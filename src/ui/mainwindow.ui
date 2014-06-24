@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1040</width>
+    <height>648</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>OpenLMI</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../icons/openlmi-logo_full-color_light-bg.png</normaloff>../../icons/openlmi-logo_full-color_light-bg.png</iconset>
+  </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <widget class="QWidget" name="central_widget">
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="margin">
+     <number>5</number>
+    </property>
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <item row="0" column="0" rowspan="2">
+     <widget class="PCTreeWidget" name="tree_widget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>301</width>
+        <height>591</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="ProviderWidget" name="provider_widget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>650</width>
+        <height>357</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menu_bar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1040</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_file">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_reset_password_storage"/>
+    <addaction name="action_show_log"/>
+    <addaction name="action_exit"/>
+   </widget>
+   <addaction name="menu_file"/>
+  </widget>
+  <widget class="QStatusBar" name="status_bar"/>
+  <action name="action_exit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="action_show_log">
+   <property name="text">
+    <string>Show &amp;log</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="action_reset_password_storage">
+   <property name="text">
+    <string>Reset password storage</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ProviderWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/providerwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PCTreeWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/pctreewidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

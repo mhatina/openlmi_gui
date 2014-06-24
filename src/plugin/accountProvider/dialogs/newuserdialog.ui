@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NewUserDialog</class>
+ <widget class="QDialog" name="NewUserDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>328</width>
+    <height>325</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>New User</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../images.qrc">
+    <normaloff>:/icons/openlmi-logo_full-color_light-bg.png</normaloff>:/icons/openlmi-logo_full-color_light-bg.png</iconset>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="name_label">
+     <property name="text">
+      <string>Name:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="password_label">
+     <property name="text">
+      <string>Password:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="4">
+    <widget class="Line" name="line">
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="midLineWidth">
+      <number>0</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QLabel" name="gecos_label">
+     <property name="text">
+      <string>General info</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2" colspan="2">
+    <widget class="QLineEdit" name="gecos_line"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="shell_label">
+     <property name="text">
+      <string>Shell</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="2" colspan="2">
+    <widget class="QLineEdit" name="shell_line">
+     <property name="text">
+      <string>/bin/bash</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <widget class="QLabel" name="home_dir_label">
+     <property name="text">
+      <string>Home directory</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="2" colspan="2">
+    <widget class="QLineEdit" name="home_dir_line">
+     <property name="text">
+      <string>/home/</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="2">
+    <widget class="QLabel" name="create_home_label">
+     <property name="text">
+      <string>Create home?</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="2">
+    <widget class="QCheckBox" name="create_home_box">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <property name="tristate">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="2">
+    <widget class="QLabel" name="system_acc_label">
+     <property name="text">
+      <string>Is system account?</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="2">
+    <widget class="QCheckBox" name="system_account_box">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0" colspan="2">
+    <widget class="QLabel" name="create_group_label">
+     <property name="text">
+      <string>Create group?</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="2">
+    <widget class="QCheckBox" name="create_group_box">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="2">
+    <widget class="QPushButton" name="cancel_button">
+     <property name="minimumSize">
+      <size>
+       <width>85</width>
+       <height>27</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="3">
+    <widget class="QPushButton" name="ok_button">
+     <property name="minimumSize">
+      <size>
+       <width>85</width>
+       <height>27</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>OK</string>
+     </property>
+     <property name="default">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" colspan="3">
+    <widget class="QLineEdit" name="password_line">
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" colspan="3">
+    <widget class="QLineEdit" name="name_line">
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>name_line</tabstop>
+  <tabstop>password_line</tabstop>
+  <tabstop>gecos_line</tabstop>
+  <tabstop>shell_line</tabstop>
+  <tabstop>home_dir_line</tabstop>
+  <tabstop>create_home_box</tabstop>
+  <tabstop>system_account_box</tabstop>
+  <tabstop>create_group_box</tabstop>
+  <tabstop>cancel_button</tabstop>
+  <tabstop>ok_button</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../images.qrc"/>
+ </resources>
+ <connections/>
+</ui>
