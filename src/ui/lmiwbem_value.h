@@ -36,6 +36,7 @@ public:
      * @return std::string representation of value
      */
     static std::string to_std_string(const Pegasus::CIMValue &value);
+    static Pegasus::CIMValue to_cim_value(Pegasus::CIMType type, std::string value, bool isArray = false);
 
 };
 

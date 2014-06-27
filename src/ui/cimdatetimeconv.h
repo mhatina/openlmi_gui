@@ -28,6 +28,7 @@
 class CIMDateTimeConv
 {
 public:
+    static Pegasus::CIMDateTime as_cim_date_time(const std::string &dt);
     /**
      * @brief Convert CIMDateTime
      * @param dt -- date

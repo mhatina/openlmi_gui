@@ -15,6 +15,7 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
+#include "eventlog.h"
 #include "kernel.h"
 #include "logger.h"
 
@@ -114,6 +115,9 @@ Engine::Kernel::Kernel() :
     m_bar->setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     m_code_dialog.setTitle("LMIShell Code");
     createKeyring();
+
+    m_event_log.setConnectionStorage(&m_connections);
+    m_event_log.setPCTree(m_main_window.getPcTreeWidget()->getTree());
 }
 
 Engine::Kernel::~Kernel()
@@ -200,61 +204,18 @@ void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
     QTreeWidgetItem* item = m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
     std::string ip = item->text(0).toStdString();
 
-    if (m_connections.find(ip) == m_connections.end()) {
-        CIMClient *client = NULL;
-        GnomeKeyringAttributeList *list = gnome_keyring_attribute_list_new();
-        GList *res_list;
-
-        gnome_keyring_attribute_list_append_string(list, "server", ip.c_str());
-
-        GnomeKeyringResult res = gnome_keyring_find_items_sync(
-                    GNOME_KEYRING_ITEM_NETWORK_PASSWORD,
-                    list,
-                    &res_list
-                    );
-
-        if (res == GNOME_KEYRING_RESULT_NO_MATCH) {
-            emit authenticate(state);
-            gnome_keyring_found_list_free(res_list);
-            return;
-        } else if (res != GNOME_KEYRING_RESULT_OK) {
-            Logger::getInstance()->error("Cannot get username and password");
-            gnome_keyring_found_list_free(res_list);
-            return;
-        }
-
-        std::string username;
-        GnomeKeyringFound *keyring = ((GnomeKeyringFound*) res_list->data);
-        guint cnt = g_array_get_element_size(keyring->attributes);
-        for (guint i = 0; i < cnt; i++) {
-            GnomeKeyringAttribute tmp;
-            if (strcmp((tmp = g_array_index(keyring->attributes, GnomeKeyringAttribute, i)).name, "user") == 0) {
-                username = gnome_keyring_attribute_get_string(&tmp);
-                break;
-            }
-        }
-
-        gchar* passwd;
-        gnome_keyring_find_password_sync(
-                    GNOME_KEYRING_NETWORK_PASSWORD,
-                    &passwd,
-                    "user", username.c_str(),
-                    "server", ip.c_str(),
-                    NULL
-                    );
-
-        client = new CIMClient();
-        try {
-            client->connect(ip, 5988, false, username, passwd);
-            m_connections[ip] = client;
-            emit doneConnecting(client, state);
-            return;
-        } catch (Pegasus::Exception &ex) {
-            emit error(std::string(ex.getMessage().getCString()));
-        }
+    switch (getSilentConnection(ip)) {
+    case 0:
+        emit doneConnecting(m_connections[ip], state);
+        break;
+    case 1:
+        emit authenticate(state);
+        break;
+    case -1:
+        // error already displayed
+        break;
     }
 
-    emit doneConnecting(m_connections[ip], state);
 }
 
 void Engine::Kernel::loadPlugin()
@@ -290,6 +251,65 @@ void Engine::Kernel::showMainWindow()
     loadPlugin();
     setActivePlugin(0);
     m_main_window.show();
+}
+
+int Engine::Kernel::getSilentConnection(std::string ip)
+{
+    if (m_connections.find(ip) == m_connections.end()) {
+        CIMClient *client = NULL;
+        GnomeKeyringAttributeList *list = gnome_keyring_attribute_list_new();
+        GList *res_list;
+
+        gnome_keyring_attribute_list_append_string(list, "server", ip.c_str());
+
+        GnomeKeyringResult res = gnome_keyring_find_items_sync(
+                    GNOME_KEYRING_ITEM_NETWORK_PASSWORD,
+                    list,
+                    &res_list
+                    );
+
+        if (res == GNOME_KEYRING_RESULT_NO_MATCH) {
+            gnome_keyring_found_list_free(res_list);
+            return 1;
+        } else if (res != GNOME_KEYRING_RESULT_OK) {
+            emit error("Cannot get username and password");
+            gnome_keyring_found_list_free(res_list);
+            return -1;
+        }
+
+        std::string username;
+        GnomeKeyringFound *keyring = ((GnomeKeyringFound*) res_list->data);
+        guint cnt = g_array_get_element_size(keyring->attributes);
+        for (guint i = 0; i < cnt; i++) {
+            GnomeKeyringAttribute tmp;
+            if (strcmp((tmp = g_array_index(keyring->attributes, GnomeKeyringAttribute, i)).name, "user") == 0) {
+                username = gnome_keyring_attribute_get_string(&tmp);
+                break;
+            }
+        }
+
+        gchar* passwd;
+        gnome_keyring_find_password_sync(
+                    GNOME_KEYRING_NETWORK_PASSWORD,
+                    &passwd,
+                    "user", username.c_str(),
+                    "server", ip.c_str(),
+                    NULL
+                    );
+        gnome_keyring_found_list_free(res_list);
+
+        client = new CIMClient();
+        try {
+            client->connect(ip, 5988, false, username, passwd);
+            m_connections[ip] = client;
+            return 0;
+        } catch (Pegasus::Exception &ex) {
+            emit error(std::string(ex.getMessage().getCString()));
+            return -1;
+        }
+    }
+
+    return 0;
 }
 
 void Engine::Kernel::deletePasswd()

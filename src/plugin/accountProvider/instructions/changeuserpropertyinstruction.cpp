@@ -48,16 +48,9 @@ IInstruction::Subject ChangeUserPropertyInstruction::getSubject()
 
 std::string ChangeUserPropertyInstruction::toString()
 {
-    int user_cnt = sizeof(userProperties) / sizeof(userProperties[0]);
-    for (int i = 0; i < user_cnt; i++) {
-        if (userProperties[i].property == m_instruction && userProperties[i].enabled) {
-            std::stringstream ss;
-            ss << "acc." << userProperties[i].property << " = \"" << CIMValue::to_std_string(m_value) << "\"\n";
-            return ss.str();
-        }
-    }
-
-    return "";
+    std::stringstream ss;
+    ss << "acc." << m_instruction << " = \"" << CIMValue::to_std_string(m_value) << "\"\n";
+    return ss.str();
 }
 
 void ChangeUserPropertyInstruction::run()

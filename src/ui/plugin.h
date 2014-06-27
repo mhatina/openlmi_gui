@@ -74,11 +74,16 @@ protected:
      */
     std::string getPath();
 
+    std::string getPropertyOfInstance(Pegasus::CIMInstance instance,
+                                      std::string propertyName, Pegasus::CIMProperty *property = NULL);
+
     /**
      * @brief Add new instruction to end of m_instructions
      * @param instruction -- see IInstruction
      */
     void addInstruction(IInstruction *instruction);
+
+    void deleteInstruction(int pos);
 
     /**
      * @brief Insert new instruction to @ref pos
@@ -86,6 +91,12 @@ protected:
      * @param pos -- position where instruction should be inserted
      */
     void insertInstruction(IInstruction *instruction, int pos);
+
+    /**
+     * @brief findInstruction -- find all occurences of instructions that fulfill requirements
+     * @return position of instruction
+     */
+    int findInstruction(IInstruction::Subject subject, std::string instructionName = "", int pos = 0);
 
 public:
     /**
@@ -105,7 +116,7 @@ public:
      * @brief Refresh state of provider
      * @return refresh state
      */
-    bool isRefreshed();
+    bool isRefreshed();    
     /**
      * @brief Virtual method for getting LMIShell code of all instructions
      * @return LMIShell code

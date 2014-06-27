@@ -52,7 +52,7 @@ void DeleteGroupInstruction::run()
                     in_param,
                     out_param
                     );        
-        if (ret.equal(Pegasus::CIMValue(Pegasus::Uint32(4097))))
+        if (ret.equal(CIMValue::to_cim_value(Pegasus::CIMTYPE_UINT32, "4097")))
             Logger::getInstance()->info("Unable to delete group: " + m_name + ". Group is primary group of a user.");
     } catch (const Pegasus::Exception &ex) {
         emit error(CIMValue::to_std_string(ex.getMessage()));

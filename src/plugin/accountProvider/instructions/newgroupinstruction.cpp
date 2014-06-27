@@ -77,12 +77,10 @@ void NewGroupInstruction::run()
                             ));
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("Name"),
-                            Pegasus::CIMValue(
-                                Pegasus::String(m_dialog->getName().c_str())
-                                )
+                            CIMValue::to_cim_value(Pegasus::CIMTYPE_STRING, m_dialog->getName())
                             ));
         in_param.append(Pegasus::CIMParamValue(
-                            Pegasus::String("SystemAccount"),
+                            Pegasus::String("SystemAccount"),                            
                             Pegasus::CIMValue(m_dialog->isSystemGroup())
                             ));
 

@@ -26,7 +26,7 @@ QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
 INCLUDEPATH  += ../../ui ../../logger
 TARGET        = $$qtLibraryTarget(accountProvider)
 DESTDIR       = ..
-LIBS += -lpegclient -lpegcommon -lboost_thread -L../../logger -lLogger
+LIBS += -lpegclient -lpegcommon -lboost_thread -L../../logger -llogger
 DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
 RESOURCES = images.qrc
 
@@ -52,7 +52,9 @@ SOURCES += \
     instructions/deleteuserinstruction.cpp \
     instructions/changeuserpropertyinstruction.cpp \
     ../../ui/lmiwbem_value.cpp \
-    ../../ui/cimdatetimeconv.cpp
+    ../../ui/cimdatetimeconv.cpp \
+    detailsdialog.cpp \
+    labeledlineedit.cpp
 
 HEADERS += \
     accountprovider.h \ 
@@ -74,11 +76,15 @@ HEADERS += \
     instructions/deleteuserinstruction.h \
     instructions/changeuserpropertyinstruction.h \
     ../../ui/plugin.h \
-    ../../ui/instructions/instruction.h
+    ../../ui/instructions/instruction.h \
+    detailsdialog.h \
+    labeledlineedit.h
 
 FORMS += \
     accountprovider.ui \
     dialogs/newuserdialog.ui \
     dialogs/newgroupdialog.ui \
     memberbox.ui \
-    dialogs/groupmemberdialog.ui
+    dialogs/groupmemberdialog.ui \
+    detailsdialog.ui \
+    labeledlineedit.ui

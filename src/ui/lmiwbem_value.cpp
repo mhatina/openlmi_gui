@@ -21,6 +21,7 @@
 
 #include <sstream>
 #include <ctime>
+#include <Pegasus/Common/Array.h>
 
 namespace {
 
@@ -67,6 +68,7 @@ std::string get_pegasus_value(const Pegasus::CIMValue &value)
         Pegasus::Array<T> raw_array;
         std::stringstream ss;
         value.get(raw_array);
+        ss << "{";
         const Pegasus::Uint32 cnt = value.getArraySize();
         for (Pegasus::Uint32 i = 0; i < cnt; ++i) {
             const T &raw_value = raw_array[i];
@@ -74,8 +76,65 @@ std::string get_pegasus_value(const Pegasus::CIMValue &value)
             if (i < cnt - 1)
                 ss << ", ";
         }
+        ss << "}";
         return ss.str();
     }
+}
+
+template <typename T>
+T get_value_from_std_string_core(const std::string &value)
+{
+    T v;
+    std::stringstream ss(value);
+    ss >> v;
+    return v;
+}
+
+template <>
+Pegasus::Char16 get_value_from_std_string_core(const std::string &value)
+{
+    return get_value_from_std_string_core<Pegasus::Uint16>(value);
+}
+
+template <>
+Pegasus::String get_value_from_std_string_core(const std::string &value)
+{
+    return value.c_str();
+}
+
+template <>
+Pegasus::CIMDateTime get_value_from_std_string_core(const std::string &value)
+{
+    return CIMDateTimeConv::as_cim_date_time(value);
+}
+
+template <typename T>
+Pegasus::CIMValue get_value_from_std_string(std::string &value, bool isArray)
+{
+    if (!isArray)
+        return Pegasus::CIMValue(get_value_from_std_string_core<T>(value));
+
+    if (value[0] == '{') {
+        value = value.substr(1, value.size() - 2);
+    }
+
+    int pos = 0;
+    int pos_start = 0;
+    Pegasus::Array<T> array;
+    while (1) {
+        pos = value.find(",");
+        std::string tmp = value.substr(pos_start, pos);
+        array.append(get_value_from_std_string_core<T>(tmp));
+        if (pos == std::string::npos)
+            break;
+
+        pos_start = pos + 1;
+        while (pos_start < value.size() && isspace(value[pos_start]))
+            pos_start++;
+        value = value.substr(pos_start);
+        pos_start = 0;
+    }
+    return Pegasus::CIMValue(array);
 }
 
 } // unnamed namespace
@@ -113,5 +172,43 @@ std::string CIMValue::to_std_string(const Pegasus::CIMValue &value)
 //        return get_pegasus_value<Pegasus::CIMObject>(value);
     default:
         return std::string("Not implemented");
+    }
+}
+
+#include <sstream>
+
+Pegasus::CIMValue CIMValue::to_cim_value(Pegasus::CIMType type, std::string value, bool isArray)
+{
+    switch (type) {
+    case Pegasus::CIMTYPE_BOOLEAN:
+        return get_value_from_std_string<Pegasus::Boolean>(value, isArray);
+    case Pegasus::CIMTYPE_UINT8:
+        return get_value_from_std_string<Pegasus::Uint8>(value, isArray);
+    case Pegasus::CIMTYPE_SINT8:
+        return get_value_from_std_string<Pegasus::Sint8>(value, isArray);
+    case Pegasus::CIMTYPE_UINT16:
+        return get_value_from_std_string<Pegasus::Uint16>(value, isArray);
+    case Pegasus::CIMTYPE_SINT16:
+        return get_value_from_std_string<Pegasus::Sint16>(value, isArray);
+    case Pegasus::CIMTYPE_UINT32:
+        return get_value_from_std_string<Pegasus::Uint32>(value, isArray);
+    case Pegasus::CIMTYPE_SINT32:
+        return get_value_from_std_string<Pegasus::Sint32>(value, isArray);
+    case Pegasus::CIMTYPE_UINT64:
+        return get_value_from_std_string<Pegasus::Uint64>(value, isArray);
+    case Pegasus::CIMTYPE_SINT64:
+        return get_value_from_std_string<Pegasus::Sint64>(value, isArray);
+    case Pegasus::CIMTYPE_CHAR16:
+        return get_value_from_std_string<Pegasus::Char16>(value, isArray);
+    case Pegasus::CIMTYPE_STRING:
+        return get_value_from_std_string<Pegasus::String>(value, isArray);
+    case Pegasus::CIMTYPE_DATETIME:
+        return get_value_from_std_string<Pegasus::CIMDateTime>(value, isArray);
+//    case Pegasus::CIMTYPE_REFERENCE:
+//        return get_pegasus_value<Pegasus::CIMObjectPath>(value);
+//    case Pegasus::CIMTYPE_OBJECT:
+//        return get_pegasus_value<Pegasus::CIMObject>(value);
+    default:
+        return Pegasus::CIMValue();
     }
 }

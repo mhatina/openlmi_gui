@@ -15,30 +15,42 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
-#include "instruction.h"
+#ifndef EVENTLOG_H
+#define EVENTLOG_H
 
-IInstruction::IInstruction(std::string instruction, Pegasus::CIMValue value) :
-    m_value(value),
-    m_instruction(instruction)
-{
-}
+#include "lmiwbem_client.h"
 
-IInstruction::IInstruction(std::string instruction) :
-    m_value(),
-    m_instruction(instruction)
-{
-}
+#include <boost/thread.hpp>
+#include <map>
+#include <string>
+#include <QMutex>
+#include <QTreeWidget>
 
-IInstruction::~IInstruction()
+class EventLog : QObject
 {
-}
+    Q_OBJECT
 
-Pegasus::CIMValue IInstruction::getValue()
-{
-    return m_value;
-}
+    typedef std::map<std::string, CIMClient*> connection_map;
 
-std::string IInstruction::getInstructionName()
-{
-    return m_instruction;
-}
+private:
+    bool m_end;
+    boost::thread *m_thread;
+    connection_map *m_connections;
+    QMutex *m_mutex;
+    QTreeWidget *m_tree;
+
+    void checkEvents();
+
+public:
+    EventLog();
+    ~EventLog();
+    void end();
+    void setConnectionStorage(connection_map *connections);
+    void setPCTree(QTreeWidget *tree);
+    void start();
+
+signals:
+    void silentConnection(std::string ip);
+};
+
+#endif // EVENTLOG_H

@@ -54,3 +54,8 @@ Pegasus::CIMInstance GroupInstruction::getGroup()
 
     return Pegasus::CIMInstance(groups[0]);
 }
+
+std::string GroupInstruction::getGroupName()
+{
+    return m_name;
+}

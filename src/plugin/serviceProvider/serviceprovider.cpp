@@ -52,6 +52,11 @@ ServiceProviderPlugin::ServiceProviderPlugin() :
                 new QTableWidgetItem("Action")
                 );
     m_services_table->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    connect(
+        m_ui->services_table,
+        SIGNAL(itemDoubleClicked(QTableWidgetItem*)),
+        this,
+        SLOT(showDetails()));
     showFilter(false);
     setPluginEnabled(false);
 }
@@ -130,8 +135,11 @@ void ServiceProviderPlugin::getData(std::vector<void *> *data)
     }
 
     unsigned int cnt = !filter.empty() ? services_obj.size() : services.size();
-    for (unsigned int i = 0; i < cnt; i++)
-        data->push_back(new Pegasus::CIMInstance(!filter.empty() ? services_obj[i] : services[i]));
+    for (unsigned int i = 0; i < cnt; i++) {
+        Pegasus::CIMInstance instance = !filter.empty() ? Pegasus::CIMInstance(services_obj[i]) : services[i];
+        data->push_back(new Pegasus::CIMInstance(instance));
+        m_service_instances.push_back(instance);
+    }
 
     emit doneFetchingData(data);
 }
@@ -246,6 +254,21 @@ void ServiceProviderPlugin::actionHandle(std::string name, e_action action)
     default:
         return;
     }
+}
+
+void ServiceProviderPlugin::showDetails()
+{
+    Pegasus::CIMInstance service;
+    std::string name_expected = m_ui->services_table->selectedItems()[0]->text().toStdString();
+    int cnt = m_service_instances.size();
+    for (int i = 0; i < cnt; i++) {
+        if (name_expected == getPropertyOfInstance(m_service_instances[i], "Name"))
+            service = m_service_instances[i];
+    }
+
+    cnt = service.getPropertyCount();
+    for (int i = 0; i < cnt; i++)
+        std::cout << "Name: " << service.getProperty(i).getName().getString() << ": " << CIMValue::to_std_string(service.getProperty(i).getValue()) << "\n";
 }
 
 Q_EXPORT_PLUGIN2(serviceProvider, ServiceProviderPlugin)

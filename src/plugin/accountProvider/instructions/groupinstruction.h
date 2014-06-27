@@ -59,7 +59,8 @@ public:
     /**
      * @brief Destructor
      */
-    ~GroupInstruction();    
+    ~GroupInstruction();
+    std::string getGroupName();
 };
 
 #endif // GROUPINSTRUCTION_H

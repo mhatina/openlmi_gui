@@ -68,7 +68,7 @@ void DeleteUserInstruction::run()
 
         // home dir probably just dont exist
         //  4097 == "Unable to delete Home Directory"
-        if (ret.equal(Pegasus::CIMValue(Pegasus::Uint32(4097)))) {
+        if (ret.equal(CIMValue::to_cim_value(Pegasus::CIMTYPE_UINT32, "4097"))) {
             Pegasus::CIMValue dontDeleteHome(true);
             in_param[0].setValue(dontDeleteHome);
             ret = m_client->invokeMethod(

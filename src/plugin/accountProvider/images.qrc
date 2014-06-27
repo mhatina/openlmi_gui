@@ -1,29 +1,19 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-    <file>../../../icons/accessories-text-editor.png</file>
     <file>../../../icons/add.png</file>
-    <file>../../../icons/application-exit.png</file>
-    <file>../../../icons/applications-internet.png</file>
+    <file>../../../icons/apply.png</file>
+    <file>../../../icons/cancel.png</file>
     <file>../../../icons/changes-allow.png</file>
     <file>../../../icons/changes-prevent.png</file>
-    <file>../../../icons/document-revert.png</file>
-    <file>../../../icons/document-save-as.png</file>
-    <file>../../../icons/document-save.png</file>
-    <file>../../../icons/edit-clear.png</file>
-    <file>../../../icons/edit-delete.png</file>
-    <file>../../../icons/edit-find.png</file>
-    <file>../../../icons/edit-redo.png</file>
-    <file>../../../icons/edit-select-all.png</file>
-    <file>../../../icons/list.txt</file>
-    <file>../../../icons/network-error.png</file>
-    <file>../../../icons/network-idle.png</file>
-    <file>../../../icons/network-offline.png</file>
-    <file>../../../icons/network-transmit-receive.png</file>
+    <file>../../../icons/discover.png</file>
+    <file>../../../icons/filter.png</file>
     <file>../../../icons/openlmi-logo_full-color_light-bg.png</file>
+    <file>../../../icons/reboot.png</file>
+    <file>../../../icons/refresh.png</file>
     <file>../../../icons/remove.png</file>
-    <file>../../../icons/system-search.png</file>
-    <file>../../../icons/system-shutdown.png</file>
-    <file>../../../icons/view-refresh.png</file>
-    <file>../../../icons/xfsm-reboot.png</file>
+    <file>../../../icons/save-as.png</file>
+    <file>../../../icons/save.png</file>
+    <file>../../../icons/show-code.png</file>
+    <file>../../../icons/shutdown.png</file>
 </qresource>
 </RCC>

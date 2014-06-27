@@ -77,21 +77,15 @@ void NewUserInstruction::run()
                             ));
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("Name"),
-                            Pegasus::CIMValue(
-                                Pegasus::String(m_dialog->getName().c_str())
-                                )
+                            CIMValue::to_cim_value(Pegasus::CIMTYPE_STRING, m_dialog->getName())
                             ));
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("GECOS"),
-                            Pegasus::CIMValue(
-                                Pegasus::String(m_dialog->getGecos().c_str())
-                                )
+                            CIMValue::to_cim_value(Pegasus::CIMTYPE_STRING, m_dialog->getGecos())
                             ));
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("HomeDirectory"),
-                            Pegasus::CIMValue(
-                                Pegasus::String(m_dialog->getHomeDir().c_str())
-                                )
+                            CIMValue::to_cim_value(Pegasus::CIMTYPE_STRING, m_dialog->getHomeDir())
                             ));
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("DontCreateHome"),
@@ -99,9 +93,7 @@ void NewUserInstruction::run()
                             ));
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("Shell"),
-                            Pegasus::CIMValue(
-                                Pegasus::String(m_dialog->getShell().c_str())
-                                )
+                            CIMValue::to_cim_value(Pegasus::CIMTYPE_STRING, m_dialog->getShell())
                             ));
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("SystemAccount"),
@@ -109,9 +101,7 @@ void NewUserInstruction::run()
                             ));
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("Password"),
-                            Pegasus::CIMValue(
-                                Pegasus::String(m_dialog->getPasswd().c_str())
-                                )
+                            CIMValue::to_cim_value(Pegasus::CIMTYPE_STRING, m_dialog->getPasswd())
                             ));
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("DontCreateGroup"),
@@ -119,7 +109,7 @@ void NewUserInstruction::run()
                             ));
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("PasswordIsPlain"),
-                            false
+                            Pegasus::CIMValue(false)
                             ));
 
         m_client->invokeMethod(

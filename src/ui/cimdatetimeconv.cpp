@@ -19,7 +19,7 @@
 
 #include <sstream>
 
-
+// HH:MM:SS DD.MM.YYYY
 std::string CIMDateTimeConv::as_time_value(
     const Pegasus::CIMDateTime &dt)
 {
@@ -31,4 +31,20 @@ std::string CIMDateTimeConv::as_time_value(
           timestr.substr(4, 2) << "." << timestr.substr(0, 4);
 
     return ss.str();
+}
+
+//yyyymmddhhmmss.mmmmmmsutc
+Pegasus::CIMDateTime CIMDateTimeConv::as_cim_date_time(const std::string &dt)
+{
+    if (dt.size() < 19)
+        return Pegasus::CIMDateTime();
+
+    std::stringstream ss;
+    ss << dt.substr(15, 4) << dt.substr(12, 2) << dt.substr(9, 2) <<
+          dt.substr(0, 2) << dt.substr(3, 2) << dt.substr(6, 2) <<
+          ".000000000";
+
+    Pegasus::String str_time(ss.str().c_str());
+
+    return Pegasus::CIMDateTime(str_time);
 }

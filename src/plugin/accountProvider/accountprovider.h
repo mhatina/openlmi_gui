@@ -38,11 +38,9 @@ const Engine::property groupProperties[] = {
 const Engine::property userProperties[] = {
     {"ID", "UserID", false},
     {"Name", "Name", false},
-    {"Gecos", "ElementName", true},
-    {"System name", "SystemName", false},
-    {"Home directory", "HomeDirectory", true},
-    {"Login shell", "LoginShell", true},
-    {"Last login", "LastLogin", false}
+    {"Gecos", "ElementName", false},
+    {"Home directory", "HomeDirectory", false},
+    {"Login shell", "LoginShell", true}
 };
 
 const Qt::ItemFlags item_flags =
@@ -62,17 +60,19 @@ class AccountProviderPlugin : public Engine::IPlugin
     Q_INTERFACES(Engine::IPlugin)
 
 private:
-    int m_group_push_pos;
-    int m_user_push_pos;
     QTableWidget *m_group_table;
     QTableWidget *m_user_table;
     std::string m_last_group_name;
     std::string m_last_user_name;
-    std::vector<std::string> m_users;
+    std::vector<Pegasus::CIMInstance> m_group_instances;
+    std::vector<Pegasus::CIMInstance> m_user_instances;
+    std::vector<std::string> m_users;    
     Ui::AccountProviderPlugin *m_ui;
 
+    bool isKeyProperty(const char *property);
     int findGroupIndex(std::string name);
-    std::string convertNameToID(std::string name);
+    std::string convertNameToID(std::string name);    
+    void setSelectedLineColor(QList<QTableWidgetItem*> selectedItems, QColor color);
 
 public:
     explicit AccountProviderPlugin();
@@ -86,9 +86,9 @@ public:
 private slots:    
     void add();
     void addUserToGroup(std::string group);
-    void itemChanged(QTableWidgetItem* item);
     void remove();
     void removeUserFromGroup(std::string group);
+    void showDetails();
 };
 
 #endif // ACCOUNTPROVIDERPLUGIN_H

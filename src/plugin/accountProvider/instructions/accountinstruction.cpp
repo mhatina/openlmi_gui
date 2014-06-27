@@ -54,3 +54,8 @@ Pegasus::CIMInstance AccountInstruction::getUser()
 
     return Pegasus::CIMInstance(users[0]);
 }
+
+std::string AccountInstruction::getUserName()
+{
+    return m_name;
+}

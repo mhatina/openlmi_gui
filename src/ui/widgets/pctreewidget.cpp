@@ -159,6 +159,7 @@ QTreeWidgetItem* PCTreeWidget::addPcToTree(std::string parent, std::string text)
                 | Qt::ItemIsEditable;
         m_data_of_item_changed = false;
         child->setFlags(flags);
+        child->setIcon(0, QIcon("../../icons/computer.png"));
         m_data_of_item_changed = true;
 
         if (text != "")
@@ -324,13 +325,14 @@ void PCTreeWidget::validate(QTreeWidgetItem* item ,int column)
     else {
         result = getaddrinfo(ip, NULL, NULL, &res);
 
-        if (res->ai_family == AF_INET) {
-            struct in_addr dstv4;
-            result = inet_pton(res->ai_family, ip, &dstv4);
-        } else if (res->ai_family == AF_INET6) {
-            struct in6_addr dstv6;
-            result = inet_pton(res->ai_family, ip, &dstv6);
-        }
+        // BUG - res == 0x1
+//        if (res->ai_family == AF_INET) {
+//            struct in_addr dstv4;
+//            result = inet_pton(res->ai_family, ip, &dstv4);
+//        } else if (res->ai_family == AF_INET6) {
+//            struct in6_addr dstv6;
+//            result = inet_pton(res->ai_family, ip, &dstv6);
+//        }
     }
 
     if (!result) {

@@ -26,7 +26,7 @@ QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
 INCLUDEPATH  += ../../ui ../../logger
 TARGET        = $$qtLibraryTarget(serviceProvider)
 DESTDIR       = ..
-LIBS += -lpegclient -lpegcommon -lboost_thread -L../../logger -lLogger
+LIBS += -lpegclient -lpegcommon -lboost_thread -L../../logger -llogger
 DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
 
 HEADERS += \

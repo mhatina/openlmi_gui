@@ -137,6 +137,7 @@ class ServiceProviderPlugin : public Engine::IPlugin
     Q_INTERFACES(Engine::IPlugin)
     
 private:
+    std::vector<Pegasus::CIMInstance> m_service_instances;
     QTableWidget *m_services_table;
     Ui::ServiceProviderPlugin *m_ui;    
 
@@ -157,6 +158,7 @@ public:
 
 private slots:
     void actionHandle(std::string name, e_action action);
+    void showDetails();
 };
 
 #endif // SERVICEPROVIDER_H

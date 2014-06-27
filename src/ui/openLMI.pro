@@ -22,7 +22,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = openLMI
 TEMPLATE = app
 QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
-LIBS += -lslp -lpegclient -lpegcommon -lboost_thread -lgnome-keyring -L../logger/ -lLogger
+LIBS += -lslp -lpegclient -lpegcommon -lboost_thread -lgnome-keyring -L../logger/ -llogger
 INCLUDEPATH += ../logger
 DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
 CONFIG += link_pkgconfig
@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     instructions/connectinstruction.cpp \
     plugin.cpp \
     masterpasswddialog.cpp \
-    showtextdialog.cpp
+    showtextdialog.cpp \
+    eventlog.cpp
 
 HEADERS  += mainwindow.h \
     kernel.h \
@@ -60,7 +61,8 @@ HEADERS  += mainwindow.h \
     instructions/instruction.h \
     instructions/connectinstruction.h \
     masterpasswddialog.h \
-    showtextdialog.h
+    showtextdialog.h \
+    eventlog.h
 
 FORMS    += mainwindow.ui \
     widgets/providerwidget.ui \

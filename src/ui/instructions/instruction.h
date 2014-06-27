@@ -59,6 +59,8 @@ public:
      * @param instruction -- name of instruction
      */
     IInstruction(std::string instruction);
+    Pegasus::CIMValue getValue();
+    std::string getInstructionName();
     /**
      * @brief Virtual destructor
      */

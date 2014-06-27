@@ -60,6 +60,7 @@ public:
      * @brief Destructor
      */
     ~AccountInstruction();    
+    std::string getUserName();
 };
 
 #endif // ACCOUNTINSTRUCTION_H

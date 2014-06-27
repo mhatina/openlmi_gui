@@ -47,16 +47,9 @@ IInstruction::Subject ChangeGroupPropertyInstruction::getSubject()
 
 std::string ChangeGroupPropertyInstruction::toString()
 {
-    int group_cnt = sizeof(groupProperties) / sizeof(groupProperties[0]);
-    for (int i = 0; i < group_cnt; i++) {
-        if (groupProperties[i].property == m_instruction && groupProperties[i].enabled) {
-            std::stringstream ss;
-            ss << "gr." << groupProperties[i].property << " = \"" << CIMValue::to_std_string(m_value) << "\"\n";
-            return ss.str();
-        }
-    }
-
-    return "";
+    std::stringstream ss;
+    ss << "gr." << m_instruction << " = \"" << CIMValue::to_std_string(m_value) << "\"\n";
+    return ss.str();
 }
 
 void ChangeGroupPropertyInstruction::run()

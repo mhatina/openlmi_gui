@@ -16,6 +16,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "instructions/connectinstruction.h"
+#include "lmiwbem_value.h"
 #include "plugin.h"
 
 #include <boost/thread.hpp>
@@ -60,6 +61,22 @@ std::string Engine::IPlugin::getPath()
     return dialog.getExistingDirectory().toStdString();
 }
 
+std::string Engine::IPlugin::getPropertyOfInstance(Pegasus::CIMInstance instance,
+                                                         std::string propertyName, Pegasus::CIMProperty *property)
+{
+    Pegasus::Uint32 propIndex = instance.findProperty(Pegasus::CIMName(propertyName.c_str()));
+    if (propIndex == Pegasus::PEG_NOT_FOUND) {
+        Logger::getInstance()->error("property " + propertyName + " not found");
+        return "";
+    }
+    Pegasus::CIMProperty prop = instance.getProperty(propIndex);
+    if (property != NULL) {
+        *property = prop;
+    }
+    Pegasus::CIMValue value = prop.getValue();
+    return CIMValue::to_std_string(value);
+}
+
 void Engine::IPlugin::addInstruction(IInstruction *instruction)
 {
     if (m_instructions.empty()) {
@@ -77,6 +94,13 @@ void Engine::IPlugin::addInstruction(IInstruction *instruction)
     emit newInstructionText(getInstructionText());
 }
 
+void Engine::IPlugin::deleteInstruction(int pos)
+{
+    delete m_instructions[pos];
+    m_instructions.erase(m_instructions.begin() + pos);
+    emit newInstructionText(getInstructionText());
+}
+
 void Engine::IPlugin::insertInstruction(IInstruction *instruction, int pos)
 {
     m_instructions.insert(
@@ -87,6 +111,31 @@ void Engine::IPlugin::insertInstruction(IInstruction *instruction, int pos)
     connect(instruction, SIGNAL(error(std::string)), this, SLOT(handleError(std::string)));
     emit unsavedChanges(this);
     emit newInstructionText(getInstructionText());
+}
+
+int Engine::IPlugin::findInstruction(IInstruction::Subject subject, std::string instructionName, int pos)
+{
+    std::vector<IInstruction*>::iterator it;
+    unsigned int i = pos;
+    if (i > m_instructions.size())
+        return -1;
+    for (it = m_instructions.begin() + pos; it != m_instructions.end(); it++) {
+        bool found = true;
+
+        found &= (*it)->getSubject() == subject;
+
+        if (!instructionName.empty())
+            found &= (*it)->getInstructionName() == instructionName;
+
+        if (!found) {
+            i++;
+            continue;
+        }
+
+        return i;
+    }
+
+    return -1;
 }
 
 Engine::IPlugin::IPlugin() :

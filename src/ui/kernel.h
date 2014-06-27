@@ -20,6 +20,7 @@
 
 #include "authenticationdialog.h"
 #include "config.h"
+#include "eventlog.h"
 #include "lmiwbem_client.h"
 #include "mainwindow.h"
 #include "plugin.h"
@@ -66,6 +67,7 @@ class Kernel : public QObject {
 private:    
     bool m_refreshEnabled;
     connection_map m_connections;
+    EventLog m_event_log;
     MainWindow m_main_window;
     plugin_map m_loaded_plugins;
     QMutex *m_mutex;
@@ -90,12 +92,12 @@ public:
     /**
      * @brief Destructor
      */
-    ~Kernel();    
+    ~Kernel();
     /**
-     * @brief Connects all selected CIMClients
+     * @brief Connects to system
      * @param state -- power state
      */
-    void getConnection(PowerStateValues::POWER_VALUES state);
+    void getConnection(PowerStateValues::POWER_VALUES state);    
     /**
      * @brief Load all plugins
      */
@@ -106,6 +108,7 @@ public:
     void showMainWindow();
 
 private slots:    
+    int getSilentConnection(std::string ip);
     void deletePasswd();
     void deletePasswd(std::string id);
     void enableSpecialButtons();
