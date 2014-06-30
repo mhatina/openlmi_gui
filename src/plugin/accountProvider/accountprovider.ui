@@ -41,8 +41,8 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="images.qrc">
-       <normaloff>:/icons/remove.png</normaloff>:/icons/remove.png</iconset>
+      <iconset resource="icons.qrc">
+       <normaloff>:/remove.png</normaloff>:/remove.png</iconset>
      </property>
      <property name="shortcut">
       <string>Ctrl+D</string>
@@ -70,8 +70,8 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="images.qrc">
-       <normaloff>:/icons/add.png</normaloff>:/icons/add.png</iconset>
+      <iconset resource="icons.qrc">
+       <normaloff>:/add.png</normaloff>:/add.png</iconset>
      </property>
      <property name="shortcut">
       <string>Ctrl+A</string>
@@ -236,7 +236,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="images.qrc"/>
+  <include location="icons.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -14,8 +14,8 @@
    <string>Password Request</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>../../icons/openlmi-logo_full-color_light-bg.png</normaloff>../../icons/openlmi-logo_full-color_light-bg.png</iconset>
+   <iconset resource="icons.qrc">
+    <normaloff>:/openlmi-logo.png</normaloff>:/openlmi-logo.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -80,6 +80,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

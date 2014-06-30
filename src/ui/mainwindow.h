@@ -38,24 +38,24 @@ typedef struct {
 } button;
 
 const button buttons[] = {
-    {"edit_button", "changes-prevent.png", "Edit", "", false, true},
-    {"add_button", "add.png", "Add", "", true, false},
-    {"remove_button", "remove.png", "Remove", "", true, false},
-    {"discover_button", "discover.png", "Discover", "", true, false},
+    {"edit_button", ":/changes-prevent.png", "Edit", "", false, true},
+    {"add_button", ":/add.png", "Add", "", true, false},
+    {"remove_button", ":/remove.png", "Remove", "", true, false},
+    {"discover_button", ":/discover.png", "Discover", "", true, false},
     {"delete_passwd_button", "", "Delete password", "", true, false},
     {"", "", "", "", true, false},
-    {"refresh_button", "refresh.png", "Refresh", "Ctrl+R", true, false},
-    {"cancel_button", "cancel.png", "Cancel", "", true, false},
-    {"save_button", "save.png", "Save", "", true, false},
-    {"save_as_button", "save-as.png", "Save as...", "", true, false},
-    {"apply_button", "apply.png", "Apply", "", true, false},
+    {"refresh_button", ":/refresh.png", "Refresh", "Ctrl+R", true, false},
+    {"cancel_button", ":/cancel.png", "Cancel", "", true, false},
+    {"save_button", ":/save.png", "Save", "", true, false},
+    {"save_as_button", ":/save-as.png", "Save as...", "", true, false},
+    {"apply_button", ":/apply.png", "Apply", "", true, false},
     {"", "", "", "", true, false},
-    {"reboot_button", "reboot.png", "Reboot", "", true, false},
-    {"shutdown_button", "shutdown.png", "Shutdown", "", true, false},
+    {"reboot_button", ":/reboot.png", "Reboot", "", true, false},
+    {"shutdown_button", ":/shutdown.png", "Shutdown", "", true, false},
     {"", "", "", "", true, false},
-    {"show_code_button", "show-code.png", "Show code", "", false, false},
+    {"show_code_button", ":/show-code.png", "Show code", "", false, false},
     {"", "", "", "", true, false},
-    {"filter_button", "filter.png", "Filter", "Ctrl+F", false, true}
+    {"filter_button", ":/filter.png", "Filter", "Ctrl+F", false, true}
 };
 
 namespace Ui {

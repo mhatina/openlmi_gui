@@ -20,27 +20,12 @@
 
 #ifndef DEFAULT_LOG_PATH
 #   define DEFAULT_LOG_PATH \
-        "openlmi_log"
+        "~/.openlmi/openlmi_log"
 #endif
 
 #ifndef PLUGIN_PATH
 #   define PLUGIN_PATH \
         "../plugin"
-#endif
-
-#ifndef SAVED_COMPUTER_PATH
-#   define SAVED_COMPUTER_PATH \
-    "openlmi_computers.xml"
-#endif
-
-#ifndef CONNECTION_DATABASE_PATH
-#   define CONNECTION_DATABASE_PATH \
-    "connections.db"
-#endif
-
-#ifndef ICON_PATH
-#   define ICON_PATH \
-    "../../icons/"
 #endif
 
 #endif // CONFIG_H

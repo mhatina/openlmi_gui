@@ -28,7 +28,8 @@ TARGET        = $$qtLibraryTarget(accountProvider)
 DESTDIR       = ..
 LIBS += -lpegclient -lpegcommon -lboost_thread -L../../logger -llogger
 DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
-RESOURCES = images.qrc
+RESOURCES = \
+    icons.qrc
 
 UI_DIR = uics
 MOC_DIR = mocs
@@ -92,3 +93,10 @@ FORMS += \
     dialogs/groupmemberdialog.ui \
     detailsdialog.ui \
     labeledlineedit.ui
+
+linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+    target.path = /usr/lib64/openlmi
+} else {
+    target.path = /usr/lib/openlmi
+}
+INSTALLS += target

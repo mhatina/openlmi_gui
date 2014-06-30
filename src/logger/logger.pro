@@ -36,11 +36,12 @@ SOURCES += logger.cpp
 HEADERS += logger.h\
         logger_global.h
 
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
+linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+    target.path = /usr/lib64
+} else {
+    target.path = /usr/lib
 }
+DEFINES +=DEFAULT_LOG_PATH="\\\"/tmp/openlmi_log\\\""
+INSTALLS += target
+
+RESOURCES +=

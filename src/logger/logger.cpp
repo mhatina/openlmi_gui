@@ -25,15 +25,18 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <QDateTime>
 #include <QMutex>
 #include <Qt/qmessagebox.h>
+
+#include <iostream>
 
 Logger* Logger::m_instance = NULL;
 QMutex Logger::m_mutex;
 
-Logger::Logger() :
-    m_log_path(DEFAULT_LOG_PATH)
+Logger::Logger()
 {
+    setLogPath(DEFAULT_LOG_PATH);
 }
 
 Logger::~Logger()
@@ -68,8 +71,13 @@ const std::string Logger::getLogPath() const
 }
 
 void Logger::setLogPath(std::string file_path)
-{
+{    
+    std::stringstream ss;
     m_log_path = file_path;
+    ss << QDateTime().currentDateTime().date().day()
+       << QDateTime().currentDateTime().date().month()
+       << QDateTime().currentDateTime().date().year();
+    m_log_path += ss.str();
 }
 
 bool Logger::info(std::string message, bool show_message)
@@ -101,7 +109,7 @@ bool Logger::error(std::string message, bool show_message)
             false
             );
 
-        QMessageBox::warning(0, "Error", message.c_str());
+        QMessageBox::warning(0, "Warning", message.c_str());
 
         return true;
     }
@@ -120,7 +128,7 @@ bool Logger::critical(std::string message, bool show_message)
             false
             );
 
-        QMessageBox::warning(0, "Critical", message.c_str());
+        QMessageBox::critical(0, "Critical", message.c_str());
 
         return true;
     }
@@ -144,7 +152,9 @@ bool Logger::log(std::string message, log_mode mode, bool show_message)
     {
         setLogPath(DEFAULT_LOG_PATH);
         m_mutex.unlock();
-        error("Log file cannot be opened! Possibly wrong path. Path changed to " + m_log_path);
+        std::string err = "Log file cannot be opened! Possibly wrong path. Path changed to " + m_log_path;
+        if (message != err)
+            error(err);
         return false;
     }
 

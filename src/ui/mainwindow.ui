@@ -14,8 +14,8 @@
    <string>OpenLMI</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>../../icons/openlmi-logo_full-color_light-bg.png</normaloff>../../icons/openlmi-logo_full-color_light-bg.png</iconset>
+   <iconset resource="icons.qrc">
+    <normaloff>:/openlmi-logo.png</normaloff>:/openlmi-logo.png</iconset>
   </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
@@ -122,6 +122,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

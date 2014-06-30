@@ -27,6 +27,8 @@ INCLUDEPATH += ../logger
 DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
 CONFIG += link_pkgconfig
 PKGCONFIG += glib-2.0
+RESOURCES += \
+    icons.qrc
 
 UI_DIR = uics
 MOC_DIR = mocs
@@ -74,3 +76,13 @@ FORMS    += mainwindow.ui \
     authenticationdialog.ui \
     masterpasswddialog.ui \
     showtextdialog.ui
+
+linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+    DEFINES+= "PLUGIN_PATH=\\\"/usr/lib64/openlmi\\\""
+} else {
+    DEFINES+= "PLUGIN_PATH=\\\"/usr/lib/openlmi\\\""
+}
+
+target.path = /usr/bin
+INSTALLS += target
+

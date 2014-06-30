@@ -68,3 +68,13 @@ SOURCES += \
 FORMS += \
     serviceprovider.ui \
     actionbox.ui
+
+linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+    target.path = /usr/lib64/openlmi
+} else {
+    target.path = /usr/lib/openlmi
+}
+INSTALLS += target
+
+RESOURCES += \
+    icons.qrc

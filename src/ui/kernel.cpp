@@ -24,6 +24,12 @@
 #include <Pegasus/Common/Array.h>
 #include <QStatusBar>
 #include <QToolBar>
+#include <sys/stat.h>
+
+#include <errno.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 extern const GnomeKeyringPasswordSchema *GNOME_KEYRING_NETWORK_PASSWORD;
 #define OPENLMI_KEYRING_DEFAULT "openlmi"
@@ -33,6 +39,12 @@ Engine::Kernel::Kernel() :
     m_mutex(new QMutex()),
     m_bar(new QProgressBar(m_main_window.getProviderWidget()))
 {
+    struct passwd *pw = getpwuid(getuid());
+    std::string path = pw->pw_dir;
+    path += "/.openlmi";
+    if (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0 && errno != EEXIST) {
+        Logger::getInstance()->error("Cannot create ~/.openlmi dir.\nError: " + std::string(strerror(errno)));
+    }
     QPushButton *button = m_main_window.getToolbar()->findChild<QPushButton*>("refresh_button");
     connect(
         button,
@@ -114,7 +126,7 @@ Engine::Kernel::Kernel() :
         SLOT(resetKeyring()));
     m_bar->setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     m_code_dialog.setTitle("LMIShell Code");
-    createKeyring();
+    createKeyring();        
 
     m_event_log.setConnectionStorage(&m_connections);
     m_event_log.setPCTree(m_main_window.getPcTreeWidget()->getTree());
@@ -142,7 +154,20 @@ void Engine::Kernel::createKeyring()
 {
     GnomeKeyringResult res = gnome_keyring_create_sync(OPENLMI_KEYRING_DEFAULT, NULL);
     if (res != GNOME_KEYRING_RESULT_OK && res != GNOME_KEYRING_RESULT_KEYRING_ALREADY_EXISTS) {
-        Logger::getInstance()->error("Cannot create " + std::string(OPENLMI_KEYRING_DEFAULT) + " keyring");
+        const std::string err[] = {
+            "GNOME_KEYRING_RESULT_OK",
+            "GNOME_KEYRING_RESULT_DENIED",
+            "GNOME_KEYRING_RESULT_NO_KEYRING_DAEMON",
+            "GNOME_KEYRING_RESULT_ALREADY_UNLOCKED",
+            "GNOME_KEYRING_RESULT_NO_SUCH_KEYRING",
+            "GNOME_KEYRING_RESULT_BAD_ARGUMENTS",
+            "GNOME_KEYRING_RESULT_IO_ERROR",
+            "GNOME_KEYRING_RESULT_CANCELLED",
+            "GNOME_KEYRING_RESULT_KEYRING_ALREADY_EXISTS",
+            "GNOME_KEYRING_RESULT_NO_MATCH"
+        };
+
+        Logger::getInstance()->error("Cannot create " + std::string(OPENLMI_KEYRING_DEFAULT) + " keyring\nError: " + err[res]);
         exit(EXIT_FAILURE);
     }
 }
@@ -221,7 +246,7 @@ void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
 void Engine::Kernel::loadPlugin()
 {
     QDir plugins_dir(qApp->applicationDirPath());
-    plugins_dir.cd(PLUGIN_PATH);
+    plugins_dir.cd(PLUGIN_PATH);    
 
     foreach (QString file_name, plugins_dir.entryList(QDir::Files)) {
         QPluginLoader plugin_loader(plugins_dir.absoluteFilePath(file_name));
@@ -500,7 +525,7 @@ void Engine::Kernel::setEditState(bool state)
     ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("remove_button"))->setEnabled(state);
     ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("discover_button"))->setEnabled(state);    
     ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("edit_button"))->setIcon(
-                QIcon(!state ? "../../icons/changes-prevent.png" : "../../icons/changes-allow.png"));
+                QIcon(!state ? ":/changes-prevent.png" : ":/changes-allow.png"));
 
     tree_widget->setEditState(state);
 }

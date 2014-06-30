@@ -43,7 +43,8 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
     m_ui(new Ui::PCTreeWidget)
 {
     m_ui->setupUi(this);
-    loadPcs(SAVED_COMPUTER_PATH);    
+    std::string path = "/home/mhatina/.openlmi/openlmi_computers.xml";
+    loadPcs(path);
     m_ui->tree->header()->resizeSection(0, 260);
     connect(
         m_ui->tree,
@@ -58,7 +59,8 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
 
 PCTreeWidget::~PCTreeWidget()
 {    
-    saveAllPcs(SAVED_COMPUTER_PATH);
+    std::string path = "/home/mhatina/.openlmi/openlmi_computers.xml";
+    saveAllPcs(path);
     delete m_ui;
     delete m_worker;
 }
@@ -187,7 +189,7 @@ QTreeWidgetItem* PCTreeWidget::findTopLevelNode(std::string item_name)
 void PCTreeWidget::loadPcs(std::string filename)
 {
     QFile file(filename.c_str());
-    if (!file.open( QIODevice::ReadOnly)) {
+    if (!file.open(QIODevice::ReadOnly)) {
         Logger::getInstance()->error("Failed to read from " + filename + ", error: " + file.errorString().toStdString(), false);
         return;
     }

@@ -14,8 +14,8 @@
    <string>User's details</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images.qrc">
-    <normaloff>:/icons/openlmi-logo_full-color_light-bg.png</normaloff>:/icons/openlmi-logo_full-color_light-bg.png</iconset>
+   <iconset resource="icons.qrc">
+    <normaloff>:/openlmi-logo.png</normaloff>:/openlmi-logo.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="0">
@@ -49,7 +49,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="images.qrc"/>
+  <include location="icons.qrc"/>
  </resources>
  <connections>
   <connection>
