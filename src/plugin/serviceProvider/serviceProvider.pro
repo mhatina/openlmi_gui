@@ -29,6 +29,10 @@ DESTDIR       = ..
 LIBS += -lpegclient -lpegcommon -lboost_thread -L../../logger -llogger
 DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
 
+UI_DIR = uics
+MOC_DIR = mocs
+OBJECTS_DIR = objs
+
 HEADERS += \
     serviceprovider.h \
     ../../ui/plugin.h \

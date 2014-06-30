@@ -30,6 +30,10 @@ LIBS += -lpegclient -lpegcommon -lboost_thread -L../../logger -llogger
 DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
 RESOURCES = images.qrc
 
+UI_DIR = uics
+MOC_DIR = mocs
+OBJECTS_DIR = objs
+
 SOURCES += \
     accountprovider.cpp \
     instructions/accountinstruction.cpp \

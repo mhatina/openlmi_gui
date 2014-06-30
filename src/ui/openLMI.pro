@@ -28,6 +28,10 @@ DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
 CONFIG += link_pkgconfig
 PKGCONFIG += glib-2.0
 
+UI_DIR = uics
+MOC_DIR = mocs
+OBJECTS_DIR = objs
+
 SOURCES += main.cpp\
     mainwindow.cpp \
     widgets/pctreewidget.cpp \
