@@ -125,6 +125,7 @@ public:
      * @param state -- true if items can be edited, else false
      */
     void setEditState(bool state);
+    void setComputerIcon(QIcon icon);
 };
 
 #endif // PCTREEWIDGET_H

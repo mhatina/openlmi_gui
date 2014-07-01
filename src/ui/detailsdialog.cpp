@@ -20,13 +20,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "detailsdialog.h"
-#include "instructions/changegrouppropertyinstruction.h"
-#include "instructions/changeuserpropertyinstruction.h"
-#include "labeledlineedit.h"
+#include "widgets/labeledlineedit.h"
 #include "ui_detailsdialog.h"
 
 #include <lmiwbem_value.h>
 #include <QLabel>
+#include <QPushButton>
 #include <QTextEdit>
 
 bool DetailsDialog::isKeyProperty(const char *property)
@@ -52,11 +51,14 @@ std::string DetailsDialog::insertSpaces(std::string text)
     return text;
 }
 
-DetailsDialog::DetailsDialog(QWidget *parent) :
-    QDialog(parent),
+DetailsDialog::DetailsDialog(std::string title) :
+    QDialog(),
     m_ui(new Ui::DetailsDialog)
 {
-    m_ui->setupUi(this);    
+    m_ui->setupUi(this);
+    setWindowTitle(title.c_str());
+    m_ui->key_label->setStyleSheet("QLabel { background-color : pink;}");
+    m_ui->changed_label->setStyleSheet("QLabel { background-color : yellow;}");
 }
 
 DetailsDialog::~DetailsDialog()
@@ -69,57 +71,53 @@ std::map<std::string, std::string> DetailsDialog::getChanges()
     return m_changes;
 }
 
-void DetailsDialog::alterProperties(std::vector<IInstruction *> instructions)
+void DetailsDialog::alterProperties(std::map<std::string, std::string> instructions)
 {
-    int cnt = instructions.size();
-
-    Pegasus::Uint32 propIndex = m_instance.findProperty(Pegasus::CIMName("Name"));
-    Pegasus::CIMProperty prop = m_instance.getProperty(propIndex);
-    Pegasus::CIMValue value = prop.getValue();
-    std::string name = CIMValue::to_std_string(value);
-    std::string property_name;
-    std::string str_value;
-
-    for (int i = 0; i < cnt; i++) {
-        bool found = false;
-        IInstruction *instruction = instructions[i];
-        property_name = instruction->getInstructionName();
-        str_value = CIMValue::to_std_string(instruction->getValue());
-
-        if (instruction->getSubject() == IInstruction::ACCOUNT
-                && m_instance.findProperty(Pegasus::CIMName(property_name.c_str())) != Pegasus::Uint32(-1))
-            found = ((ChangeUserPropertyInstruction*) instructions[i])->getUserName() == name;
-        else if (instruction->getSubject() == IInstruction::GROUP
-                 && m_instance.findProperty(Pegasus::CIMName(property_name.c_str())) != Pegasus::Uint32(-1))
-            found = ((ChangeGroupPropertyInstruction*) instructions[i])->getGroupName() == name;
-
-        if (!found)
-            continue;
-
+    std::map<std::string, std::string>::iterator it;
+    for (it = instructions.begin(); it != instructions.end(); it++) {
         LabeledLineEdit *line;
-        if ((line = findChild<LabeledLineEdit*>(property_name.c_str())) != NULL) {
+        if ((line = findChild<LabeledLineEdit*>(it->first.c_str())) != NULL) {
             line->textChanged();
-            line->setText(str_value);
+            line->setText(it->second.c_str());
         }
      }
 }
 
-void DetailsDialog::setInstance(Pegasus::CIMInstance instance)
+void DetailsDialog::hideCancelButton()
 {
-    m_changes_enabled = false;
-    m_instance = instance;
+    m_ui->button_box->button(QDialogButtonBox::Cancel)->hide();
+}
 
-    std::vector<LabeledLineEdit*> lines;
+void DetailsDialog::setValues(Pegasus::CIMInstance instance, bool disableAll)
+{
+    std::map<std::string, std::string> values;
     int cnt = instance.getPropertyCount();
-    int max_width = 0;
     for (int i = 0; i < cnt; i++) {
         std::string object_name = std::string(instance.getProperty(i).getName().getString().getCString());
-        std::string str_name = insertSpaces(object_name);
         std::string str_value = CIMValue::to_std_string(instance.getProperty(i).getValue());
+        values[object_name] = str_value;
+    }
+
+    setValues(values, disableAll);
+}
+
+void DetailsDialog::setValues(std::map<std::string, std::string> values, bool disableAll)
+{
+    m_changes_enabled = false;
+    std::map<std::string, std::string>::iterator it;
+
+    std::vector<LabeledLineEdit*> lines;
+    int max_width = 0;
+    for (it = values.begin(); it != values.end(); it++) {
+        std::string object_name = it->first;
+        std::string str_name = insertSpaces(object_name);
+        std::string str_value = it->second;
         QWidget *widget_area = findChild<QWidget*>("widget_area");
         QLayout *layout = widget_area->layout();
 
-        LabeledLineEdit *widget = new LabeledLineEdit(object_name, str_name, str_value, isKeyProperty(object_name.c_str()));
+        bool key = isKeyProperty(object_name.c_str());
+        LabeledLineEdit *widget = new LabeledLineEdit(object_name, str_name, str_value, key);
+        widget->setReadOnly(disableAll | key);
         if (max_width < widget->getLabelWidth())
             max_width = widget->getLabelWidth();
         connect(
@@ -130,11 +128,13 @@ void DetailsDialog::setInstance(Pegasus::CIMInstance instance)
         layout->addWidget(widget);
         lines.push_back(widget);
     }
+    int cnt = lines.size();
     for (int i = 0; i < cnt; i++)
         lines[i]->setAlignment(max_width);
 
     m_changes_enabled = true;
 }
+
 
 void DetailsDialog::itemChanged(LabeledLineEdit *item)
 {

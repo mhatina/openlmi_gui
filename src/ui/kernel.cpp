@@ -215,14 +215,16 @@ void Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VA
             Pegasus::CIMName("RequestPowerStateChange"),
             in_param,
             out_param
-            );
+            );        
+        m_connections.erase(m_connections.find(client->hostname()));
+        client->disconnect();
     } catch (const Pegasus::Exception &ex) {
         Logger::getInstance()->error(std::string(ex.getMessage().getCString()));
     }
 }
 
 void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
-{
+{    
     Logger::getInstance()->info("Connecting...");
     QTreeWidgetItem* item = m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
     std::string ip = item->text(0).toStdString();
@@ -419,6 +421,7 @@ void Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER
     if (state == PowerStateValues::NoPowerSetting) {
         QTabWidget* tab = m_main_window.getProviderWidget()->getTabWidget();
         IPlugin *plugin = (IPlugin*) tab->currentWidget();
+        m_main_window.getPcTreeWidget()->setComputerIcon(QIcon(":/computer.png"));
 
         if (plugin != NULL)
             plugin->refresh(client);
@@ -464,10 +467,11 @@ void Engine::Kernel::handleProgressState(int state)
 void Engine::Kernel::rebootPc()
 {
     QList<QTreeWidgetItem *> items;
-    if (!(items = m_main_window.getPcTreeWidget()->getTree()->selectedItems()).isEmpty())
+    if (!(items = m_main_window.getPcTreeWidget()->getTree()->selectedItems()).isEmpty())        
         Logger::getInstance()->info("Rebooting system: "
                                     + m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0]->text(0).toStdString()
                                     );
+    m_main_window.getPcTreeWidget()->setComputerIcon(QIcon(":/reboot.png"));
 
     handleProgressState(0);
     boost::thread(boost::bind(&Engine::Kernel::getConnection, this, PowerStateValues::PowerCycleOffSoft));
@@ -573,6 +577,7 @@ void Engine::Kernel::shutdownPc()
 {
     QList<QTreeWidgetItem *> items;
     if (!(items = m_main_window.getPcTreeWidget()->getTree()->selectedItems()).isEmpty())
+        m_main_window.getPcTreeWidget()->setComputerIcon(QIcon(":/shutdown.png"));
         Logger::getInstance()->info("Shutting down system: "
                                     + m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0]->text(0).toStdString()
                                     );

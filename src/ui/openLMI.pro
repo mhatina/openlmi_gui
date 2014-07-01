@@ -48,9 +48,10 @@ SOURCES += main.cpp\
     instructions/instruction.cpp \
     instructions/connectinstruction.cpp \
     plugin.cpp \
-    masterpasswddialog.cpp \
     showtextdialog.cpp \
-    eventlog.cpp
+    eventlog.cpp \
+    widgets/labeledlineedit.cpp \
+    detailsdialog.cpp
 
 HEADERS  += mainwindow.h \
     kernel.h \
@@ -66,16 +67,18 @@ HEADERS  += mainwindow.h \
     cimdatetimeconv.h \
     instructions/instruction.h \
     instructions/connectinstruction.h \
-    masterpasswddialog.h \
     showtextdialog.h \
-    eventlog.h
+    eventlog.h \
+    widgets/labeledlineedit.h \
+    detailsdialog.h
 
 FORMS    += mainwindow.ui \
     widgets/providerwidget.ui \
     widgets/pctreewidget.ui \
     authenticationdialog.ui \
-    masterpasswddialog.ui \
-    showtextdialog.ui
+    showtextdialog.ui \
+    widgets/labeledlineedit.ui \
+    detailsdialog.ui
 
 linux-g++:contains(QMAKE_HOST.arch, x86_64):{
     DEFINES+= "PLUGIN_PATH=\\\"/usr/lib64/openlmi\\\""

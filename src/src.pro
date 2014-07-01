@@ -1,8 +1,8 @@
 TEMPLATE = subdirs
 SUBDIRS += \
     logger/logger.pro \
-    plugin/plugin.pro \
-    ui/openLMI.pro
+    ui/openLMI.pro \
+    plugin/plugin.pro 
 
 CONFIG += ordered
 

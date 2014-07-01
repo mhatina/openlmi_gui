@@ -137,6 +137,14 @@ void PCTreeWidget::setEditState(bool state)
     }
 }
 
+void PCTreeWidget::setComputerIcon(QIcon icon)
+{
+    QTreeWidgetItem *item = m_ui->tree->selectedItems()[0];
+    m_data_of_item_changed = false;
+    item->setIcon(0, icon);
+    m_data_of_item_changed = true;
+}
+
 // private
 
 bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text)

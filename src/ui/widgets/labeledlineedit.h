@@ -48,6 +48,7 @@ public:
     std::string getText();    
     void setAlignment(int alignment);
     void setLabelText(std::string text);
+    void setReadOnly(bool state);
     void setText(std::string text);
 
 public slots:

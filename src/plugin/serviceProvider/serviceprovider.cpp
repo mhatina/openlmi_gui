@@ -20,6 +20,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "actionbox.h"
+#include "detailsdialog.h"
 #include "instructions/disableserviceinstruction.h"
 #include "instructions/enableserviceinstruction.h"
 #include "instructions/getinstruction.h"
@@ -33,6 +34,32 @@
 
 #include <sstream>
 #include <vector>
+
+std::string ServiceProviderPlugin::valueToStr(Pegasus::CIMProperty property)
+{
+    Pegasus::CIMValue value = property.getValue();
+    if (property.getName().equal(Pegasus::CIMName("EnabledDefault")))
+        return enabled_default_values[atoi(value.toString().getCString())];
+    else if (property.getName().equal(Pegasus::CIMName("EnabledState")))
+        return enabled_state_values[atoi(value.toString().getCString())];
+    else if (property.getName().equal(Pegasus::CIMName("OperationalStatus"))) {
+        Pegasus::Array<Pegasus::Uint16> raw_array;
+        std::stringstream ss;
+        value.get(raw_array);
+        const Pegasus::Uint32 cnt = value.getArraySize();
+        for (Pegasus::Uint32 i = 0; i < cnt; ++i) {
+            const Pegasus::Uint16 &raw_value = raw_array[i];
+            ss << operational_status_values[atoi(CIMValue::to_std_string(raw_value).c_str())];
+            if (i < cnt - 1)
+                ss << ", ";
+        }
+        return ss.str();
+    } else if (property.getName().equal(Pegasus::CIMName("RequestedState"))
+               || property.getName().equal(Pegasus::CIMName("TransitioningToState")))
+        return requested_state_values[atoi(value.toString().getCString())];
+    else
+        return CIMValue::to_std_string(value);
+}
 
 ServiceProviderPlugin::ServiceProviderPlugin() :
     IPlugin(),
@@ -164,30 +191,10 @@ void ServiceProviderPlugin::fillTab(std::vector<void *> *data)
                     continue;
                 }
 
-                Pegasus::CIMProperty property = ((Pegasus::CIMInstance *) (*data)[i])->getProperty(propIndex);
-                Pegasus::CIMValue value = property.getValue();
+                Pegasus::CIMProperty property = ((Pegasus::CIMInstance *) (*data)[i])->getProperty(propIndex);                
                 std::string str_value;
 
-                if (property.getName().equal(Pegasus::CIMName("EnabledDefault")))
-                    str_value = enabled_default_values[atoi(value.toString().getCString())];
-                else if (property.getName().equal(Pegasus::CIMName("EnabledState")))
-                    str_value = enabled_state_values[atoi(value.toString().getCString())];
-                else if (property.getName().equal(Pegasus::CIMName("OperationalStatus"))) {
-                    Pegasus::Array<Pegasus::Uint16> raw_array;
-                    std::stringstream ss;
-                    value.get(raw_array);
-                    const Pegasus::Uint32 cnt = value.getArraySize();
-                    for (Pegasus::Uint32 i = 0; i < cnt; ++i) {
-                        const Pegasus::Uint16 &raw_value = raw_array[i];
-                        ss << operational_status_values[atoi(CIMValue::to_std_string(raw_value).c_str())];
-                        if (i < cnt - 1)
-                            ss << ", ";
-                    }
-                    str_value = ss.str();
-                } else if (property.getName().equal(Pegasus::CIMName("RequestedState")))
-                    str_value = requested_state_values[atoi(value.toString().getCString())];
-                else
-                    str_value = CIMValue::to_std_string(value);
+                str_value = valueToStr(property);
 
                 if (property.getName().equal(Pegasus::CIMName("Name")))
                     serv_name = str_value;
@@ -266,9 +273,18 @@ void ServiceProviderPlugin::showDetails()
             service = m_service_instances[i];
     }
 
+    std::map<std::string, std::string> values;
     cnt = service.getPropertyCount();
-    for (int i = 0; i < cnt; i++)
-        std::cout << "Name: " << service.getProperty(i).getName().getString() << ": " << CIMValue::to_std_string(service.getProperty(i).getValue()) << "\n";
+    for (int i = 0; i < cnt; i++) {
+        std::string object_name = std::string(service.getProperty(i).getName().getString().getCString());
+        std::string str_value = valueToStr(service.getProperty(i));
+        values[object_name] = str_value;
+    }
+
+    DetailsDialog dialog("Service details");
+    dialog.setValues(values, true);
+    dialog.hideCancelButton();
+    dialog.exec();
 }
 
 Q_EXPORT_PLUGIN2(serviceProvider, ServiceProviderPlugin)

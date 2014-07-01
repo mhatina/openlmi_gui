@@ -23,7 +23,7 @@
 #define DETAILSDIALOG_H
 
 #include "instructions/instruction.h"
-#include "labeledlineedit.h"
+#include "widgets/labeledlineedit.h"
 
 #include <Pegasus/Common/CIMInstance.h>
 #include <QDialog>
@@ -46,7 +46,6 @@ class DetailsDialog : public QDialog
 
 private:    
     bool m_changes_enabled;
-    Pegasus::CIMInstance m_instance;
     std::map<std::string, std::string> m_changes;
     Ui::DetailsDialog *m_ui;
 
@@ -54,12 +53,14 @@ private:
     std::string insertSpaces(std::string text);
 
 public:
-    explicit DetailsDialog(QWidget *parent = 0);
+    explicit DetailsDialog(std::string title);
     ~DetailsDialog();
 
     std::map<std::string, std::string> getChanges();
-    void alterProperties(std::vector<IInstruction*> instructions);
-    void setInstance(Pegasus::CIMInstance instance);
+    void alterProperties(std::map<std::string, std::string> instructions);
+    void hideCancelButton();
+    void setValues(Pegasus::CIMInstance instance, bool disableAll = false);
+    void setValues(std::map<std::string, std::string> values, bool disableAll);
 
 private slots:
     void itemChanged(LabeledLineEdit *item);

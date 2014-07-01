@@ -31,10 +31,10 @@
 const Engine::property serviceProperties[] = {
     {"Name", "Name", false},
     {"Caption", "Caption", false},
-    {"Enabled default", "EnabledDefault", false},
-    {"Enabled state", "EnabledState", false},
+//    {"Enabled default", "EnabledDefault", false},
+//    {"Enabled state", "EnabledState", false},
     {"Operational status", "OperationalStatus", false},
-    {"Requested state", "RequestedState", false},
+//    {"Requested state", "RequestedState", false},
     {"Status", "Status", false}
 };
 
@@ -140,6 +140,8 @@ private:
     std::vector<Pegasus::CIMInstance> m_service_instances;
     QTableWidget *m_services_table;
     Ui::ServiceProviderPlugin *m_ui;    
+
+    std::string valueToStr(Pegasus::CIMProperty property);
 
 public:
     /**

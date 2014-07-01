@@ -87,6 +87,11 @@ void LabeledLineEdit::setLabelText(std::string text)
     m_ui->label->setText(text.c_str());
 }
 
+void LabeledLineEdit::setReadOnly(bool state)
+{
+    m_ui->lineEdit->setReadOnly(state);
+}
+
 void LabeledLineEdit::setText(std::string text)
 {
     m_text = text;

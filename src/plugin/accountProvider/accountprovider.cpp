@@ -651,12 +651,12 @@ void AccountProviderPlugin::removeUserFromGroup(std::string group)
 
 void AccountProviderPlugin::showDetails()
 {
-    QWidget *current = m_ui->tab_widget->currentWidget();
-    DetailsDialog dialog;
+    QWidget *current = m_ui->tab_widget->currentWidget();   
     QList<QTableWidgetItem*> selected_items;
     bool edited = false;
 
     if (current == m_ui->user_page) {
+        DetailsDialog dialog("User details");
         Pegasus::CIMInstance *user = NULL;
         selected_items = m_ui->user_table->selectedItems();
         std::string name_expected = selected_items[1]->text().toStdString();
@@ -670,8 +670,27 @@ void AccountProviderPlugin::showDetails()
         if (user == NULL)
             return;
 
-        dialog.setInstance(*user);
-        dialog.alterProperties(m_instructions);
+        dialog.setValues(*user);
+
+        int pos = 0;
+        std::map<std::string, std::string> changes;
+        while ((pos = findInstruction(IInstruction::ACCOUNT, "", pos)) != -1) {
+            IInstruction *instruction = m_instructions[pos];
+            std::string name = getPropertyOfInstance(*user, "Name");
+            std::string property_name = instruction->getInstructionName();
+            std::string str_value = CIMValue::to_std_string(instruction->getValue());
+
+            bool found = false;
+            if (user->findProperty(Pegasus::CIMName(property_name.c_str())) != Pegasus::Uint32(-1))
+                found = ((ChangeUserPropertyInstruction*) instruction)->getUserName() == name;
+
+            if (!found)
+                continue;
+
+            changes[property_name] = str_value;
+        }
+        dialog.alterProperties(changes);
+
         if (dialog.exec()) {
             std::map<std::string, std::string> changes = dialog.getChanges();
             edited = !changes.empty();
@@ -701,6 +720,7 @@ void AccountProviderPlugin::showDetails()
                     );
         }
     } else {
+        DetailsDialog dialog("Group details");
         Pegasus::CIMInstance *group = NULL;
         selected_items = m_ui->group_table->selectedItems();
         std::string name_expected = selected_items[1]->text().toStdString();
@@ -714,8 +734,27 @@ void AccountProviderPlugin::showDetails()
         if (group == NULL)
             return;
 
-        dialog.setInstance(*group);
-        dialog.alterProperties(m_instructions);
+        dialog.setValues(*group);
+
+        int pos = 0;
+        std::map<std::string, std::string> changes;
+        while ((pos = findInstruction(IInstruction::GROUP, "", pos)) != -1) {
+            IInstruction *instruction = m_instructions[pos];
+            std::string name = getPropertyOfInstance(*group, "Name");
+            std::string property_name = instruction->getInstructionName();
+            std::string str_value = CIMValue::to_std_string(instruction->getValue());
+
+            bool found = false;
+            if (group->findProperty(Pegasus::CIMName(property_name.c_str())) != Pegasus::Uint32(-1))
+                found = ((ChangeGroupPropertyInstruction*) instruction)->getGroupName() == name;
+
+            if (!found)
+                continue;
+
+            changes[property_name] = str_value;
+        }
+        dialog.alterProperties(changes);
+
         if (dialog.exec()) {
             std::map<std::string, std::string> changes = dialog.getChanges();
             edited = !changes.empty();

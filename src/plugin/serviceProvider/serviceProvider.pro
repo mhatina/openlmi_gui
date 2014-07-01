@@ -23,7 +23,7 @@ QT       += core gui
 TEMPLATE      = lib
 CONFIG       += plugin
 QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
-INCLUDEPATH  += ../../ui ../../logger
+INCLUDEPATH  += ../../ui ../../ui/uics ../../logger
 TARGET        = $$qtLibraryTarget(serviceProvider)
 DESTDIR       = ..
 LIBS += -lpegclient -lpegcommon -lboost_thread -L../../logger -llogger
@@ -46,7 +46,9 @@ HEADERS += \
     ../../ui/instructions/connectinstruction.h \
     instructions/restartserviceinstruction.h \
     instructions/reloadserviceinstruction.h \
-    ../../ui/instructions/instruction.h
+    ../../ui/instructions/instruction.h \
+    ../../ui/detailsdialog.h \
+    ../../ui/widgets/labeledlineedit.h
 
 SOURCES += \
     serviceprovider.cpp \
@@ -63,7 +65,9 @@ SOURCES += \
     ../../ui/instructions/connectinstruction.cpp \
     ../../ui/instructions/instruction.cpp \
     instructions/restartserviceinstruction.cpp \
-    instructions/reloadserviceinstruction.cpp
+    instructions/reloadserviceinstruction.cpp \
+    ../../ui/detailsdialog.cpp \
+    ../../ui/widgets/labeledlineedit.cpp
 
 FORMS += \
     serviceprovider.ui \

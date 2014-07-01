@@ -23,7 +23,7 @@ QT       += core gui
 TEMPLATE      = lib
 CONFIG       += plugin
 QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
-INCLUDEPATH  += ../../ui ../../logger
+INCLUDEPATH  += ../../ui ../../ui/uics ../../logger
 TARGET        = $$qtLibraryTarget(accountProvider)
 DESTDIR       = ..
 LIBS += -lpegclient -lpegcommon -lboost_thread -L../../logger -llogger
@@ -58,8 +58,9 @@ SOURCES += \
     instructions/changeuserpropertyinstruction.cpp \
     ../../ui/lmiwbem_value.cpp \
     ../../ui/cimdatetimeconv.cpp \
-    detailsdialog.cpp \
-    labeledlineedit.cpp
+#    ../../ui/widgets/labeledlineedit.cpp \
+    ../../ui/detailsdialog.cpp \
+    ../../ui/widgets/labeledlineedit.cpp
 
 HEADERS += \
     accountprovider.h \ 
@@ -82,17 +83,16 @@ HEADERS += \
     instructions/changeuserpropertyinstruction.h \
     ../../ui/plugin.h \
     ../../ui/instructions/instruction.h \
-    detailsdialog.h \
-    labeledlineedit.h
+#    ../../ui/widgets/labeledlineedit.h \
+    ../../ui/detailsdialog.h \
+    ../../ui/widgets/labeledlineedit.h
 
 FORMS += \
     accountprovider.ui \
     dialogs/newuserdialog.ui \
     dialogs/newgroupdialog.ui \
     memberbox.ui \
-    dialogs/groupmemberdialog.ui \
-    detailsdialog.ui \
-    labeledlineedit.ui
+    dialogs/groupmemberdialog.ui
 
 linux-g++:contains(QMAKE_HOST.arch, x86_64):{
     target.path = /usr/lib64/openlmi

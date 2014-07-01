@@ -38,6 +38,12 @@ std::string get_pegasus_value_core(const T &value)
     return ss.str(); 
 }
 
+template <>
+std::string get_pegasus_value_core(const Pegasus::Boolean &value)
+{
+    return value ? "True" : "False";
+}
+
 /**
  * @brief get_pegasus_value_core
  * @param value
