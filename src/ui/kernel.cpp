@@ -236,9 +236,9 @@ void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
         break;
     case -1:
         // error already displayed
+        handleProgressState(1);
         break;
     }
-
 }
 
 void Engine::Kernel::loadPlugin()
@@ -424,6 +424,7 @@ void Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER
             plugin->refresh(client);
     } else {
         setPowerState(client, state);
+        handleProgressState(100);
     }
 }
 

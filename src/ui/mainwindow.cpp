@@ -67,7 +67,11 @@ MainWindow::MainWindow(QWidget *parent) :
         }
 
         std::string path = buttons[i].icon_path;
-        QPushButton *button = new QPushButton(QIcon(QPixmap(path.c_str())), "");
+        QPushButton *button;
+        if (!path.empty())
+            button = new QPushButton(QIcon(QPixmap(path.c_str())), "");
+        else
+            button = new QPushButton(buttons[i].tooltip);
         button->setObjectName(buttons[i].object_name);
         button->setToolTip(buttons[i].tooltip);
         button->setShortcut(QKeySequence(buttons[i].shortcut));
