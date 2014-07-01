@@ -161,7 +161,7 @@ QTreeWidgetItem* PCTreeWidget::addPcToTree(std::string parent, std::string text)
                 | Qt::ItemIsEditable;
         m_data_of_item_changed = false;
         child->setFlags(flags);
-        child->setIcon(0, QIcon("../../icons/computer.png"));
+        child->setIcon(0, QIcon(":/computer.png"));
         m_data_of_item_changed = true;
 
         if (text != "")
@@ -189,6 +189,9 @@ QTreeWidgetItem* PCTreeWidget::findTopLevelNode(std::string item_name)
 void PCTreeWidget::loadPcs(std::string filename)
 {
     QFile file(filename.c_str());
+    if (!file.exists())
+        return;
+
     if (!file.open(QIODevice::ReadOnly)) {
         Logger::getInstance()->error("Failed to read from " + filename + ", error: " + file.errorString().toStdString(), false);
         return;
@@ -205,7 +208,7 @@ void PCTreeWidget::loadPcs(std::string filename)
 
         if (token == QXmlStreamReader::StartDocument)
             continue;
-        else if(token == QXmlStreamReader::StartElement) {
+        else {
             if (in.name() == "computers")
                 continue;
             else if(in.name() == "computer") {

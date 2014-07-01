@@ -184,9 +184,7 @@ void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
     ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("save_as_button"))->setEnabled(state & refreshed);
     if (refresh_button) {
         enableSpecialButtons(state);
-    }
-    ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("shutdown_button"))->setEnabled(state & refreshed);
-    ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("reboot_button"))->setEnabled(state & refreshed);
+    }    
 }
 
 void Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VALUES power_state)
@@ -365,11 +363,16 @@ void Engine::Kernel::enableSpecialButtons()
 
 void Engine::Kernel::enableSpecialButtons(bool state)
 {
-    QPushButton *button = m_main_window.findChild<QPushButton*>("refresh_button");
     QList<QTreeWidgetItem*> list = m_main_window.getPcTreeWidget()->getTree()->selectedItems();
-    button->setEnabled(!list.empty() & m_refreshEnabled & state);
+    bool refresh = !list.empty() & m_refreshEnabled & state;
+    QPushButton *button = m_main_window.findChild<QPushButton*>("refresh_button");
+    button->setEnabled(refresh);
     button = m_main_window.getToolbar()->findChild<QPushButton*>("delete_passwd_button");
-    button->setEnabled(state & !m_refreshEnabled & !list.empty());
+    button->setEnabled(refresh);
+    button = m_main_window.getToolbar()->findChild<QPushButton*>("shutdown_button");
+    button->setEnabled(refresh);
+    button = m_main_window.getToolbar()->findChild<QPushButton*>("reboot_button");
+    button->setEnabled(refresh);
 }
 
 void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)

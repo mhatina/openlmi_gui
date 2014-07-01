@@ -5,6 +5,7 @@
     <file alias="cancel.png">../../icons/cancel.png</file>
     <file alias="changes-allow.png">../../icons/changes-allow.png</file>
     <file alias="changes-prevent.png">../../icons/changes-prevent.png</file>
+    <file alias="computer.png">../../icons/computer.png</file>
     <file alias="discover.png">../../icons/discover.png</file>
     <file alias="filter.png">../../icons/filter.png</file>
     <file alias="openlmi-logo.png">../../icons/openlmi-logo_full-color_light-bg.png</file>
