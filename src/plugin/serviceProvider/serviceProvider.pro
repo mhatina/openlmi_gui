@@ -25,7 +25,7 @@ CONFIG       += plugin
 QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
 INCLUDEPATH  += ../../ui ../../ui/uics ../../logger
 TARGET        = $$qtLibraryTarget(serviceProvider)
-DESTDIR       = ..
+DESTDIR       = ../libs
 LIBS += -lpegclient -lpegcommon -lboost_thread -L../../logger -llogger
 DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
 
@@ -73,10 +73,14 @@ FORMS += \
     serviceprovider.ui \
     actionbox.ui
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-    target.path = /usr/lib64/openlmi
+CONFIG(debug, debug|release) {
+    target.path = ../libs
 } else {
-    target.path = /usr/lib/openlmi
+    linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+        target.path = /usr/lib64/openlmi
+    } else {
+        target.path = /usr/lib/openlmi
+    }
 }
 INSTALLS += target
 

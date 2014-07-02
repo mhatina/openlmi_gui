@@ -81,10 +81,14 @@ FORMS    += mainwindow.ui \
     widgets/labeledlineedit.ui \
     detailsdialog.ui
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-    DEFINES+= "PLUGIN_PATH=\\\"/usr/lib64/openlmi\\\""
+CONFIG(debug, debug|release) {
+    DEFINES+= "PLUGIN_PATH=\\\"../plugin/libs\\\""
 } else {
-    DEFINES+= "PLUGIN_PATH=\\\"/usr/lib/openlmi\\\""
+    linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+        DEFINES+= "PLUGIN_PATH=\\\"/usr/lib64/openlmi\\\""
+    } else {
+        DEFINES+= "PLUGIN_PATH=\\\"/usr/lib/openlmi\\\""
+    }
 }
 
 target.path = /usr/bin

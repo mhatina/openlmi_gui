@@ -110,39 +110,36 @@ std::string ServiceProviderPlugin::getLabel()
 void ServiceProviderPlugin::getData(std::vector<void *> *data)
 {
     Pegasus::Array<Pegasus::CIMInstance> services;
-    Pegasus::Array<Pegasus::CIMObject> services_obj;
     std::string filter = m_ui->filter_line->text().toStdString();
 
     try
     {
-
         m_client->setTimeout(Pegasus::Uint32(600000));
 
-        if (!filter.empty()) {            
-            services_obj = m_client->execQuery(
-                        Pegasus::CIMNamespaceName("root/cimv2"),
-                        Pegasus::String("WQL"),
-                        Pegasus::String(std::string("SELECT * FROM LMI_Service WHERE " + filter).c_str())
-                        );
-        } else {
-         services = m_client->enumerateInstances(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    Pegasus::CIMName("LMI_Service"),
-                    true,       // deep inheritance
-                    false,      // local only
-                    false,      // include qualifiers
-                    false       // include class origin
-                    );
-        }
+        services = m_client->enumerateInstances(
+                Pegasus::CIMNamespaceName("root/cimv2"),
+                Pegasus::CIMName("LMI_Service"),
+                true,       // deep inheritance
+                false,      // local only
+                false,      // include qualifiers
+                false       // include class origin
+                );
     } catch (Pegasus::Exception &ex)
     {
         emit doneFetchingData(NULL, std::string(ex.getMessage().getCString()));
         return;
     }
 
-    unsigned int cnt = !filter.empty() ? services_obj.size() : services.size();
+    unsigned int cnt = services.size();
     for (unsigned int i = 0; i < cnt; i++) {
-        Pegasus::CIMInstance instance = !filter.empty() ? Pegasus::CIMInstance(services_obj[i]) : services[i];
+        Pegasus::CIMInstance instance;
+        if (!filter.empty()) {
+            instance = services[i];
+            if (getPropertyOfInstance(instance, "Name").find(filter) == std::string::npos)
+                continue;
+        } else
+            instance = services[i];
+
         data->push_back(new Pegasus::CIMInstance(instance));
         m_service_instances.push_back(instance);
     }

@@ -55,42 +55,54 @@ std::string HardwareProviderPlugin::getLabel()
 
 void HardwareProviderPlugin::getData(std::vector<void *> *data)
 {
-//    Pegasus::Array<Pegasus::CIMInstance> services;
-//    Pegasus::Array<Pegasus::CIMObject> services_obj;
-//    std::string filter = m_ui->filter_line->text().toStdString();
+//    + class LMI_Processor: CIM_Processor
+//    - class LMI_ProcessorChip: CIM_Chip
+//    - class LMI_ProcessorSystemDevice: CIM_SystemDevice
+//    + class LMI_Memory: CIM_Memory
+//    + class LMI_PhysicalMemory: CIM_PhysicalMemory
+//    - class LMI_MemorySystemDevice: CIM_SystemDevice
+//    class LMI_Chassis: CIM_Chassis
+//    class LMI_Baseboard: CIM_Card
+//    - class LMI_MemorySlot: CIM_Slot
+//    class LMI_SystemSlot: CIM_Slot
+//    class LMI_PointingDevice: CIM_PointingDevice
+//    class LMI_Battery: CIM_Battery
+//    class LMI_BatterySystemDevice: CIM_SystemDevice
+//    class LMI_PCIDevice: CIM_PCIDevice
+//    class LMI_PCIDeviceSystemDevice: CIM_SystemDevice
+//    class LMI_PCIBridge: CIM_PCIBridge
+//    class LMI_PCIBridgeSystemDevice: CIM_SystemDevice
+//    class LMI_DiskDrive: CIM_DiskDrive
 
-//    try
-//    {
-//        if (!filter.empty()) {
-//            services_obj = m_client->execQuery(
-//                        Pegasus::CIMNamespaceName("root/cimv2"),
-//                        Pegasus::String("WQL"),
-//                        Pegasus::String(std::string("SELECT * FROM LMI_Service WHERE " + filter).c_str())
-//                        );
-//        } else {
-//         services = m_client->enumerateInstances(
-//                    Pegasus::CIMNamespaceName("root/cimv2"),
-//                    Pegasus::CIMName("LMI_Service"),
-//                    true,       // deep inheritance
-//                    false,      // local only
-//                    false,      // include qualifiers
-//                    false       // include class origin
-//                    );
-//        }
-//    } catch (Pegasus::Exception &ex)
-//    {
-//        emit doneFetchingData(NULL, std::string(ex.getMessage().getCString()));
-//        return;
-//    }
-
-//    unsigned int cnt = !filter.empty() ? services_obj.size() : services.size();
-//    for (unsigned int i = 0; i < cnt; i++) {
-//        Pegasus::CIMInstance instance = !filter.empty() ? Pegasus::CIMInstance(services_obj[i]) : services[i];
-//        data->push_back(new Pegasus::CIMInstance(instance));
-//        m_service_instances.push_back(instance);
-//    }
-
-//    emit doneFetchingData(data);
+//    class LMI_ProcessorCapabilities: CIM_ProcessorCapabilities
+//    class LMI_ProcessorElementCapabilities: CIM_ElementCapabilities
+//    class LMI_ProcessorCacheMemory: CIM_Memory
+//    class LMI_AssociatedProcessorCacheMemory: CIM_AssociatedCacheMemory
+//    class LMI_ProcessorChipRealizes: CIM_Realizes
+//    class LMI_PhysicalMemoryRealizes: CIM_Realizes
+//    class LMI_BaseboardContainer: CIM_Container
+//    class LMI_ProcessorChipContainer: CIM_Container
+//    class LMI_ChassisComputerSystemPackage: CIM_ComputerSystemPackage
+//    class LMI_MemorySlotContainer: CIM_Container
+//    class LMI_MemoryPhysicalPackage: CIM_PhysicalPackage
+//    class LMI_MemoryPhysicalPackageInConnector: CIM_PackageInConnector
+//    class LMI_PhysicalMemoryContainer: CIM_Container
+//    class LMI_PortPhysicalConnector: CIM_PhysicalConnector
+//    class LMI_PortPhysicalConnectorContainer: CIM_Container
+//    class LMI_SystemSlotContainer: CIM_Container
+//    class LMI_BatteryPhysicalPackage: CIM_PhysicalPackage
+//    class LMI_PhysicalBatteryRealizes: CIM_Realizes
+//    class LMI_PhysicalBatteryContainer: CIM_Container
+//    class LMI_DiskPhysicalPackage: CIM_PhysicalPackage
+//    class LMI_DiskPhysicalPackageContainer: CIM_Container
+//    class LMI_DiskDriveRealizes: CIM_Realizes
+//    class LMI_DiskDriveSystemDevice: CIM_SystemDevice
+//    class LMI_DiskDriveSoftwareIdentity: CIM_SoftwareIdentity
+//    class LMI_DiskDriveElementSoftwareIdentity: CIM_ElementSoftwareIdentity
+//    class LMI_DiskDriveATAProtocolEndpoint: CIM_ATAProtocolEndpoint
+//    class LMI_DiskDriveSAPAvailableForElement: CIM_SAPAvailableForElement
+//    class LMI_DiskDriveATAPort: CIM_ATAPort
+//    class LMI_DiskDriveDeviceSAPImplementation: CIM_DeviceSAPImplementation
 }
 
 void HardwareProviderPlugin::fillTab(std::vector<void *> *data)

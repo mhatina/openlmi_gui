@@ -99,12 +99,18 @@
       <item row="0" column="0">
        <widget class="QLabel" name="filter_user_label">
         <property name="text">
-         <string>... Account ... WHERE</string>
+         <string>Account name</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
        <widget class="QLineEdit" name="filter_user_line">
+        <property name="minimumSize">
+         <size>
+          <width>306</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="autoFillBackground">
          <bool>true</bool>
         </property>
@@ -112,6 +118,12 @@
       </item>
       <item row="0" column="3">
        <widget class="QLineEdit" name="filter_group_line">
+        <property name="minimumSize">
+         <size>
+          <width>348</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="autoFillBackground">
          <bool>true</bool>
         </property>
@@ -120,7 +132,7 @@
       <item row="0" column="2">
        <widget class="QLabel" name="filter_group_label">
         <property name="text">
-         <string>... Group ... WHERE</string>
+         <string>Group name</string>
         </property>
        </widget>
       </item>

@@ -25,7 +25,7 @@ CONFIG       += plugin
 QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
 INCLUDEPATH  += ../../ui ../../ui/uics ../../logger
 TARGET        = $$qtLibraryTarget(accountProvider)
-DESTDIR       = ..
+DESTDIR       = ../libs
 LIBS += -lpegclient -lpegcommon -lboost_thread -L../../logger -llogger
 DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
 RESOURCES = \
@@ -58,7 +58,6 @@ SOURCES += \
     instructions/changeuserpropertyinstruction.cpp \
     ../../ui/lmiwbem_value.cpp \
     ../../ui/cimdatetimeconv.cpp \
-#    ../../ui/widgets/labeledlineedit.cpp \
     ../../ui/detailsdialog.cpp \
     ../../ui/widgets/labeledlineedit.cpp
 
@@ -83,7 +82,6 @@ HEADERS += \
     instructions/changeuserpropertyinstruction.h \
     ../../ui/plugin.h \
     ../../ui/instructions/instruction.h \
-#    ../../ui/widgets/labeledlineedit.h \
     ../../ui/detailsdialog.h \
     ../../ui/widgets/labeledlineedit.h
 
@@ -94,9 +92,13 @@ FORMS += \
     memberbox.ui \
     dialogs/groupmemberdialog.ui
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-    target.path = /usr/lib64/openlmi
+CONFIG(debug, debug|release) {
+    target.path = ../libs
 } else {
-    target.path = /usr/lib/openlmi
+    linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+        target.path = /usr/lib64/openlmi
+    } else {
+        target.path = /usr/lib/openlmi
+    }
 }
 INSTALLS += target
