@@ -31,6 +31,8 @@
 #include <QPluginLoader>
 #include <string>
 
+#define OPENLMI_KEYRING_DEFAULT "openlmi"
+
 namespace PowerStateValues {
 typedef enum {
     NoPowerSetting = -1,
@@ -73,6 +75,7 @@ private:
     QMutex *m_mutex;
     QProgressBar *m_bar;
     ShowTextDialog m_code_dialog;
+    std::string m_save_script_path;
 
     int getIndexOfTab(std::string name);
     void createKeyring();
@@ -121,6 +124,8 @@ private slots:
     void rebootPc();
     void refresh();
     void resetKeyring();
+    void saveAsScripts();
+    void saveScripts();
     void setActivePlugin(int index);
     void setEditState(bool state);
     void setPluginNoChanges(IPlugin *plugin);

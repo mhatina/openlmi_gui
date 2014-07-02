@@ -80,7 +80,6 @@ public:
     virtual std::string getInstructionText();
     virtual std::string getLabel();    
     virtual void fillTab(std::vector<void *> *data);
-    virtual void generateCode();
     virtual void getData(std::vector<void *> *data);
 
 private slots:    

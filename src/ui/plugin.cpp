@@ -20,8 +20,21 @@
 #include "plugin.h"
 
 #include <boost/thread.hpp>
+#include <fstream>
 #include <QGroupBox>
 #include <QToolBar>
+
+bool Engine::IPlugin::isFileEmpty(std::string filename)
+{
+    std::ifstream file;
+    file.open(filename.c_str());
+
+    bool empty = file.peek() == std::ifstream::traits_type::eof();
+
+    file.close();
+
+    return empty;
+}
 
 void Engine::IPlugin::setPluginEnabled(bool state)
 {
@@ -52,13 +65,6 @@ int Engine::IPlugin::throwAwayChanges()
     message_box.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
     message_box.setDefaultButton(QMessageBox::Yes);
     return message_box.exec();
-}
-
-std::string Engine::IPlugin::getPath()
-{
-    QFileDialog dialog;
-    dialog.setFileMode(QFileDialog::Directory);
-    return dialog.getExistingDirectory().toStdString();
 }
 
 std::string Engine::IPlugin::getPropertyOfInstance(Pegasus::CIMInstance instance,
@@ -143,9 +149,7 @@ Engine::IPlugin::IPlugin() :
     m_changes_enabled(false),
     m_refreshed(false),
     m_client(NULL),
-    m_mutex(new QMutex(QMutex::Recursive)),
-    m_save_dir_path(""),
-    m_save_dir_path_backup("")
+    m_mutex(new QMutex(QMutex::Recursive))
 {
     qRegisterMetaType<std::string>("std::string");
     connect(
@@ -206,20 +210,6 @@ void Engine::IPlugin::connectButtons(QToolBar *toolbar)
         this,
         SLOT(apply())
         );
-    button = toolbar->findChild<QPushButton*>("save_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(save())
-        );
-    button = toolbar->findChild<QPushButton*>("save_as_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(saveAs())
-        );
     button = toolbar->findChild<QPushButton*>("cancel_button");
     connect(
         button,
@@ -246,6 +236,25 @@ void Engine::IPlugin::refresh(CIMClient *client)
     setRefreshed(true);
 
     boost::thread(boost::bind(&Engine::IPlugin::getData, this, m_data));
+}
+
+void Engine::IPlugin::saveScript(std::string filename)
+{
+    if (m_instructions.empty())
+        return;
+
+    std::ofstream out_file;
+    out_file.open(filename.c_str(), std::fstream::out | std::fstream::app);
+
+    unsigned int i;
+    bool empty = isFileEmpty(filename);
+    if (!empty)
+        out_file << "\n";
+    for (i = empty ? 0 : 1; i < m_instructions.size(); i++) {
+        out_file << m_instructions[i]->toString();
+    }
+
+    out_file.close();
 }
 
 void Engine::IPlugin::setActive(bool active)
@@ -313,29 +322,6 @@ void Engine::IPlugin::handleDoneApplying()
 void Engine::IPlugin::handleError(std::string message)
 {
     Logger::getInstance()->error(message);
-}
-
-void Engine::IPlugin::save()
-{
-    if (!m_active)
-        return;
-
-    if (m_save_dir_path.empty())
-        m_save_dir_path = getPath();
-
-    if (m_save_dir_path.empty()) {
-        m_save_dir_path = m_save_dir_path_backup;
-        return;
-    }
-
-    generateCode();
-}
-
-void Engine::IPlugin::saveAs()
-{
-    m_save_dir_path_backup = m_save_dir_path;
-    m_save_dir_path.clear();
-    save();
 }
 
 

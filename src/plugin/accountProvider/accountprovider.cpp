@@ -168,51 +168,6 @@ std::string AccountProviderPlugin::getLabel()
     return "&Accounts";
 }
 
-void AccountProviderPlugin::generateCode()
-{        
-    if (!m_active)
-        return;
-    if (m_instructions.empty())
-        return;
-
-    std::ofstream user_out_file;
-    std::ofstream group_out_file;
-    std::string filename = m_save_dir_path + "/" + m_client->hostname();
-
-    bool user_connected = false;
-    bool group_connected = false;
-
-    for (unsigned int i = 1; i < m_instructions.size(); i++) {
-        switch (m_instructions[i]->getSubject()) {
-        case IInstruction::ACCOUNT:
-            if (!user_connected) {
-                user_out_file.open(std::string(filename + "_users").c_str());
-                user_out_file << m_instructions[0]->toString();
-                user_connected = true;
-            }
-
-            user_out_file << m_instructions[i]->toString();
-            break;
-        case IInstruction::GROUP:
-            if (!group_connected) {
-                group_out_file.open(std::string(filename + "_groups").c_str());
-                group_out_file << m_instructions[0]->toString();
-                group_connected = true;
-            }
-
-            group_out_file << m_instructions[i]->toString();
-            break;
-        default:
-            continue;
-        }
-    }
-
-    if (user_out_file.is_open())
-        user_out_file.close();
-    if (group_out_file.is_open())
-        group_out_file.close();
-}
-
 void AccountProviderPlugin::getData(std::vector<void *> *data)
 {
     Logger::getInstance()->debug("getData");
@@ -663,8 +618,10 @@ void AccountProviderPlugin::showDetails()
         int cnt = m_user_instances.size();
         for (int i = 0; i < cnt; i++) {
 
-            if (name_expected == getPropertyOfInstance(m_user_instances[i], "Name"))
+            if (name_expected == getPropertyOfInstance(m_user_instances[i], "Name")) {
                 user = &(m_user_instances[i]);
+                break;
+            }
         }
 
         if (user == NULL)
@@ -679,6 +636,7 @@ void AccountProviderPlugin::showDetails()
             std::string name = getPropertyOfInstance(*user, "Name");
             std::string property_name = instruction->getInstructionName();
             std::string str_value = CIMValue::to_std_string(instruction->getValue());
+            pos++;
 
             bool found = false;
             if (user->findProperty(Pegasus::CIMName(property_name.c_str())) != Pegasus::Uint32(-1))
@@ -687,7 +645,7 @@ void AccountProviderPlugin::showDetails()
             if (!found)
                 continue;
 
-            changes[property_name] = str_value;
+            changes[property_name] = str_value;            
         }
         dialog.alterProperties(changes);
 
@@ -743,6 +701,7 @@ void AccountProviderPlugin::showDetails()
             std::string name = getPropertyOfInstance(*group, "Name");
             std::string property_name = instruction->getInstructionName();
             std::string str_value = CIMValue::to_std_string(instruction->getValue());
+            pos++;
 
             bool found = false;
             if (group->findProperty(Pegasus::CIMName(property_name.c_str())) != Pegasus::Uint32(-1))

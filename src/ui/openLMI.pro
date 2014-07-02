@@ -51,7 +51,8 @@ SOURCES += main.cpp\
     showtextdialog.cpp \
     eventlog.cpp \
     widgets/labeledlineedit.cpp \
-    detailsdialog.cpp
+    detailsdialog.cpp \
+    kernelslots.cpp
 
 HEADERS  += mainwindow.h \
     kernel.h \

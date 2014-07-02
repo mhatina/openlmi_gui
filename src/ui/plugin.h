@@ -52,14 +52,15 @@ class IPlugin : public QWidget
 {
     Q_OBJECT
 
+private:
+    bool isFileEmpty(std::string filename);
+
 protected:
     bool m_active; /**< @brief whether provider is active and is being displayed */
     bool m_changes_enabled; /**< @brief whether any changes are enabled */
     bool m_refreshed; /**< @brief represent refresh state of provider */
     CIMClient *m_client; /**< @brief see CIMClient */
     QMutex *m_mutex; /**< @brief Qt mutex */
-    std::string m_save_dir_path; /**< @brief path to dir where LMIShell code is stored */
-    std::string m_save_dir_path_backup; /**< @brief backup for m_save_dir_path */
     std::vector<IInstruction*> m_instructions; /**< @brief vector where all instructions are stored*/
     std::vector<void*> *m_data; /**< @brief vector where data from provider are stored */
 
@@ -68,11 +69,6 @@ protected:
      * @return QMessageBox::Yes / QMessageBox::No
      */
     int throwAwayChanges();
-    /**
-     * @brief Getter
-     * @return path of dir, see m_save_dir_path
-     */
-    std::string getPath();
 
     std::string getPropertyOfInstance(Pegasus::CIMInstance instance,
                                       std::string propertyName, Pegasus::CIMProperty *property = NULL);
@@ -126,13 +122,7 @@ public:
      * @brief Label of provider
      * @return label
      */
-    virtual std::string getLabel() = 0;
-    /**
-     * @brief Save LMIShell code from instructions to file
-     *
-     * Form can be defined later in provider.
-     */
-    virtual void generateCode() = 0;
+    virtual std::string getLabel() = 0;    
     /**
      * @brief Display all data
      * @param data
@@ -174,6 +164,12 @@ public:
      */
     void refresh(CIMClient *client);
     /**
+     * @brief Save LMIShell code from instructions to file
+     *
+     * Form can be defined later in provider.
+     */
+    void saveScript(std::string filename);
+    /**
      * @brief Setter
      * @param active -- whether provider is active
      */
@@ -210,18 +206,6 @@ protected slots:
      * @param message itself
      */
     void handleError(std::string message);
-    /**
-     * @brief Save all changes as LMIShell code
-     *
-     * When m_save_dir_path is not set, dialog is displayed.
-     */
-    void save();
-    /**
-     * @brief See @ref save()
-     *
-     * Dialog is always displayed.
-     */
-    void saveAs();
 
 signals:
     /**

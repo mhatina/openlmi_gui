@@ -107,27 +107,6 @@ std::string ServiceProviderPlugin::getLabel()
     return "&Services";
 }
 
-void ServiceProviderPlugin::generateCode()
-{
-    if (!m_active)
-        return;
-    if (m_instructions.empty())
-        return;
-
-    if (m_save_dir_path.empty())
-        m_save_dir_path = getPath();
-
-    std::ofstream out_file;
-    std::string filename = m_save_dir_path + "/" + m_client->hostname() + "_services";
-    out_file.open(filename.c_str());
-
-    for (unsigned int i = 0; i < m_instructions.size(); i++) {
-        out_file << m_instructions[i]->toString();
-    }
-
-    out_file.close();
-}
-
 void ServiceProviderPlugin::getData(std::vector<void *> *data)
 {
     Pegasus::Array<Pegasus::CIMInstance> services;
