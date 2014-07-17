@@ -208,4 +208,4 @@ private slots:
     void showComponent();
 };
 
-#endif // SERVICEPROVIDER_H
+#endif // HARDWAREPROVIDER_H
