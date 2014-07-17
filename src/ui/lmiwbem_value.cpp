@@ -35,7 +35,23 @@ std::string get_pegasus_value_core(const T &value)
 {
     std::stringstream ss;
     ss << value;
-    return ss.str(); 
+    return ss.str();
+}
+
+template <>
+std::string get_pegasus_value_core(const Pegasus::Uint8 &value)
+{
+    std::stringstream ss;
+    ss << static_cast<Pegasus::Uint16>(value);
+    return ss.str();
+}
+
+template <>
+std::string get_pegasus_value_core(const Pegasus::Sint8 &value)
+{
+    std::stringstream ss;
+    ss << static_cast<Pegasus::Sint16>(value);
+    return ss.str();
 }
 
 template <>

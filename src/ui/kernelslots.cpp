@@ -52,7 +52,11 @@ int Engine::Kernel::getSilentConnection(std::string ip)
 
         client = new CIMClient();
         try {
-            client->connect(ip, 5988, false, username, passwd);
+            try {
+                client->connect("https://" + ip, 5989, false, username, passwd);
+            } catch (Pegasus::Exception &ex) {
+                client->connect(ip, 5988, false, username, passwd);
+            }
             m_connections[ip] = client;
             return 0;
         } catch (Pegasus::Exception &ex) {

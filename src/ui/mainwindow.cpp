@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui(new Ui::MainWindow)
 {
     m_ui->setupUi(this);
-    showMaximized();
+//    showMaximized();
 
     connect(
         m_ui->action_exit,

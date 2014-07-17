@@ -38,15 +38,19 @@ HEADERS += \
     ../../ui/plugin.h \
     ../../ui/instructions/connectinstruction.h \
     ../../ui/instructions/instruction.h \
+    labeledlabel.h
 
 SOURCES += \
     hardwareprovider.cpp \
     ../../ui/plugin.cpp \
     ../../ui/instructions/connectinstruction.cpp \
     ../../ui/instructions/instruction.cpp \
+    ../../ui/lmiwbem_value.cpp \
+    labeledlabel.cpp
 
 FORMS += \
     hardwareprovider.ui \
+    labeledlabel.ui
 
 CONFIG(debug, debug|release) {
     target.path = ../libs

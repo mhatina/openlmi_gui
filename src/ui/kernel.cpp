@@ -23,6 +23,7 @@
 #include <gnome-keyring-1/gnome-keyring.h>
 #include <Pegasus/Common/Array.h>
 
+#include <QStatusBar>
 #include <QToolBar>
 #include <sys/stat.h>
 
@@ -36,14 +37,14 @@ extern const GnomeKeyringPasswordSchema *GNOME_KEYRING_NETWORK_PASSWORD;
 Engine::Kernel::Kernel() :
     m_refreshEnabled(true),
     m_mutex(new QMutex()),
-    m_bar(new QProgressBar(m_main_window.getProviderWidget()))
+    m_bar(new QProgressBar())
 {
     struct passwd *pw = getpwuid(getuid());
     std::string path = pw->pw_dir;
     path += "/.openlmi";
     if (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0 && errno != EEXIST) {
         Logger::getInstance()->error("Cannot create ~/.openlmi dir.\nError: " + std::string(strerror(errno)));
-    }
+    }    
     QPushButton *button = m_main_window.getToolbar()->findChild<QPushButton*>("refresh_button");
     connect(
         button,
@@ -135,7 +136,10 @@ Engine::Kernel::Kernel() :
         SIGNAL(triggered()),
         this,
         SLOT(resetKeyring()));
-    m_bar->setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    m_main_window.getStatusBar()->addPermanentWidget(m_bar);
+    m_bar->setMaximumWidth(100);
+    m_bar->hide();
+
     m_code_dialog.setTitle("LMIShell Code");
     createKeyring();        
 
