@@ -19,28 +19,28 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include "provider.h"
+#include "softwareprovider.h"
 #include "lmiwbem_value.h"
-#include "ui_provider.h"
+#include "ui_softwareprovider.h"
 
 #include <sstream>
 
-ProviderPlugin::ProviderPlugin() :
+SoftwareProviderPlugin::SoftwareProviderPlugin() :
     IPlugin(),
     m_changes_enabled(false),
-    m_ui(new Ui::ProviderPlugin)
+    m_ui(new Ui::SoftwareProviderPlugin)
 {
     m_ui->setupUi(this);
     showFilter(false);
     setPluginEnabled(false);
 }
 
-ProviderPlugin::~ProviderPlugin()
+SoftwareProviderPlugin::~SoftwareProviderPlugin()
 {
     delete m_ui;
 }
 
-std::string ProviderPlugin::getInstructionText()
+std::string SoftwareProviderPlugin::getInstructionText()
 {
     std::stringstream ss;
     for (unsigned int i = 0; i < m_instructions.size(); i++) {
@@ -49,13 +49,13 @@ std::string ProviderPlugin::getInstructionText()
     return ss.str();
 }
 
-std::string ProviderPlugin::getLabel()
+std::string SoftwareProviderPlugin::getLabel()
 {
-    return "";
+    return "Sof&tware";
 }
 
-void ProviderPlugin::getData(std::vector<void *> *data)
-    
+void SoftwareProviderPlugin::getData(std::vector<void *> *data)
+{    
     try {    
     } catch (Pegasus::Exception &ex) {
         emit doneFetchingData(NULL, std::string(ex.getMessage().getCString()));
@@ -65,7 +65,7 @@ void ProviderPlugin::getData(std::vector<void *> *data)
     emit doneFetchingData(data);
 }
 
-void ProviderPlugin::fillTab(std::vector<void *> *data)
+void SoftwareProviderPlugin::fillTab(std::vector<void *> *data)
 {
     m_changes_enabled = false;
 
@@ -78,4 +78,4 @@ void ProviderPlugin::fillTab(std::vector<void *> *data)
     m_changes_enabled = true;
 }
 
-Q_EXPORT_PLUGIN2(Provider, ProviderPlugin)
+Q_EXPORT_PLUGIN2(softwareProvider, SoftwareProviderPlugin)
