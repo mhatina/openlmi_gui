@@ -51,8 +51,8 @@ std::string DetailsDialog::insertSpaces(std::string text)
     return text;
 }
 
-DetailsDialog::DetailsDialog(std::string title) :
-    QDialog(),
+DetailsDialog::DetailsDialog(std::string title, QWidget *parent) :
+    QDialog(parent),
     m_ui(new Ui::DetailsDialog)
 {
     m_ui->setupUi(this);

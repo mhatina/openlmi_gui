@@ -608,7 +608,7 @@ void AccountProviderPlugin::showDetails()
     bool edited = false;
 
     if (current == m_ui->user_page) {
-        DetailsDialog dialog("User details");
+        DetailsDialog dialog("User details", this);
         Pegasus::CIMInstance *user = NULL;
         selected_items = m_ui->user_table->selectedItems();
         std::string name_expected = selected_items[1]->text().toStdString();
@@ -675,7 +675,7 @@ void AccountProviderPlugin::showDetails()
                     );
         }
     } else {
-        DetailsDialog dialog("Group details");
+        DetailsDialog dialog("Group details", this);
         Pegasus::CIMInstance *group = NULL;
         selected_items = m_ui->group_table->selectedItems();
         std::string name_expected = selected_items[1]->text().toStdString();

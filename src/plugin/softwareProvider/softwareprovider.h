@@ -24,6 +24,7 @@
 
 #include "plugin.h"
 
+#include <QListWidgetItem>
 #include <QtPlugin>
 
 namespace Ui {
@@ -37,7 +38,11 @@ class SoftwareProviderPlugin : public Engine::IPlugin
     
 private:
     bool m_changes_enabled;
+    std::vector<Pegasus::CIMInstance> m_installed;
+    std::vector<Pegasus::CIMInstance> m_repos;
     Ui::SoftwareProviderPlugin *m_ui;
+
+    void fetchPackageInfo(Pegasus::CIMInstance instance);
 
 public:
     explicit SoftwareProviderPlugin();
@@ -46,6 +51,16 @@ public:
     virtual std::string getLabel();    
     virtual void fillTab(std::vector<void *> *data);
     virtual void getData(std::vector<void *> *data);
+
+private slots:
+    void getPackageDetail(QListWidgetItem *item);
+    void hidePackageButtons();
+    void hideRepoButtons();
+    void showPackageDetail(Pegasus::CIMInstance item);
+    void showRepoDetail(QListWidgetItem *item);
+
+signals:
+    void havePackageDetails(Pegasus::CIMInstance item);
 };
 
 #endif // SOFTWAREPROVIDER_H

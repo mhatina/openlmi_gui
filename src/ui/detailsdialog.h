@@ -53,14 +53,14 @@ private:
     std::string insertSpaces(std::string text);
 
 public:
-    explicit DetailsDialog(std::string title);
+    explicit DetailsDialog(std::string title, QWidget *parent = 0);
     ~DetailsDialog();
 
     std::map<std::string, std::string> getChanges();
     void alterProperties(std::map<std::string, std::string> instructions);
     void hideCancelButton();
     void setValues(Pegasus::CIMInstance instance, bool disableAll = false);
-    void setValues(std::map<std::string, std::string> values, bool disableAll);
+    void setValues(std::map<std::string, std::string> values, bool disableAll = false);
 
 private slots:
     void itemChanged(LabeledLineEdit *item);

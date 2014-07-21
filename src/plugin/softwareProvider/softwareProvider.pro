@@ -39,17 +39,25 @@ HEADERS += \
     softwareprovider.h \
     ../../ui/plugin.h \
     ../../ui/instructions/connectinstruction.h \
-    ../../ui/instructions/instruction.h
+    ../../ui/instructions/instruction.h \
+    ../../ui/widgets/labeledlineedit.h \
+    ../../ui/detailsdialog.h \
+    listwidget.h
 
 SOURCES += \
     softwareprovider.cpp \
     ../../ui/plugin.cpp \
     ../../ui/instructions/connectinstruction.cpp \
     ../../ui/instructions/instruction.cpp \
-    ../../ui/lmiwbem_value.cpp 
+    ../../ui/lmiwbem_value.cpp \ 
+    ../../ui/widgets/labeledlineedit.cpp \
+    ../../ui/cimdatetimeconv.cpp \
+    ../../ui/detailsdialog.cpp \
+    listwidget.cpp
 
 FORMS += \
-    softwareprovider.ui 
+    softwareprovider.ui \  
+    listwidget.ui
 
 CONFIG(debug, debug|release) {
     target.path = ../libs

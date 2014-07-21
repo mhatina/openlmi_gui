@@ -257,7 +257,7 @@ void ServiceProviderPlugin::showDetails()
         values[object_name] = str_value;
     }
 
-    DetailsDialog dialog("Service details");
+    DetailsDialog dialog("Service details", this);
     dialog.setValues(values, true);
     dialog.hideCancelButton();
     dialog.exec();
