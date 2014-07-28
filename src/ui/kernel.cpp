@@ -39,6 +39,7 @@ Engine::Kernel::Kernel() :
     m_mutex(new QMutex()),
     m_bar(new QProgressBar())
 {
+    Logger::getInstance()->debug("Engine::Kernel::Kernel()");
     struct passwd *pw = getpwuid(getuid());
     std::string path = pw->pw_dir;
     path += "/.openlmi";
@@ -149,13 +150,25 @@ Engine::Kernel::Kernel() :
 
 Engine::Kernel::~Kernel()
 {
+    Logger::getInstance()->debug("Engine::Kernel::~Kernel()");
     Logger::removeInstance();
     delete m_mutex;
     delete m_bar;
+
+    disconnect(
+        m_main_window.getProviderWidget()->getTabWidget(),
+        0,
+        this,
+        0);
+    foreach (QPluginLoader *loader, m_loaders) {
+        loader->unload();
+        delete loader;
+    }
 }
 
 int Engine::Kernel::getIndexOfTab(std::string name)
 {
+    Logger::getInstance()->debug("Engine::Kernel::getIndexOfTab(std::string name)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     for (int i = 0; i < tab->count(); i++) {
        if (tab->tabText(i).contains(name.c_str()))
@@ -167,6 +180,7 @@ int Engine::Kernel::getIndexOfTab(std::string name)
 
 void Engine::Kernel::createKeyring()
 {
+    Logger::getInstance()->debug("Engine::Kernel::createKeyring()");
     GnomeKeyringResult res = gnome_keyring_create_sync(OPENLMI_KEYRING_DEFAULT, NULL);
     if (res != GNOME_KEYRING_RESULT_OK && res != GNOME_KEYRING_RESULT_KEYRING_ALREADY_EXISTS) {
         const std::string err[] = {
@@ -189,6 +203,7 @@ void Engine::Kernel::createKeyring()
 
 void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
 {
+    Logger::getInstance()->debug("Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     IPlugin *plugin = (IPlugin*) tab->currentWidget();
     bool refreshed = plugin->isRefreshed();
@@ -204,6 +219,7 @@ void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
 
 void Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VALUES power_state)
 {
+    Logger::getInstance()->debug("Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VALUES power_state)");
     Pegasus::CIMObjectPath power_inst_name;
     try {
         power_inst_name = client->enumerateInstanceNames(
@@ -240,9 +256,10 @@ void Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VA
 
 void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
 {    
-    Logger::getInstance()->info("Connecting...");
+    Logger::getInstance()->debug("Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)");
     QTreeWidgetItem* item = m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
     std::string ip = item->text(0).toStdString();
+    Logger::getInstance()->info("Connecting to " + ip);
 
     switch (getSilentConnection(ip)) {
     case 0:
@@ -260,13 +277,15 @@ void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
 
 void Engine::Kernel::loadPlugin()
 {
+    Logger::getInstance()->debug("Engine::Kernel::loadPlugin()");
     QDir plugins_dir(qApp->applicationDirPath());
     plugins_dir.cd(PLUGIN_PATH);    
 
     foreach (QString file_name, plugins_dir.entryList(QDir::Files)) {
-        QPluginLoader plugin_loader(plugins_dir.absoluteFilePath(file_name));
-        QObject *plugin = plugin_loader.instance();
+        QPluginLoader *plugin_loader = new QPluginLoader(plugins_dir.absoluteFilePath(file_name));
+        QObject *plugin = plugin_loader->instance();
         IPlugin *loaded_plugin = NULL;
+        m_loaders.push_back(plugin_loader);
         if (plugin && (loaded_plugin = qobject_cast<IPlugin*>(plugin))) {
             if (m_loaded_plugins.find(file_name.toStdString()) == m_loaded_plugins.end()) {
                 Logger::getInstance()->debug("Loaded: " + loaded_plugin->getLabel(), true);
@@ -281,13 +300,14 @@ void Engine::Kernel::loadPlugin()
                 m_main_window.getProviderWidget()->getTabWidget()->addTab(loaded_plugin, loaded_plugin->getLabel().c_str());
             }
         } else {
-            Logger::getInstance()->error(plugin_loader.errorString().toStdString());
+            Logger::getInstance()->error(plugin_loader->errorString().toStdString());
         }
     }
 }
 
 void Engine::Kernel::showMainWindow()
 {
+    Logger::getInstance()->debug("Engine::Kernel::showMainWindow()");
     loadPlugin();
     setActivePlugin(0);
     m_main_window.show();

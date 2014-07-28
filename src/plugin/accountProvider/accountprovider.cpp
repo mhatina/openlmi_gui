@@ -165,7 +165,15 @@ std::string AccountProviderPlugin::getInstructionText()
 
 std::string AccountProviderPlugin::getLabel()
 {
-    return "&Accounts";
+    return "Accounts";
+}
+
+std::string AccountProviderPlugin::getRefreshInfo()
+{
+    std::stringstream ss;
+    ss << m_user_instances.size() << " user(s), "
+       << m_group_instances.size() << " group(s) shown";
+    return ss.str();
 }
 
 void AccountProviderPlugin::getData(std::vector<void *> *data)

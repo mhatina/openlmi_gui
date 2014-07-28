@@ -122,7 +122,8 @@ public:
      * @brief Label of provider
      * @return label
      */
-    virtual std::string getLabel() = 0;    
+    virtual std::string getLabel() = 0;
+    virtual std::string getRefreshInfo() = 0;
     /**
      * @brief Display all data
      * @param data
@@ -201,11 +202,6 @@ protected slots:
      * @brief Process applying itself (refresh provider, set to refreshed, ...)
      */
     void handleDoneApplying();
-    /**
-     * @brief Logs error message
-     * @param message itself
-     */
-    void handleError(std::string message);
 
 signals:
     /**

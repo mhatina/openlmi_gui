@@ -19,33 +19,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include "enableserviceinstruction.h"
-#include "lmiwbem_value.h"
-#include "logger.h"
+#ifndef VERIFYPACKAGEINSTRUCTION_H
+#define VERIFYPACKAGEINSTRUCTION_H
 
-EnableServiceInstruction::EnableServiceInstruction(CIMClient *client, std::string name) :
-    ServiceInstruction(client, "enable_service", name)
+#include "instructions/softwareinstruction.h"
+#include "lmiwbem_client.h"
+
+class VerifyPackageInstruction : public SoftwareInstruction
 {
-}
+public:
+    VerifyPackageInstruction(CIMClient *client, Pegasus::CIMInstance package);
+    IInstruction::Subject getSubject();
+    std::string toString();
+    void run();
+};
 
-IInstruction::Subject EnableServiceInstruction::getSubject()
-{
-    return IInstruction::SERVICE;
-}
-
-std::string EnableServiceInstruction::toString()
-{
-    return "srv.TurnServiceOn()\n";
-}
-
-void EnableServiceInstruction::run()
-{
-    try {
-        Pegasus::CIMValue ret = invokeMethod("TurnServiceOn");
-
-        if (!ret.equal(Pegasus::CIMValue(Pegasus::Uint32(0))))
-            Logger::getInstance()->info("Unable to enable service.");
-    } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
-    }
-}
+#endif // VERIFYPACKAGEINSTRUCTION_H

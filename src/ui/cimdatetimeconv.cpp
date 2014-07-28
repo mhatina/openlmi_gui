@@ -16,6 +16,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "cimdatetimeconv.h"
+#include "logger.h"
 
 #include <sstream>
 
@@ -23,6 +24,7 @@
 std::string CIMDateTimeConv::as_time_value(
     const Pegasus::CIMDateTime &dt)
 {
+    Logger::getInstance()->debug("CIMDateTimeConv::as_time_value(const Pegasus::CIMDateTime &dt)");
     std::string timestr(dt.toString().getCString());
 
     std::stringstream ss;
@@ -36,6 +38,7 @@ std::string CIMDateTimeConv::as_time_value(
 //yyyymmddhhmmss.mmmmmmsutc
 Pegasus::CIMDateTime CIMDateTimeConv::as_cim_date_time(const std::string &dt)
 {
+    Logger::getInstance()->debug("CIMDateTimeConv::as_cim_date_time(const std::string &dt)");
     if (dt.size() < 19)
         return Pegasus::CIMDateTime();
 

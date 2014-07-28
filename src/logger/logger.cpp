@@ -37,6 +37,11 @@ QMutex Logger::m_mutex;
 Logger::Logger()
 {
     setLogPath(DEFAULT_LOG_PATH);
+    connect(
+        this,
+        SIGNAL(showDialog(std::string,std::string)),
+        this,
+        SLOT(displayDialog(std::string,std::string)));
 }
 
 Logger::~Logger()
@@ -91,13 +96,13 @@ bool Logger::info(std::string message, bool show_message)
 
 bool Logger::debug(std::string message, bool show_message)
 {
-    if (DEBUGGING)
+    if (DEBUGGING) {
         return log(
                 message,
                 DEBUG,
                 show_message
                 );
-    else
+    } else
         return false;
 }
 
@@ -109,7 +114,7 @@ bool Logger::error(std::string message, bool show_message)
             false
             );
 
-        QMessageBox::warning(0, "Warning", message.c_str());
+        emit showDialog("Warning", message);
 
         return true;
     }
@@ -128,7 +133,7 @@ bool Logger::critical(std::string message, bool show_message)
             false
             );
 
-        QMessageBox::critical(0, "Critical", message.c_str());
+        emit showDialog("Critical", message);
 
         return true;
     }
@@ -194,4 +199,13 @@ std::string Logger::getLogModeInfo(log_mode mode)
         "Critical"
     };
     return info[mode];
+}
+
+void Logger::displayDialog(std::string title, std::string text)
+{
+    if (title == "Warning") {
+        QMessageBox::warning((QWidget*) parent(), title.c_str(), text.c_str());
+    } else {
+        QMessageBox::critical((QWidget*) parent(), title.c_str(), text.c_str());
+    }
 }

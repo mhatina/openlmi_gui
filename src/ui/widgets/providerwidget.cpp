@@ -26,15 +26,18 @@ ProviderWidget::ProviderWidget(QWidget *parent) :
     QWidget(parent),
     m_ui(new Ui::ProviderWidget)
 {
+    Logger::getInstance()->debug("ProviderWidget::ProviderWidget(QWidget *parent)");
     m_ui->setupUi(this);
 }
 
 ProviderWidget::~ProviderWidget()
 {
+    Logger::getInstance()->debug("ProviderWidget::~ProviderWidget()");
     delete m_ui;
 }
 
 QTabWidget* ProviderWidget::getTabWidget()
 {
+    Logger::getInstance()->debug("ProviderWidget::getTabWidget()");
     return m_ui->tab_widget;
 }

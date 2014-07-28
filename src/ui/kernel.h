@@ -76,6 +76,7 @@ private:
     QProgressBar *m_bar;
     ShowTextDialog m_code_dialog;
     std::string m_save_script_path;
+    std::vector<QPluginLoader*> m_loaders;
 
     int getIndexOfTab(std::string name);
     void createKeyring();

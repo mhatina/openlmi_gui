@@ -33,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_toolbar(new QToolBar()),
     m_ui(new Ui::MainWindow)
 {
+    Logger::getInstance()->setParent(this);
+    Logger::getInstance()->debug("MainWindow::MainWindow(QWidget *parent)");
     m_ui->setupUi(this);
 //    showMaximized();
 
@@ -85,36 +87,43 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    Logger::getInstance()->debug("MainWindow::~MainWindow()");
     delete m_ui;    
 }
 
 PCTreeWidget* MainWindow::getPcTreeWidget()
 {
+    Logger::getInstance()->debug("MainWindow::getPcTreeWidget()");
     return m_ui->tree_widget;
 }
 
 ProviderWidget* MainWindow::getProviderWidget()
 {
+    Logger::getInstance()->debug("MainWindow::getProviderWidget()");
     return m_ui->provider_widget;
 }
 
 QAction* MainWindow::getResetPasswdStorageAction()
 {
+    Logger::getInstance()->debug("MainWindow::getResetPasswdStorageAction()");
     return m_ui->action_reset_password_storage;
 }
 
 QStatusBar* MainWindow::getStatusBar()
 {
+    Logger::getInstance()->debug("MainWindow::getStatusBar()");
     return m_ui->status_bar;
 }
 
 QToolBar* MainWindow::getToolbar()
 {
+    Logger::getInstance()->debug("MainWindow::getToolbar()");
     return m_toolbar;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    Logger::getInstance()->debug("MainWindow::closeEvent(QCloseEvent *event)");
     Q_UNUSED(event);
 
     closeAll();
@@ -122,12 +131,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::closeAll()
 {
+    Logger::getInstance()->debug("MainWindow::closeAll()");
     qApp->closeAllWindows();
 }
 
 void MainWindow::showLog()
 {
-    QFile file(DEFAULT_LOG_PATH);
+    Logger::getInstance()->debug("MainWindow::showLog()");
+    QFile file(Logger::getInstance()->getLogPath().c_str());
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
     file.close();

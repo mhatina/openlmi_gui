@@ -104,7 +104,14 @@ std::string ServiceProviderPlugin::getInstructionText()
 
 std::string ServiceProviderPlugin::getLabel() 
 {
-    return "&Services";
+    return "Services";
+}
+
+std::string ServiceProviderPlugin::getRefreshInfo()
+{
+    std::stringstream ss;
+    ss << m_service_instances.size() << " service(s) shown";
+    return ss.str();
 }
 
 void ServiceProviderPlugin::getData(std::vector<void *> *data)

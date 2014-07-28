@@ -16,6 +16,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "discoverworker.h"
+#include "logger.h"
 
 #include <cstring>
 #include <iostream>
@@ -38,6 +39,7 @@ SLPBoolean get_srvs_list (
       SLPError errcode,
       void* cookie )
 {
+    Logger::getInstance()->debug("get_srvs_list (SLPHandle hslp, const char* srvurl, unsigned short lifetime, SLPError errcode, void* cookie )");
     if ((errcode == SLP_OK || errcode == SLP_LAST_CALL) && srvurl != NULL) {
         SLPSrvURL *url;
         SLPParseSrvURL(srvurl, &url);
@@ -54,20 +56,24 @@ DiscoverWorker::DiscoverWorker() :
     m_async(false),
     m_errcode(SLP_OK)
 {
+    Logger::getInstance()->debug("DiscoverWorker::DiscoverWorker()");
 }
 
 void DiscoverWorker::close()
 {
+    Logger::getInstance()->debug("DiscoverWorker::close()");
     SLPClose(m_hslp);
 }
 
 void DiscoverWorker::open()
 {
+    Logger::getInstance()->debug("DiscoverWorker::open()");
     m_errcode = SLPOpen(m_pc_lang.c_str(), m_async ? SLP_TRUE : SLP_FALSE, &m_hslp);
 }
 
 void DiscoverWorker::discover()
 {
+    Logger::getInstance()->debug("DiscoverWorker::discover()");
     open();
     std::list<std::string> *pc = new std::list<std::string>();
 

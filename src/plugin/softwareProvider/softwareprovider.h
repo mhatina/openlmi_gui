@@ -40,24 +40,36 @@ private:
     bool m_changes_enabled;
     std::vector<Pegasus::CIMInstance> m_installed;
     std::vector<Pegasus::CIMInstance> m_repos;
+    std::vector<std::string> m_verify;
     Ui::SoftwareProviderPlugin *m_ui;
 
-    void fetchPackageInfo(Pegasus::CIMInstance instance);
+    Pegasus::CIMInstance findInstalledPackage(std::string package_name);
+    Pegasus::CIMInstance findRepo(std::string repo_name);
+    std::string getPackageName(Pegasus::CIMInstance package);
+    void fetchPackageInfo(Pegasus::CIMInstance instance);    
 
 public:
     explicit SoftwareProviderPlugin();
     ~SoftwareProviderPlugin();
     virtual std::string getInstructionText();
     virtual std::string getLabel();    
+    virtual std::string getRefreshInfo();
     virtual void fillTab(std::vector<void *> *data);
     virtual void getData(std::vector<void *> *data);
 
 private slots:
+    void disablePackageButtons();
+    void disableRepo();
+    void disableRepoButtons();
+    void enableRepo();
     void getPackageDetail(QListWidgetItem *item);
-    void hidePackageButtons();
-    void hideRepoButtons();
+    void installPackage();
     void showPackageDetail(Pegasus::CIMInstance item);
     void showRepoDetail(QListWidgetItem *item);
+    void uninstallPackage();
+    void updateList();
+    void updatePackage();
+    void verifyPackage();
 
 signals:
     void havePackageDetails(Pegasus::CIMInstance item);

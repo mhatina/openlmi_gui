@@ -16,10 +16,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "authenticationdialog.h"
+#include "logger.h"
 
 AuthenticationDialog::AuthenticationDialog(std::string id):
     m_ui(new Ui::AuthenticationDialog)
 {
+    Logger::getInstance()->debug("AuthenticationDialog::AuthenticationDialog(std::string id)");
     m_ui->setupUi(this);
     m_ui->id_label->setText(id.c_str());
     m_ui->passwd_line->setEchoMode(QLineEdit::Password);
@@ -29,14 +31,17 @@ AuthenticationDialog::AuthenticationDialog(std::string id):
 
 AuthenticationDialog::~AuthenticationDialog()
 {
+    Logger::getInstance()->debug("AuthenticationDialog::~AuthenticationDialog()");
 }
 
 std::string AuthenticationDialog::getPasswd()
 {
+    Logger::getInstance()->debug("AuthenticationDialog::getPasswd()");
     return m_ui->passwd_line->text().toStdString();
 }
 
 std::string AuthenticationDialog::getUsername()
 {
+    Logger::getInstance()->debug("AuthenticationDialog::getUsername()");
     return m_ui->username_line->text().toStdString();
 }

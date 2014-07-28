@@ -23,6 +23,7 @@
 // TODO complete
 void EventLog::checkEvents()
 {
+    Logger::getInstance()->debug("EventLog::checkEvents()");
     while (1) {
         m_mutex->lock();
         if (m_end) {
@@ -74,15 +75,18 @@ EventLog::EventLog() :
     m_mutex(new QMutex()),
     m_tree(NULL)
 {
+    Logger::getInstance()->debug("EventLog::EventLog()");
 }
 
 EventLog::~EventLog()
 {
+    Logger::getInstance()->debug("EventLog::~EventLog()");
     delete m_mutex;
 }
 
 void EventLog::end()
 {
+    Logger::getInstance()->debug("EventLog::end()");
     m_mutex->lock();
     m_end = true;
     m_mutex->unlock();
@@ -91,16 +95,19 @@ void EventLog::end()
 
 void EventLog::setConnectionStorage(connection_map *connections)
 {
+    Logger::getInstance()->debug("EventLog::setConnectionStorage(connection_map *connections)");
     m_connections = connections;
 }
 
 void EventLog::setPCTree(QTreeWidget *tree)
 {
+    Logger::getInstance()->debug("EventLog::setPCTree(QTreeWidget *tree)");
     m_tree = tree;
 }
 
 void EventLog::start()
 {
+    Logger::getInstance()->debug("EventLog::start()");
     if (m_connections == NULL || m_tree == NULL) {
         Logger::getInstance()->error("Tree or connection storage not set");
         return;

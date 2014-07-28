@@ -412,7 +412,18 @@ std::string HardwareProviderPlugin::getInstructionText()
 
 std::string HardwareProviderPlugin::getLabel()
 {
-    return "&Hardware";
+    return "Hardware";
+}
+
+std::string HardwareProviderPlugin::getRefreshInfo()
+{
+    int cnt = m_battery.size() + m_chassis.size() +
+              m_pci_bridge.size() + m_pci_device.size() +
+              m_port.size() + m_memory.size() +
+              m_processor.size();
+    std::stringstream ss;
+    ss << cnt << " component(s) shown";
+    return ss.str();
 }
 
 void HardwareProviderPlugin::getData(std::vector<void *> *data)

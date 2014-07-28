@@ -16,29 +16,35 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "instruction.h"
+#include "logger.h"
 
 IInstruction::IInstruction(std::string instruction, Pegasus::CIMValue value) :
     m_value(value),
     m_instruction(instruction)
 {
+    Logger::getInstance()->debug("IInstruction::IInstruction(std::string instruction, Pegasus::CIMValue value)");
 }
 
 IInstruction::IInstruction(std::string instruction) :
     m_value(),
     m_instruction(instruction)
 {
+    Logger::getInstance()->debug("IInstruction::IInstruction(std::string instruction)");
 }
 
 IInstruction::~IInstruction()
 {
+    Logger::getInstance()->debug("IInstruction::~IInstruction()");
 }
 
 Pegasus::CIMValue IInstruction::getValue()
 {
+    Logger::getInstance()->debug("IInstruction::getValue()");
     return m_value;
 }
 
 std::string IInstruction::getInstructionName()
 {
+    Logger::getInstance()->debug("IInstruction::getInstructionName()");
     return m_instruction;
 }

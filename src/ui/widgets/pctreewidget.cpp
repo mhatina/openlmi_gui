@@ -34,6 +34,8 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
+#define MAX_LENGTH 256
+
 // public
 
 PCTreeWidget::PCTreeWidget(QWidget *parent) :
@@ -42,6 +44,7 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
     m_worker(NULL),
     m_ui(new Ui::PCTreeWidget)
 {
+    Logger::getInstance()->debug("PCTreeWidget::PCTreeWidget(QWidget *parent)");
     m_ui->setupUi(this);
     std::string path = "/home/mhatina/.openlmi/openlmi_computers.xml";
     loadPcs(path);
@@ -58,7 +61,8 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
 }
 
 PCTreeWidget::~PCTreeWidget()
-{    
+{
+    Logger::getInstance()->debug("PCTreeWidget::~PCTreeWidget()");
     std::string path = "/home/mhatina/.openlmi/openlmi_computers.xml";
     saveAllPcs(path);
     delete m_ui;
@@ -67,11 +71,13 @@ PCTreeWidget::~PCTreeWidget()
 
 QTreeWidget* PCTreeWidget::getTree()
 {
+    Logger::getInstance()->debug("PCTreeWidget::getTree()");
     return m_ui->tree;
 }
 
 QTreeWidgetItem* PCTreeWidget::topLevelNode(std::string item_name)
 {
+    Logger::getInstance()->debug("PCTreeWidget::topLevelNode(std::string item_name)");
     QTreeWidgetItem *node;
     if (!(node = findTopLevelNode(item_name))) {
         node = new QTreeWidgetItem(m_ui->tree);
@@ -88,6 +94,7 @@ QTreeWidgetItem* PCTreeWidget::topLevelNode(std::string item_name)
 
 void PCTreeWidget::connectButtons(QToolBar *toolbar)
 {
+    Logger::getInstance()->debug("PCTreeWidget::connectButtons(QToolBar *toolbar)");
     QPushButton *button = toolbar->findChild<QPushButton*>("add_button");
     connect(
         button,
@@ -113,6 +120,7 @@ void PCTreeWidget::connectButtons(QToolBar *toolbar)
 
 void PCTreeWidget::setEditState(bool state)
 {
+    Logger::getInstance()->debug("PCTreeWidget::setEditState(bool state)");
     Qt::ItemFlags flags_editable =
               Qt::ItemIsSelectable
             | Qt::ItemIsDragEnabled
@@ -139,6 +147,7 @@ void PCTreeWidget::setEditState(bool state)
 
 void PCTreeWidget::setComputerIcon(QIcon icon)
 {
+    Logger::getInstance()->debug("PCTreeWidget::setComputerIcon(QIcon icon)");
     QTreeWidgetItem *item = m_ui->tree->selectedItems()[0];
     m_data_of_item_changed = false;
     item->setIcon(0, icon);
@@ -149,6 +158,7 @@ void PCTreeWidget::setComputerIcon(QIcon icon)
 
 bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text)
 {
+    Logger::getInstance()->debug("PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text)");
     for (int i = 0; i < parent->childCount(); i++)
         if (parent->child(i)->text(0).toStdString() == text)
             return true;
@@ -158,6 +168,10 @@ bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text)
 
 QTreeWidgetItem* PCTreeWidget::addPcToTree(std::string parent, std::string text)
 {
+    Logger::getInstance()->debug("PCTreeWidget::addPcToTree(std::string parent, std::string text)");
+    if (text.empty())
+        return NULL;
+
     QTreeWidgetItem *parentItem = topLevelNode(parent);
 
     if (!parentContainsItem(parentItem, text)) {
@@ -183,6 +197,7 @@ QTreeWidgetItem* PCTreeWidget::addPcToTree(std::string parent, std::string text)
 
 QTreeWidgetItem* PCTreeWidget::findTopLevelNode(std::string item_name)
 {
+    Logger::getInstance()->debug("PCTreeWidget::findTopLevelNode(std::string item_name)");
     QTreeWidgetItem *tmp;
     for (int i = 0; i < m_ui->tree->topLevelItemCount(); i++) {
         tmp = m_ui->tree->topLevelItem(i);
@@ -196,6 +211,7 @@ QTreeWidgetItem* PCTreeWidget::findTopLevelNode(std::string item_name)
 
 void PCTreeWidget::loadPcs(std::string filename)
 {
+    Logger::getInstance()->debug("PCTreeWidget::loadPcs(std::string filename)");
     QFile file(filename.c_str());
     if (!file.exists())
         return;
@@ -236,6 +252,7 @@ void PCTreeWidget::loadPcs(std::string filename)
 
 void PCTreeWidget::saveAllPcs(std::string filename)
 {
+    Logger::getInstance()->debug("PCTreeWidget::saveAllPcs(std::string filename)");
     QFile file(filename.c_str());
     if (!file.open(QIODevice::WriteOnly)) {
         Logger::getInstance()->error("Failed to write to " + filename + ", error: " + file.errorString().toStdString(), false);
@@ -264,6 +281,7 @@ void PCTreeWidget::saveAllPcs(std::string filename)
 
 void PCTreeWidget::onAddButtonClicked()
 {
+    Logger::getInstance()->debug("PCTreeWidget::onAddButtonClicked()");
     topLevelNode("Added")->setExpanded(true);
 
     std::list<QTreeWidgetItem*> tmp = m_ui->tree->selectedItems().toStdList();
@@ -279,6 +297,7 @@ void PCTreeWidget::onAddButtonClicked()
 
 void PCTreeWidget::onRemoveButtonClicked()
 {
+    Logger::getInstance()->debug("PCTreeWidget::onRemoveButtonClicked()");
     QList<QTreeWidgetItem*> tmp = m_ui->tree->selectedItems();
 
     if (tmp.empty())
@@ -293,6 +312,7 @@ void PCTreeWidget::onRemoveButtonClicked()
 
 void PCTreeWidget::onDiscoverButtonClicked()
 {    
+    Logger::getInstance()->debug("PCTreeWidget::onDiscoverButtonClicked()");
     Logger::getInstance()->info("Discovering...");
     topLevelNode("Discovered");
 
@@ -308,6 +328,7 @@ void PCTreeWidget::onDiscoverButtonClicked()
 
 void PCTreeWidget::addDiscoveredPcsToTree(std::list<std::string> *pc)
 {
+    Logger::getInstance()->debug("PCTreeWidget::addDiscoveredPcsToTree(std::list<std::string> *pc)");
     for (std::list<std::string>::iterator it = pc->begin(); it != pc->end(); it++) {
         addPcToTree("Discovered", (*it));
     }
@@ -319,6 +340,7 @@ void PCTreeWidget::addDiscoveredPcsToTree(std::list<std::string> *pc)
 
 void PCTreeWidget::validate(QTreeWidgetItem* item ,int column)
 {
+    Logger::getInstance()->debug("PCTreeWidget::validate(QTreeWidgetItem* item ,int column)");
     if (!m_data_of_item_changed || item->text(0) == "Added"
             || item->text(0) == "Discovered")
         return;    
@@ -331,7 +353,9 @@ void PCTreeWidget::validate(QTreeWidgetItem* item ,int column)
     }
 
     struct addrinfo *res;
-    const char *ip = item->text(column).toStdString().c_str();
+    std::string str_ip = item->text(column).toStdString();
+    char ip[MAX_LENGTH];
+    strncpy(ip, str_ip.c_str(), MAX_LENGTH - 1);
     int result;
     if (QRegExp(PATTERN_TYPE_FQDN).exactMatch(item->text(column)))
         result = 0;
@@ -346,6 +370,8 @@ void PCTreeWidget::validate(QTreeWidgetItem* item ,int column)
 //            struct in6_addr dstv6;
 //            result = inet_pton(res->ai_family, ip, &dstv6);
 //        }
+
+        freeaddrinfo(res);
     }
 
     if (!result) {
@@ -358,5 +384,6 @@ void PCTreeWidget::validate(QTreeWidgetItem* item ,int column)
 
 void PCTreeWidget::resendRemovedSignal(std::string id)
 {
+    Logger::getInstance()->debug("PCTreeWidget::resendRemovedSignal(std::string id)");
     emit removed(id);
 }

@@ -46,6 +46,6 @@ void DisableServiceInstruction::run()
         if (!ret.equal(Pegasus::CIMValue(Pegasus::Uint32(0))))
             Logger::getInstance()->info("Unable to disable service.");
     } catch (Pegasus::Exception &ex) {
-        emit error(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }
 }

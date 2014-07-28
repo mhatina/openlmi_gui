@@ -197,6 +197,9 @@
          <attribute name="horizontalHeaderStretchLastSection">
           <bool>false</bool>
          </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
          <attribute name="verticalHeaderStretchLastSection">
           <bool>false</bool>
          </attribute>
@@ -226,6 +229,9 @@
          <property name="columnCount">
           <number>0</number>
          </property>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
         </widget>
        </item>
       </layout>

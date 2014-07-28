@@ -20,6 +20,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "detailsdialog.h"
+#include "logger.h"
 #include "widgets/labeledlineedit.h"
 #include "ui_detailsdialog.h"
 
@@ -30,6 +31,7 @@
 
 bool DetailsDialog::isKeyProperty(const char *property)
 {
+    Logger::getInstance()->debug("DetailsDialog::isKeyProperty(const char *property)");
     int cnt = sizeof(key_property) / sizeof(key_property[0]);
     for (int i = 0; i < cnt; i++) {
         if (strcmp(key_property[i], property) == 0)
@@ -41,6 +43,7 @@ bool DetailsDialog::isKeyProperty(const char *property)
 
 std::string DetailsDialog::insertSpaces(std::string text)
 {
+    Logger::getInstance()->debug("DetailsDialog::insertSpaces(std::string text)");
     for (unsigned int i = 1; i < text.length(); i++) {
         if (isupper(text[i]) && islower(text[i - 1])) {
             text.insert(i, " ");
@@ -55,6 +58,7 @@ DetailsDialog::DetailsDialog(std::string title, QWidget *parent) :
     QDialog(parent),
     m_ui(new Ui::DetailsDialog)
 {
+    Logger::getInstance()->debug("DetailsDialog::DetailsDialog(std::string title, QWidget *parent)");
     m_ui->setupUi(this);
     setWindowTitle(title.c_str());
     m_ui->key_label->setStyleSheet("QLabel { background-color : pink;}");
@@ -63,16 +67,19 @@ DetailsDialog::DetailsDialog(std::string title, QWidget *parent) :
 
 DetailsDialog::~DetailsDialog()
 {
+    Logger::getInstance()->debug("DetailsDialog::~DetailsDialog()");
     delete m_ui;
 }
 
 std::map<std::string, std::string> DetailsDialog::getChanges()
 {
+    Logger::getInstance()->debug("DetailsDialog::getChanges()");
     return m_changes;
 }
 
 void DetailsDialog::alterProperties(std::map<std::string, std::string> instructions)
 {
+    Logger::getInstance()->debug("DetailsDialog::alterProperties(std::map<std::string, std::string> instructions)");
     std::map<std::string, std::string>::iterator it;
     for (it = instructions.begin(); it != instructions.end(); it++) {
         LabeledLineEdit *line;
@@ -85,11 +92,13 @@ void DetailsDialog::alterProperties(std::map<std::string, std::string> instructi
 
 void DetailsDialog::hideCancelButton()
 {
+    Logger::getInstance()->debug("DetailsDialog::hideCancelButton()");
     m_ui->button_box->button(QDialogButtonBox::Cancel)->hide();
 }
 
 void DetailsDialog::setValues(Pegasus::CIMInstance instance, bool disableAll)
 {
+    Logger::getInstance()->debug("DetailsDialog::setValues(Pegasus::CIMInstance instance, bool disableAll)");
     std::map<std::string, std::string> values;
     int cnt = instance.getPropertyCount();
     for (int i = 0; i < cnt; i++) {
@@ -103,6 +112,7 @@ void DetailsDialog::setValues(Pegasus::CIMInstance instance, bool disableAll)
 
 void DetailsDialog::setValues(std::map<std::string, std::string> values, bool disableAll)
 {
+    Logger::getInstance()->debug("DetailsDialog::setValues(std::map<std::string, std::string> values, bool disableAll)");
     m_changes_enabled = false;
     std::map<std::string, std::string>::iterator it;
 
@@ -138,6 +148,7 @@ void DetailsDialog::setValues(std::map<std::string, std::string> values, bool di
 
 void DetailsDialog::itemChanged(LabeledLineEdit *item)
 {
+    Logger::getInstance()->debug("DetailsDialog::itemChanged(LabeledLineEdit *item)");
     if (!m_changes_enabled)
         return;
 

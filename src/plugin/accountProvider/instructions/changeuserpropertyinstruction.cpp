@@ -66,6 +66,6 @@ void ChangeUserPropertyInstruction::run()
                     false
                     );
     } catch (Pegasus::Exception &ex) {
-        emit error(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }
 }

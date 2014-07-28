@@ -64,8 +64,7 @@ void ChangeGroupPropertyInstruction::run()
                     group,
                     false
                     );
-    } catch (Pegasus::Exception &ex)
-    {
-        emit error(CIMValue::to_std_string(ex.getMessage()));
+    } catch (Pegasus::Exception &ex) {
+        Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }
 }

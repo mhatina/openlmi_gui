@@ -7,6 +7,7 @@ extern const GnomeKeyringPasswordSchema *GNOME_KEYRING_NETWORK_PASSWORD;
 
 int Engine::Kernel::getSilentConnection(std::string ip)
 {
+    Logger::getInstance()->debug("Engine::Kernel::getSilentConnection(std::string ip)");
     if (m_connections.find(ip) == m_connections.end()) {
         CIMClient *client = NULL;
         GnomeKeyringAttributeList *list = gnome_keyring_attribute_list_new();
@@ -70,12 +71,14 @@ int Engine::Kernel::getSilentConnection(std::string ip)
 
 void Engine::Kernel::deletePasswd()
 {
+    Logger::getInstance()->debug("Engine::Kernel::deletePasswd()");
     std::string id = m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0]->text(0).toStdString();
     deletePasswd(id);
 }
 
 void Engine::Kernel::deletePasswd(std::string id)
 {
+    Logger::getInstance()->debug("Engine::Kernel::deletePasswd(std::string id)");
     GnomeKeyringResult res = gnome_keyring_delete_password_sync(
                 GNOME_KEYRING_NETWORK_PASSWORD,
                 "server", id.c_str(),
@@ -91,11 +94,13 @@ void Engine::Kernel::deletePasswd(std::string id)
 
 void Engine::Kernel::enableSpecialButtons()
 {
+    Logger::getInstance()->debug("Engine::Kernel::enableSpecialButtons()");
     enableSpecialButtons(true);
 }
 
 void Engine::Kernel::enableSpecialButtons(bool state)
 {
+    Logger::getInstance()->debug("Engine::Kernel::enableSpecialButtons(bool state)");
     QList<QTreeWidgetItem*> list = m_main_window.getPcTreeWidget()->getTree()->selectedItems();
     bool refresh = !list.empty() & m_refreshEnabled & state;
     QPushButton *button = m_main_window.findChild<QPushButton*>("refresh_button");
@@ -110,6 +115,7 @@ void Engine::Kernel::enableSpecialButtons(bool state)
 
 void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
 {
+    Logger::getInstance()->debug("Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)");
     QTreeWidgetItem* item = m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
     std::string ip = item->text(0).toStdString();
     AuthenticationDialog dialog(ip);
@@ -144,6 +150,7 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
 
 void Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER_VALUES state)
 {
+    Logger::getInstance()->debug("Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER_VALUES state)");
     if (client == NULL) {
         handleProgressState(1);
         return;
@@ -164,24 +171,27 @@ void Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER
 
 void Engine::Kernel::handleError(std::string message)
 {
+    Logger::getInstance()->debug("Engine::Kernel::handleError(std::string message)");
     m_main_window.getStatusBar()->clearMessage();
     Logger::getInstance()->error(message);
 }
 
 void Engine::Kernel::handleInstructionText(std::string text)
 {
+    Logger::getInstance()->debug("Engine::Kernel::handleInstructionText(std::string text)");
     m_code_dialog.setText(text, false);
 }
 
 void Engine::Kernel::handleProgressState(int state)
 {
+    Logger::getInstance()->debug("Engine::Kernel::handleProgressState(int state)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     IPlugin *plugin = (IPlugin*) tab->currentWidget();
     if (state == 100) {
         tab->setEnabled(true);
         plugin->setPluginEnabled(true);
         setButtonsEnabled(true);
-        m_main_window.getStatusBar()->clearMessage();
+//        m_main_window.getStatusBar()->clearMessage();
         m_bar->hide();
     } else if (state == 0) {
         plugin->setPluginEnabled(false);
@@ -197,6 +207,7 @@ void Engine::Kernel::handleProgressState(int state)
 
 void Engine::Kernel::rebootPc()
 {
+    Logger::getInstance()->debug("Engine::Kernel::rebootPc()");
     QList<QTreeWidgetItem *> items;
     if (!(items = m_main_window.getPcTreeWidget()->getTree()->selectedItems()).isEmpty())
         Logger::getInstance()->info("Rebooting system: "
@@ -210,6 +221,7 @@ void Engine::Kernel::rebootPc()
 
 void Engine::Kernel::refresh()
 {
+    Logger::getInstance()->debug("Engine::Kernel::refresh()");
     if (!m_refreshEnabled || m_main_window.getPcTreeWidget()->getTree()->selectedItems().empty())
         return;
 
@@ -227,6 +239,7 @@ void Engine::Kernel::refresh()
 
 void Engine::Kernel::resetKeyring()
 {
+    Logger::getInstance()->debug("Engine::Kernel::resetKeyring()");
     GnomeKeyringResult res = gnome_keyring_delete_sync(OPENLMI_KEYRING_DEFAULT);
     if (res != GNOME_KEYRING_RESULT_OK) {
         Logger::getInstance()->error("Cannot reset keyring");
@@ -237,6 +250,7 @@ void Engine::Kernel::resetKeyring()
 
 void Engine::Kernel::saveAsScripts()
 {
+    Logger::getInstance()->debug("Engine::Kernel::saveAsScripts()");
     m_save_script_path = "";
     saveScripts();
 }
@@ -244,6 +258,7 @@ void Engine::Kernel::saveAsScripts()
 
 void Engine::Kernel::saveScripts()
 {
+    Logger::getInstance()->debug("Engine::Kernel::saveScripts()");
     if (m_save_script_path.empty()) {
         QFileDialog dialog;
         dialog.setFileMode(QFileDialog::Directory);
@@ -259,6 +274,7 @@ void Engine::Kernel::saveScripts()
 
 void Engine::Kernel::setActivePlugin(int index)
 {
+    Logger::getInstance()->debug("Engine::Kernel::setActivePlugin(int index)");
     int i = 0;
     for (plugin_map::iterator it = m_loaded_plugins.begin(); it != m_loaded_plugins.end(); it++) {
         if (i == index) {
@@ -276,6 +292,7 @@ void Engine::Kernel::setActivePlugin(int index)
 
 void Engine::Kernel::setEditState(bool state)
 {
+    Logger::getInstance()->debug("Engine::Kernel::setEditState(bool state)");
     PCTreeWidget* tree_widget = m_main_window.getPcTreeWidget();
     m_refreshEnabled = !state;
     m_main_window.getProviderWidget()->setEnabled(!state);
@@ -293,18 +310,21 @@ void Engine::Kernel::setEditState(bool state)
 
 void Engine::Kernel::setPluginNoChanges(IPlugin *plugin)
 {
+    Logger::getInstance()->debug("Engine::Kernel::setPluginNoChanges(IPlugin *plugin)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     tab->setTabText(getIndexOfTab(plugin->getLabel()), plugin->getLabel().c_str());
 }
 
 void Engine::Kernel::setPluginUnsavedChanges(IPlugin *plugin)
 {
+    Logger::getInstance()->debug("Engine::Kernel::setPluginUnsavedChanges(IPlugin *plugin)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     tab->setTabText(getIndexOfTab(plugin->getLabel()), std::string("* " + plugin->getLabel()).c_str());
 }
 
 void Engine::Kernel::showCodeDialog()
 {
+    Logger::getInstance()->debug("Engine::Kernel::showCodeDialog()");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     IPlugin *plugin = (IPlugin*) tab->currentWidget();
     m_code_dialog.setText(plugin->getInstructionText(), false);
@@ -313,6 +333,7 @@ void Engine::Kernel::showCodeDialog()
 
 void Engine::Kernel::showFilter()
 {
+    Logger::getInstance()->debug("Engine::Kernel::showFilter()");
     QPushButton *button = m_main_window.getToolbar()->findChild<QPushButton*>("filter_button");
 
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
@@ -328,6 +349,7 @@ void Engine::Kernel::showFilter()
 
 void Engine::Kernel::shutdownPc()
 {
+    Logger::getInstance()->debug("Engine::Kernel::shutdownPc()");
     QList<QTreeWidgetItem *> items;
     if (!(items = m_main_window.getPcTreeWidget()->getTree()->selectedItems()).isEmpty())
         m_main_window.getPcTreeWidget()->setComputerIcon(QIcon(":/shutdown.png"));

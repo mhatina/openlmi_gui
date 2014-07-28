@@ -28,6 +28,7 @@ CIMClient::CIMClient()
     , m_is_connected(false)
     , m_verify_cert(true)
 {
+    Logger::getInstance()->debug("CIMClient::CIMClient()");
 }
 
 CIMClient::CIMClient(const CIMClient &copy) :
@@ -37,10 +38,12 @@ CIMClient::CIMClient(const CIMClient &copy) :
     m_is_connected(copy.m_is_connected),
     m_verify_cert(copy.m_verify_cert)
 {
+    Logger::getInstance()->debug("CIMClient::CIMClient(const CIMClient &copy)");
 }
 
 CIMClient::~CIMClient()
 {
+    Logger::getInstance()->debug("CIMClient::~CIMClient()");
     disconnect();
 }
 
@@ -50,6 +53,7 @@ void CIMClient::connect(
     const std::string &password,
     const std::string &trust_store)
 {
+    Logger::getInstance()->debug("CIMClient::connect(const std::string &uri, const std::string &username, const std::string &password, const std::string &trust_store)");
     Address addr(uri);
     if (!addr.isValid()) {
         Logger::getInstance()->error("Invalid host address!");
@@ -67,6 +71,7 @@ void CIMClient::connect(
     const std::string &password,
     const std::string &trust_store)
 {
+    Logger::getInstance()->debug("CIMClient::connect(const std::string &hostname, unsigned int port, bool is_https, const std::string &username, const std::string &password, const std::string &trust_store)");
     m_hostname = hostname;
     m_username = username;
     if (!is_https) {
@@ -93,6 +98,7 @@ void CIMClient::connect(
 
 void CIMClient::disconnect()
 {
+    Logger::getInstance()->debug("CIMClient::disconnect()");
     Pegasus::CIMClient::disconnect();
     m_hostname.clear();
     m_is_connected = false;
@@ -100,10 +106,12 @@ void CIMClient::disconnect()
 
 Pegasus::Boolean CIMClient::dontVerifyCertificate(Pegasus::SSLCertificateInfo &ci)
 {
+    Logger::getInstance()->debug("CIMClient::dontVerifyCertificate(Pegasus::SSLCertificateInfo &ci)");
     return true;
 }
 
 Pegasus::Boolean CIMClient::verifyCertificate(Pegasus::SSLCertificateInfo &ci)
 {
+    Logger::getInstance()->debug("CIMClient::verifyCertificate(Pegasus::SSLCertificateInfo &ci)");
     return static_cast<Pegasus::Boolean>(ci.getResponseCode());
 }

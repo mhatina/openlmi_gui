@@ -16,6 +16,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "config.h"
+#include "logger.h"
 #include "showtextdialog.h"
 #include "ui_showtextdialog.h"
 
@@ -25,16 +26,19 @@ ShowTextDialog::ShowTextDialog(QWidget *parent) :
     QDialog(parent),
     m_ui(new Ui::ShowTextDialog)
 {
+    Logger::getInstance()->debug("ShowTextDialog::ShowTextDialog(QWidget *parent)");
     m_ui->setupUi(this);
 }
 
 ShowTextDialog::~ShowTextDialog()
 {
+    Logger::getInstance()->debug("ShowTextDialog::~ShowTextDialog()");
     delete m_ui;
 }
 
 void ShowTextDialog::setText(std::string text, bool move_to_end)
 {
+    Logger::getInstance()->debug("ShowTextDialog::setText(std::string text, bool move_to_end)");
     m_ui->text_edit->setText(text.c_str());
     if (move_to_end)
         m_ui->text_edit->moveCursor(QTextCursor::End);
@@ -42,5 +46,6 @@ void ShowTextDialog::setText(std::string text, bool move_to_end)
 
 void ShowTextDialog::setTitle(std::string title)
 {
+    Logger::getInstance()->debug("ShowTextDialog::setTitle(std::string title)");
     setWindowTitle(title.c_str());
 }

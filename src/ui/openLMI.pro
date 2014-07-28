@@ -22,7 +22,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = openLMI
 TEMPLATE = app
 QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
-LIBS += -lslp -lpegclient -lpegcommon -lboost_thread -lgnome-keyring -llogger
+LIBS += -lslp -lpegclient -lpegcommon -lboost_thread -lgnome-keyring
 INCLUDEPATH += ../logger
 DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
 CONFIG += link_pkgconfig
@@ -83,12 +83,14 @@ FORMS    += mainwindow.ui \
 
 CONFIG(debug, debug|release) {
     DEFINES+= "PLUGIN_PATH=\\\"../plugin/libs\\\""
+    LIBS += -L../logger -llogger
 } else {
     linux-g++:contains(QMAKE_HOST.arch, x86_64):{
         DEFINES+= "PLUGIN_PATH=\\\"/usr/lib64/openlmi\\\""
     } else {
         DEFINES+= "PLUGIN_PATH=\\\"/usr/lib/openlmi\\\""
     }
+    LIBS += -llogger
 }
 
 target.path = /usr/bin

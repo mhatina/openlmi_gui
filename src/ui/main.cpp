@@ -20,6 +20,8 @@
 
 int main(int argc, char *argv[])
 {
+
+    Logger::getInstance()->debug("main(int argc, char *argv[])");
     QApplication a(argc, argv);
 
     Engine::Kernel kernel;

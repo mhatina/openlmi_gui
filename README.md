@@ -2,7 +2,7 @@ ABOUT
 ===========
 
 
-LASTEST VERSION
+LATEST VERSION
 ===============
 
 Latest sources of the software can be found at: [openlmi_gui][]

@@ -18,14 +18,4 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#ifndef DEFAULT_LOG_PATH
-#   define DEFAULT_LOG_PATH \
-        "~/.openlmi/openlmi_log"
-#endif
-
-#ifndef PLUGIN_PATH
-#   define PLUGIN_PATH \
-        "../plugin"
-#endif
-
 #endif // CONFIG_H

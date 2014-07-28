@@ -19,6 +19,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include "lmiwbem_addr.h"
+#include "logger.h"
 
 Address::Address(std::string url)
     : m_hostname("unknown")
@@ -26,6 +27,7 @@ Address::Address(std::string url)
     , m_is_https(true)
     , m_is_valid(true)
 {
+    Logger::getInstance()->debug("Address::Address(std::string url)");
     if (url.find("http://") != std::string::npos) {
         url.erase(0, 7);
         m_is_https = false;

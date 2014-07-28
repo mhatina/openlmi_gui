@@ -29,7 +29,7 @@
  * shouldn't be hidden set to true when building project.
  *
  */
-#ifndef DEBUG
+#ifndef DEBUGGING
 #   define DEBUGGING false
 #endif
 
@@ -66,6 +66,7 @@ signals:
      */
     void showMessage(std::string message);
     void showMessage(QString message);
+    void showDialog(std::string title, std::string text);
 
 private:
     std::ofstream m_log_file; 
@@ -161,6 +162,9 @@ public:
      * @return true if successful; otherwise false
      */
     bool critical(std::string message, bool show_message = true);
+
+private slots:
+    void displayDialog(std::string title, std::string text);
 };
 
 #endif // LOGGER_H

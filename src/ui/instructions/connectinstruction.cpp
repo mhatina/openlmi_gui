@@ -16,6 +16,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "connectinstruction.h"
+#include "logger.h"
 
 #include <sstream>
 
@@ -24,15 +25,18 @@ ConnectInstruction::ConnectInstruction(const std::string &hostname, const std::s
     m_hostname(hostname),
     m_username(username)
 {
+    Logger::getInstance()->debug("ConnectInstruction::ConnectInstruction(const std::string &hostname, const std::string &username)");
 }
 
 IInstruction::Subject ConnectInstruction::getSubject()
 {
+    Logger::getInstance()->debug("ConnectInstruction::getSubject()");
     return IInstruction::CONNECT;
 }
 
 std::string ConnectInstruction::toString()
 {
+    Logger::getInstance()->debug("ConnectInstruction::toString()");
     std::stringstream ss;
     ss << "c = connect(\"" << m_hostname << "\", \"" << m_username << "\")\n";
     return ss.str();
@@ -40,4 +44,5 @@ std::string ConnectInstruction::toString()
 
 void ConnectInstruction::run()
 {
+    Logger::getInstance()->debug("ConnectInstruction::run()");
 }

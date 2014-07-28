@@ -41,11 +41,12 @@ public:
      */
     typedef enum
     {
+        UNKNOWN,
         CONNECT,
         ACCOUNT,
         GROUP,
         SERVICE,
-        UNKNOWN
+        SOFTWARE
     } Subject;
 
     /**
@@ -79,13 +80,6 @@ public:
      * @brief apply the change
      */
     virtual void run() = 0;
-
-signals:
-    /**
-     * @brief Log error message
-     * @param message
-     */
-    void error(std::string message);
 };
 
 #endif // INSTRUCTION_H

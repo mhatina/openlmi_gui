@@ -26,7 +26,7 @@ QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
 INCLUDEPATH  += ../../ui ../../ui/uics ../../logger
 TARGET        = $$qtLibraryTarget(accountProvider)
 DESTDIR       = ../libs
-LIBS += -lpegclient -lpegcommon -lboost_thread -L../../logger -llogger
+LIBS += -lpegclient -lpegcommon -lboost_thread
 DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
 RESOURCES = \
     icons.qrc
@@ -94,11 +94,13 @@ FORMS += \
 
 CONFIG(debug, debug|release) {
     target.path = ../libs
+    LIBS += -L../../logger -llogger
 } else {
     linux-g++:contains(QMAKE_HOST.arch, x86_64):{
         target.path = /usr/lib64/openlmi
     } else {
         target.path = /usr/lib/openlmi
     }
+    LIBS += -llogger
 }
 INSTALLS += target

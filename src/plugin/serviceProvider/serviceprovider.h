@@ -154,6 +154,7 @@ public:
     ~ServiceProviderPlugin();
     virtual std::string getInstructionText();
     virtual std::string getLabel();    
+    virtual std::string getRefreshInfo();
     virtual void fillTab(std::vector<void *> *data);
     virtual void getData(std::vector<void *> *data);
 

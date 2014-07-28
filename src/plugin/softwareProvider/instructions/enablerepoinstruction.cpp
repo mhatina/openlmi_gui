@@ -19,42 +19,54 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include "deletegroupinstruction.h"
+#include "enablerepoinstruction.h"
 #include "lmiwbem_value.h"
 #include "logger.h"
 
-DeleteGroupInstruction::DeleteGroupInstruction(CIMClient *client, std::string name) :
-    GroupInstruction(client, "delete_group", name)
+#include <sstream>
+
+EnableRepoInstruction::EnableRepoInstruction(CIMClient *client, Pegasus::CIMInstance repo) :
+    SoftwareInstruction(client, "enable_repo", repo)
 {
 }
 
-IInstruction::Subject DeleteGroupInstruction::getSubject()
+IInstruction::Subject EnableRepoInstruction::getSubject()
 {
-    return IInstruction::GROUP;
+    return IInstruction::SOFTWARE;
 }
 
-std::string DeleteGroupInstruction::toString()
+std::string EnableRepoInstruction::toString()
 {
-    return "gr.DeleteGroup()\n";
+    std::stringstream ss;
+    ss << "repo = c.root.cimv2.LMI_SoftwareIdentityResource.first_instance_name(\n"
+       << "\tkey=\"Name\",\n"
+       << "\tvalue=\"" + m_name + "\")\n"
+       << "# enable repository\n"
+       << "repo.to_instance().RequestStateChange(\n"
+       << "\tRequestedState=c.root.cimv2.LMI_SoftwareIdentityResource. \\\n"
+       << "\t\tRequestedStateValues.Enabled)\n";
+    return ss.str();
 }
 
-void DeleteGroupInstruction::run()
+void EnableRepoInstruction::run()
 {
     try {
-        Pegasus::CIMInstance group(getGroup());
         Pegasus::Array<Pegasus::CIMParamValue> in_param;
         Pegasus::Array<Pegasus::CIMParamValue> out_param;
 
-        Pegasus::CIMValue ret = m_client->invokeMethod(
+        in_param.append(Pegasus::CIMParamValue(
+                            Pegasus::String("RequestedState"),
+                            Pegasus::CIMValue(Pegasus::Uint16(2)) // Enable
+                            ));
+
+        m_client->invokeMethod(
                     Pegasus::CIMNamespaceName("root/cimv2"),
-                    group.getPath(),
-                    Pegasus::CIMName("DeleteGroup"),
+                    m_instance.getPath(),
+                    Pegasus::CIMName("RequestStateChange"),
                     in_param,
-                    out_param
-                    );        
-        if (ret.equal(CIMValue::to_cim_value(Pegasus::CIMTYPE_UINT32, "4097")))
-            Logger::getInstance()->info("Unable to delete group: " + m_name + ". Group is primary group of a user.");
+                    out_param);
     } catch (const Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }
 }
+

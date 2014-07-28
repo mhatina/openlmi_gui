@@ -36,10 +36,14 @@ SOURCES += logger.cpp
 HEADERS += logger.h\
         logger_global.h
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-    target.path = /usr/lib64
+CONFIG(debug, debug|release) {
+    DEFINES += "DEBUGGING=true"
 } else {
-    target.path = /usr/lib
+    linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+        target.path = /usr/lib64
+    } else {
+        target.path = /usr/lib
+    }
 }
 DEFINES +=DEFAULT_LOG_PATH="\\\"/tmp/openlmi_log\\\""
 INSTALLS += target

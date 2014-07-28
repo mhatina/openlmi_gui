@@ -92,6 +92,6 @@ void NewGroupInstruction::run()
                     out_param
                     );
     } catch (const Pegasus::Exception &ex) {
-        emit error(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }
 }

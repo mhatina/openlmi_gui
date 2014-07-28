@@ -25,10 +25,8 @@ CONFIG       += plugin
 QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
 INCLUDEPATH  += ../../ui ../../ui/uics ../../logger
 
-# TODO change name
 TARGET        = $$qtLibraryTarget(softwareProvider)
 DESTDIR       = ../libs
-LIBS += -L../../logger -llogger
 DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
 
 UI_DIR = uics
@@ -42,7 +40,14 @@ HEADERS += \
     ../../ui/instructions/instruction.h \
     ../../ui/widgets/labeledlineedit.h \
     ../../ui/detailsdialog.h \
-    listwidget.h
+    listwidget.h \
+    instructions/enablerepoinstruction.h \
+    instructions/disablerepoinstruction.h \
+    instructions/verifypackageinstruction.h \
+    instructions/installpackageinstruction.h \
+    instructions/uninstallpackageinstruction.h \
+    instructions/updatepackageinstruction.h \
+    instructions/softwareinstruction.h
 
 SOURCES += \
     softwareprovider.cpp \
@@ -53,7 +58,14 @@ SOURCES += \
     ../../ui/widgets/labeledlineedit.cpp \
     ../../ui/cimdatetimeconv.cpp \
     ../../ui/detailsdialog.cpp \
-    listwidget.cpp
+    listwidget.cpp \
+    instructions/enablerepoinstruction.cpp \
+    instructions/disablerepoinstruction.cpp \
+    instructions/verifypackageinstruction.cpp \
+    instructions/installpackageinstruction.cpp \
+    instructions/uninstallpackageinstruction.cpp \
+    instructions/updatepackageinstruction.cpp \
+    instructions/softwareinstruction.cpp
 
 FORMS += \
     softwareprovider.ui \  
@@ -61,12 +73,14 @@ FORMS += \
 
 CONFIG(debug, debug|release) {
     target.path = ../libs
+    LIBS += -L../../logger -llogger
 } else {
     linux-g++:contains(QMAKE_HOST.arch, x86_64):{
         target.path = /usr/lib64/openlmi
     } else {
         target.path = /usr/lib/openlmi
     }
+    LIBS += -llogger
 }
 INSTALLS += target
 

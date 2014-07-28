@@ -18,6 +18,7 @@
 
 #include "lmiwbem_value.h"
 #include "cimdatetimeconv.h"
+#include "logger.h"
 
 #include <sstream>
 #include <ctime>
@@ -163,6 +164,8 @@ Pegasus::CIMValue get_value_from_std_string(std::string &value, bool isArray)
 
 std::string CIMValue::to_std_string(const Pegasus::CIMValue &value)
 {
+
+    Logger::getInstance()->debug("CIMValue::to_std_string(const Pegasus::CIMValue &value)");
     switch (value.getType()) {
     case Pegasus::CIMTYPE_BOOLEAN:
         return get_pegasus_value<Pegasus::Boolean>(value);
@@ -201,6 +204,7 @@ std::string CIMValue::to_std_string(const Pegasus::CIMValue &value)
 
 Pegasus::CIMValue CIMValue::to_cim_value(Pegasus::CIMType type, std::string value, bool isArray)
 {
+    Logger::getInstance()->debug("CIMValue::to_cim_value(Pegasus::CIMType type, std::string value, bool isArray)");
     switch (type) {
     case Pegasus::CIMTYPE_BOOLEAN:
         return get_value_from_std_string<Pegasus::Boolean>(value, isArray);
