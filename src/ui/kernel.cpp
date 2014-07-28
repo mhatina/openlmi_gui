@@ -25,6 +25,7 @@
 
 #include <QStatusBar>
 #include <QToolBar>
+#include <QToolButton>
 #include <sys/stat.h>
 
 #include <errno.h>
@@ -53,18 +54,12 @@ Engine::Kernel::Kernel() :
         this,
         SLOT(refresh())
         );
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("shutdown_button");
+    QToolButton *power_button = m_main_window.getToolbar()->findChild<QToolButton*>("power_button");
     connect(
-        button,
-        SIGNAL(clicked()),
+        power_button,
+        SIGNAL(triggered(QAction*)),
         this,
-        SLOT(shutdownPc()));
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("reboot_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(rebootPc()));
+        SLOT(setPowerState(QAction*)));
     button = m_main_window.getToolbar()->findChild<QPushButton*>("edit_button");
     connect(
         button,

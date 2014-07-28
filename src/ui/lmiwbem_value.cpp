@@ -23,6 +23,7 @@
 #include <sstream>
 #include <ctime>
 #include <Pegasus/Common/Array.h>
+#include <Pegasus/Common/CIMInstance.h>
 
 namespace {
 
@@ -198,6 +199,21 @@ std::string CIMValue::to_std_string(const Pegasus::CIMValue &value)
     default:
         return std::string("Not implemented");
     }
+}
+
+std::string CIMValue::get_property_value(Pegasus::CIMInstance instance,
+                                         std::string propertyName, Pegasus::CIMProperty *property)
+{
+    Pegasus::Uint32 propIndex = instance.findProperty(Pegasus::CIMName(propertyName.c_str()));
+    if (propIndex == Pegasus::PEG_NOT_FOUND) {
+        return "";
+    }
+    Pegasus::CIMProperty prop = instance.getProperty(propIndex);
+    if (property != NULL) {
+        *property = prop;
+    }
+    Pegasus::CIMValue value = prop.getValue();
+    return to_std_string(value);
 }
 
 #include <sstream>

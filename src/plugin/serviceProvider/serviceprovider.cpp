@@ -142,7 +142,7 @@ void ServiceProviderPlugin::getData(std::vector<void *> *data)
         Pegasus::CIMInstance instance;
         if (!filter.empty()) {
             instance = services[i];
-            if (getPropertyOfInstance(instance, "Name").find(filter) == std::string::npos)
+            if (CIMValue::get_property_value(instance, "Name").find(filter) == std::string::npos)
                 continue;
         } else
             instance = services[i];
@@ -252,7 +252,7 @@ void ServiceProviderPlugin::showDetails()
     std::string name_expected = m_ui->services_table->selectedItems()[0]->text().toStdString();
     int cnt = m_service_instances.size();
     for (int i = 0; i < cnt; i++) {
-        if (name_expected == getPropertyOfInstance(m_service_instances[i], "Name"))
+        if (name_expected == CIMValue::get_property_value(m_service_instances[i], "Name"))
             service = m_service_instances[i];
     }
 

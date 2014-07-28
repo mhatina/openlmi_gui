@@ -47,7 +47,8 @@ HEADERS += \
     instructions/installpackageinstruction.h \
     instructions/uninstallpackageinstruction.h \
     instructions/updatepackageinstruction.h \
-    instructions/softwareinstruction.h
+    instructions/softwareinstruction.h \
+    installdialog.h
 
 SOURCES += \
     softwareprovider.cpp \
@@ -65,11 +66,13 @@ SOURCES += \
     instructions/installpackageinstruction.cpp \
     instructions/uninstallpackageinstruction.cpp \
     instructions/updatepackageinstruction.cpp \
-    instructions/softwareinstruction.cpp
+    instructions/softwareinstruction.cpp \
+    installdialog.cpp
 
 FORMS += \
     softwareprovider.ui \  
-    listwidget.ui
+    listwidget.ui \
+    installdialog.ui
 
 CONFIG(debug, debug|release) {
     target.path = ../libs

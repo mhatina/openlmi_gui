@@ -2,6 +2,7 @@
 
 #include <gnome-keyring-1/gnome-keyring.h>
 #include <QStatusBar>
+#include <QToolButton>
 
 extern const GnomeKeyringPasswordSchema *GNOME_KEYRING_NETWORK_PASSWORD;
 
@@ -107,10 +108,7 @@ void Engine::Kernel::enableSpecialButtons(bool state)
     button->setEnabled(refresh);
     button = m_main_window.getToolbar()->findChild<QPushButton*>("delete_passwd_button");
     button->setEnabled(refresh);
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("shutdown_button");
-    button->setEnabled(refresh);
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("reboot_button");
-    button->setEnabled(refresh);
+    m_main_window.getToolbar()->findChild<QToolButton*>("power_button")->setEnabled(refresh);
 }
 
 void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
@@ -203,20 +201,6 @@ void Engine::Kernel::handleProgressState(int state)
         enableSpecialButtons(true);
         m_bar->hide();
     }
-}
-
-void Engine::Kernel::rebootPc()
-{
-    Logger::getInstance()->debug("Engine::Kernel::rebootPc()");
-    QList<QTreeWidgetItem *> items;
-    if (!(items = m_main_window.getPcTreeWidget()->getTree()->selectedItems()).isEmpty())
-        Logger::getInstance()->info("Rebooting system: "
-                                    + m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0]->text(0).toStdString()
-                                    );
-    m_main_window.getPcTreeWidget()->setComputerIcon(QIcon(":/reboot.png"));
-
-    handleProgressState(0);
-    boost::thread(boost::bind(&Engine::Kernel::getConnection, this, PowerStateValues::PowerCycleOffSoft));
 }
 
 void Engine::Kernel::refresh()
@@ -322,6 +306,31 @@ void Engine::Kernel::setPluginUnsavedChanges(IPlugin *plugin)
     tab->setTabText(getIndexOfTab(plugin->getLabel()), std::string("* " + plugin->getLabel()).c_str());
 }
 
+void Engine::Kernel::setPowerState(QAction *action)
+{
+    Logger::getInstance()->debug("Engine::Kernel::setPowerState(QAction *action)");
+    QTreeWidgetItem *item = m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
+    std::string message = "";
+    handleProgressState(0);
+    if (action->objectName().toStdString() == "reboot_action") {
+        message = "Rebooting system: ";
+        m_main_window.getPcTreeWidget()->setComputerIcon(QIcon(":/reboot.png"));
+        boost::thread(boost::bind(&Engine::Kernel::getConnection, this, PowerStateValues::PowerCycleOffSoft));
+    } else if (action->objectName().toStdString() == "shutdown_action") {
+        message = "Shutting down system: ";
+        boost::thread(boost::bind(&Engine::Kernel::getConnection, this, PowerStateValues::PowerOffSoftGraceful));
+    } else if (action->objectName().toStdString() == "force_reset_action") {
+        message = "Force rebooting system: ";
+        boost::thread(boost::bind(&Engine::Kernel::getConnection, this, PowerStateValues::PowerCycleOffHard));
+    } else if (action->objectName().toStdString() == "shutdown_action") {
+        message = "Force off system: ";
+        boost::thread(boost::bind(&Engine::Kernel::getConnection, this, PowerStateValues::PowerOffHard));
+    }
+
+    Logger::getInstance()->info(message + item->text(0).toStdString());
+}
+
+
 void Engine::Kernel::showCodeDialog()
 {
     Logger::getInstance()->debug("Engine::Kernel::showCodeDialog()");
@@ -345,18 +354,4 @@ void Engine::Kernel::showFilter()
     }
 
     plugin->showFilter(button->isChecked());
-}
-
-void Engine::Kernel::shutdownPc()
-{
-    Logger::getInstance()->debug("Engine::Kernel::shutdownPc()");
-    QList<QTreeWidgetItem *> items;
-    if (!(items = m_main_window.getPcTreeWidget()->getTree()->selectedItems()).isEmpty())
-        m_main_window.getPcTreeWidget()->setComputerIcon(QIcon(":/shutdown.png"));
-        Logger::getInstance()->info("Shutting down system: "
-                                    + m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0]->text(0).toStdString()
-                                    );
-
-    handleProgressState(0);
-    boost::thread(boost::bind(&Engine::Kernel::getConnection, this, PowerStateValues::PowerOffSoftGraceful));
 }

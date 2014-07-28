@@ -70,9 +70,6 @@ protected:
      */
     int throwAwayChanges();
 
-    std::string getPropertyOfInstance(Pegasus::CIMInstance instance,
-                                      std::string propertyName, Pegasus::CIMProperty *property = NULL);
-
     /**
      * @brief Add new instruction to end of m_instructions
      * @param instruction -- see IInstruction

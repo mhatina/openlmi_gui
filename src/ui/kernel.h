@@ -122,7 +122,6 @@ private slots:
     void handleError(std::string message);
     void handleInstructionText(std::string text);
     void handleProgressState(int state);    
-    void rebootPc();
     void refresh();
     void resetKeyring();
     void saveAsScripts();
@@ -131,9 +130,9 @@ private slots:
     void setEditState(bool state);
     void setPluginNoChanges(IPlugin *plugin);
     void setPluginUnsavedChanges(IPlugin *plugin);
+    void setPowerState(QAction *action);
     void showCodeDialog();
     void showFilter();
-    void shutdownPc();    
 
 signals:
     /**

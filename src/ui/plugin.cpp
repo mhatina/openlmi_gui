@@ -70,24 +70,6 @@ int Engine::IPlugin::throwAwayChanges()
     return message_box.exec();
 }
 
-std::string Engine::IPlugin::getPropertyOfInstance(Pegasus::CIMInstance instance,
-                                                         std::string propertyName, Pegasus::CIMProperty *property)
-{
-    Logger::getInstance()->debug("Engine::IPlugin::getPropertyOfInstance(Pegasus::CIMInstance instance,"
-                                 " std::string propertyName, Pegasus::CIMProperty *property)");
-    Pegasus::Uint32 propIndex = instance.findProperty(Pegasus::CIMName(propertyName.c_str()));
-    if (propIndex == Pegasus::PEG_NOT_FOUND) {
-        Logger::getInstance()->error("property " + propertyName + " not found");
-        return "";
-    }
-    Pegasus::CIMProperty prop = instance.getProperty(propIndex);
-    if (property != NULL) {
-        *property = prop;
-    }
-    Pegasus::CIMValue value = prop.getValue();
-    return CIMValue::to_std_string(value);
-}
-
 void Engine::IPlugin::addInstruction(IInstruction *instruction)
 {
     Logger::getInstance()->debug("Engine::IPlugin::addInstruction(IInstruction *instruction)");

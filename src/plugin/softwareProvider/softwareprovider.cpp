@@ -20,6 +20,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "detailsdialog.h"
+#include "installdialog.h"
 #include "instructions/disablerepoinstruction.h"
 #include "instructions/enablerepoinstruction.h"
 #include "instructions/installpackageinstruction.h"
@@ -304,8 +305,8 @@ void SoftwareProviderPlugin::fillTab(std::vector<void *> *data)
 
         vector = ((std::vector<Pegasus::CIMInstance> *) (*data)[1]);
         for (unsigned int i = 0; i < vector->size(); i++) {
-            QListWidgetItem *item = new QListWidgetItem(getPropertyOfInstance((*vector)[i], "Caption").c_str());
-            item->setIcon(QIcon(getPropertyOfInstance((*vector)[i], "EnabledState") == "2" ? ":/enabled.png" : ":/disabled.png"));
+            QListWidgetItem *item = new QListWidgetItem(CIMValue::get_property_value((*vector)[i], "Caption").c_str());
+            item->setIcon(QIcon(CIMValue::get_property_value((*vector)[i], "EnabledState") == "2" ? ":/enabled.png" : ":/disabled.png"));
             m_ui->repos->addItem(item);
         }
         m_repos = *vector;
@@ -404,14 +405,29 @@ void SoftwareProviderPlugin::showPackageDetail(Pegasus::CIMInstance item)
 
 void SoftwareProviderPlugin::installPackage()
 {
-    Logger::getInstance()->error("Not yet supported!");
+    InstallDialog dialog(m_client, this);
+    if (dialog.exec()) {
+        std::vector<Pegasus::CIMInstance> packages = dialog.getPackages();
+        for (unsigned int i = 0; i < packages.size(); i++) {
+            addInstruction(
+                        new InstallPackageInstruction(
+                            m_client,
+                            packages[i],
+                            false));
+            m_ui->installed->addItem(new QListWidgetItem(
+                                         QIcon(":/enabled.png"),
+                                         CIMValue::get_property_value(packages[i], "ElementName").c_str()
+                                         )
+                                     );
+        }
+    }
 }
 
 void SoftwareProviderPlugin::showRepoDetail(QListWidgetItem *item)
 {
     Pegasus::CIMInstance repo;
     for (unsigned int i = 0; i < m_repos.size(); i++) {
-        if (item->text().toStdString() == getPropertyOfInstance(m_repos[i], "Caption")) {
+        if (item->text().toStdString() == CIMValue::get_property_value(m_repos[i], "Caption")) {
             repo = m_repos[i];
             break;
         }
@@ -451,8 +467,29 @@ void SoftwareProviderPlugin::updateList()
         QListWidgetItem *item = new QListWidgetItem(tmp.c_str());
         if (name.find(filter) != std::string::npos)
             m_ui->installed->addItem(item);
-        // TODO
-        int pos = findInstruction(IInstruction::SOFTWARE, "", pos);
+    }
+
+    unsigned int pos = 0;
+    while (pos < m_instructions.size()) {
+        pos = findInstruction(IInstruction::SOFTWARE, "", pos);
+
+        QList<QListWidgetItem*> list =
+                m_ui->installed->findItems(
+                    ((SoftwareInstruction*) m_instructions[pos])->getName().c_str(),
+                    Qt::MatchExactly);
+        if (list.empty()) {
+            pos++;
+            continue;
+        }
+
+        if (m_instructions[pos]->getInstructionName() == "install_package") {
+            list[0]->setIcon(QIcon(":/enabled.png"));
+        } else if (m_instructions[pos]->getInstructionName() == "uninstall_package") {
+            list[0]->setIcon(QIcon(":/disabled.png"));
+        } else if (m_instructions[pos]->getInstructionName() == "update_package") {
+            list[0]->setIcon(QIcon(":/state_changed.png"));
+        }
+        pos++;
     }
 }
 

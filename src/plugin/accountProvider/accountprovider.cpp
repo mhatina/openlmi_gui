@@ -202,7 +202,7 @@ void AccountProviderPlugin::getData(std::vector<void *> *data)
             Pegasus::CIMInstance instance;
             if (!filter_user.empty()) {
                 instance = users[i];
-                if (getPropertyOfInstance(instance, "Name").find(filter_user) == std::string::npos)
+                if (CIMValue::get_property_value(instance, "Name").find(filter_user) == std::string::npos)
                     continue;
             } else
                 instance = users[i];
@@ -211,7 +211,7 @@ void AccountProviderPlugin::getData(std::vector<void *> *data)
             m_user_instances.push_back(instance);
         }
         for (unsigned int i = 0; i < users.size(); i++) {
-            std::string str_value = getPropertyOfInstance(users[i], "Name");
+            std::string str_value = CIMValue::get_property_value(users[i], "Name");
 
             m_users.push_back(str_value);
         }
@@ -230,7 +230,7 @@ void AccountProviderPlugin::getData(std::vector<void *> *data)
             Pegasus::CIMInstance instance;
             if (!filter_group.empty()) {
                 instance = groups[i];
-                if (getPropertyOfInstance(instance, "Name").find(filter_group) == std::string::npos)
+                if (CIMValue::get_property_value(instance, "Name").find(filter_group) == std::string::npos)
                     continue;
             } else
                 instance = groups[i];
@@ -300,7 +300,7 @@ void AccountProviderPlugin::fillTab(std::vector<void *> *data)
             m_user_table->insertRow(row_count);
             prop_cnt = sizeof(userProperties) / sizeof(userProperties[0]);
             for (int k = 0; k < prop_cnt; k++) {                
-                std::string str_value = getPropertyOfInstance((*users)[j], userProperties[k].property);
+                std::string str_value = CIMValue::get_property_value((*users)[j], userProperties[k].property);
                 QTableWidgetItem *item =
                         new QTableWidgetItem(str_value.c_str());
                 item->setToolTip(str_value.c_str());
@@ -327,7 +327,7 @@ void AccountProviderPlugin::fillTab(std::vector<void *> *data)
             prop_cnt = sizeof(groupProperties) / sizeof(groupProperties[0]);
             for (int k = 0; k < prop_cnt; k++) {
                 Pegasus::CIMProperty property;
-                std::string str_value = getPropertyOfInstance((*groups)[j], groupProperties[k].property, &property);
+                std::string str_value = CIMValue::get_property_value((*groups)[j], groupProperties[k].property, &property);
                 if (property.getName() == "Name")
                     group_name = str_value;
                 QTableWidgetItem *item =
@@ -355,7 +355,7 @@ void AccountProviderPlugin::fillTab(std::vector<void *> *data)
             std::pair <std::multimap<Pegasus::String, Pegasus::CIMInstance>::iterator, std::multimap<Pegasus::String, Pegasus::CIMInstance>::iterator> ret;
             ret = members->equal_range(Pegasus::String(group_name.c_str()));
             for (std::multimap<Pegasus::String, Pegasus::CIMInstance>::iterator it = ret.first; it != ret.second; it++) {
-                std::string user_name = getPropertyOfInstance(it->second, "Name");
+                std::string user_name = CIMValue::get_property_value(it->second, "Name");
 
                 MemberBox *item = (MemberBox*) m_group_table->cellWidget(j, prop_cnt);
                 if (item != NULL)
@@ -623,7 +623,7 @@ void AccountProviderPlugin::showDetails()
         int cnt = m_user_instances.size();
         for (int i = 0; i < cnt; i++) {
 
-            if (name_expected == getPropertyOfInstance(m_user_instances[i], "Name")) {
+            if (name_expected == CIMValue::get_property_value(m_user_instances[i], "Name")) {
                 user = &(m_user_instances[i]);
                 break;
             }
@@ -638,7 +638,7 @@ void AccountProviderPlugin::showDetails()
         std::map<std::string, std::string> changes;
         while ((pos = findInstruction(IInstruction::ACCOUNT, "", pos)) != -1) {
             IInstruction *instruction = m_instructions[pos];
-            std::string name = getPropertyOfInstance(*user, "Name");
+            std::string name = CIMValue::get_property_value(*user, "Name");
             std::string property_name = instruction->getInstructionName();
             std::string str_value = CIMValue::to_std_string(instruction->getValue());
             pos++;
@@ -658,7 +658,7 @@ void AccountProviderPlugin::showDetails()
             std::map<std::string, std::string> changes = dialog.getChanges();
             edited = !changes.empty();
             std::map<std::string, std::string>::iterator it;
-            std::string name = getPropertyOfInstance(*user, "Name");
+            std::string name = CIMValue::get_property_value(*user, "Name");
             addInstruction(
                     new GetInstruction(
                         IInstruction::ACCOUNT,
@@ -667,7 +667,7 @@ void AccountProviderPlugin::showDetails()
                     );
             for (it = changes.begin(); it != changes.end(); it++) {
                 Pegasus::CIMProperty p;
-                getPropertyOfInstance(*user, it->first, &p);
+                CIMValue::get_property_value(*user, it->first, &p);
                 addInstruction
                         (new ChangeUserPropertyInstruction(
                             m_client,
@@ -690,7 +690,7 @@ void AccountProviderPlugin::showDetails()
         int cnt = m_group_instances.size();
         for (int i = 0; i < cnt; i++) {
 
-            if (name_expected == getPropertyOfInstance(m_group_instances[i], "Name"))
+            if (name_expected == CIMValue::get_property_value(m_group_instances[i], "Name"))
                 group = &(m_group_instances[i]);
         }
 
@@ -703,7 +703,7 @@ void AccountProviderPlugin::showDetails()
         std::map<std::string, std::string> changes;
         while ((pos = findInstruction(IInstruction::GROUP, "", pos)) != -1) {
             IInstruction *instruction = m_instructions[pos];
-            std::string name = getPropertyOfInstance(*group, "Name");
+            std::string name = CIMValue::get_property_value(*group, "Name");
             std::string property_name = instruction->getInstructionName();
             std::string str_value = CIMValue::to_std_string(instruction->getValue());
             pos++;
@@ -723,7 +723,7 @@ void AccountProviderPlugin::showDetails()
             std::map<std::string, std::string> changes = dialog.getChanges();
             edited = !changes.empty();
             std::map<std::string, std::string>::iterator it;
-            std::string name = getPropertyOfInstance(*group, "Name");
+            std::string name = CIMValue::get_property_value(*group, "Name");
             addInstruction(
                     new GetInstruction(
                         IInstruction::GROUP,
@@ -732,7 +732,7 @@ void AccountProviderPlugin::showDetails()
                     );
             for (it = changes.begin(); it != changes.end(); it++) {
                 Pegasus::CIMProperty p;
-                getPropertyOfInstance(*group, it->first, &p);
+                CIMValue::get_property_value(*group, it->first, &p);
                 addInstruction
                         (new ChangeGroupPropertyInstruction(
                             m_client,

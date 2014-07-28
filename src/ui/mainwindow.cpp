@@ -22,10 +22,12 @@
 
 #include <iostream>
 #include <QFile>
+#include <QMenu>
 #include <QScrollBar>
 #include <QSplitter>
 #include <QTableWidget>
 #include <QToolBar>
+#include <QToolButton>
 #include <string>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -36,7 +38,6 @@ MainWindow::MainWindow(QWidget *parent) :
     Logger::getInstance()->setParent(this);
     Logger::getInstance()->debug("MainWindow::MainWindow(QWidget *parent)");
     m_ui->setupUi(this);
-//    showMaximized();
 
     connect(
         m_ui->action_exit,
@@ -81,6 +82,37 @@ MainWindow::MainWindow(QWidget *parent) :
         button->setCheckable(buttons[i].checkable);
         m_toolbar->addWidget(button);
     }
+
+    QToolButton *button = new QToolButton(m_toolbar);
+
+    QMenu *menu = new QMenu();
+    QAction *action = new QAction(QIcon(":/reboot.png"), "Reboot", menu);
+    action->setObjectName("reboot_action");
+    action->setIconVisibleInMenu(true);
+    button->setDefaultAction(action);
+    menu->addAction(action);
+
+    action = new QAction(QIcon(":/shutdown.png"), "Shutdown", menu);
+    action->setObjectName("shutdown_action");
+    action->setIconVisibleInMenu(true);
+    menu->addAction(action);
+
+    action = new QAction(QIcon(":/reboot.png"), "Force reset", menu);
+    action->setObjectName("force_reset_action");
+    action->setIconVisibleInMenu(true);
+    menu->addAction(action);
+
+    action = new QAction(QIcon(":/shutdown.png"), "Force off", menu);
+    action->setObjectName("force_off_action");
+    action->setIconVisibleInMenu(true);
+    menu->addAction(action);
+
+    button->setObjectName("power_button");
+    button->setPopupMode(QToolButton::MenuButtonPopup);
+    button->setMenu(menu);
+    button->setEnabled(false);
+    m_toolbar->insertWidget(m_toolbar->actions()[12], button); // after apply button
+
     addToolBar(m_toolbar);
     m_ui->tree_widget->connectButtons(m_toolbar);
 }

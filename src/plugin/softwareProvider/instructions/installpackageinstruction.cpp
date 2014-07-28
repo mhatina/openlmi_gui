@@ -69,7 +69,35 @@ std::string InstallPackageInstruction::toString()
 void InstallPackageInstruction::run()
 {
     try {
-        invokeInstallMethod(4); // Install
+        if (m_synchronous) {
+            Pegasus::CIMInstance package("LMI_InstalledSoftwareIdentity");
+            package.addProperty(Pegasus::CIMProperty(
+                                Pegasus::CIMName("InstalledSoftware"),
+                                Pegasus::CIMValue(m_instance)
+                                )
+                       );
+
+            Pegasus::Array<Pegasus::CIMInstance> system = m_client->enumerateInstances(
+                        Pegasus::CIMNamespaceName("root/cimv2"),
+                        Pegasus::CIMName("CIM_ComputerSystem"),
+                        true,       // deep inheritance
+                        false,      // local only
+                        false,      // include qualifiers
+                        false       // include class origin
+                        );
+            package.addProperty(Pegasus::CIMProperty(
+                                   Pegasus::CIMName("System"),
+                                   Pegasus::CIMValue(system[0])
+                                   )
+                               );
+
+            m_client->createInstance(
+                       Pegasus::CIMNamespaceName("root/cimv2"),
+                       package
+                       );
+        } else {
+            invokeInstallMethod(4); // Install
+        }
     } catch (const Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }
