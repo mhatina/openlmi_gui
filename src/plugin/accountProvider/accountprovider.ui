@@ -107,7 +107,7 @@
        <widget class="QLineEdit" name="filter_user_line">
         <property name="minimumSize">
          <size>
-          <width>306</width>
+          <width>0</width>
           <height>0</height>
          </size>
         </property>
@@ -120,7 +120,7 @@
        <widget class="QLineEdit" name="filter_group_line">
         <property name="minimumSize">
          <size>
-          <width>348</width>
+          <width>0</width>
           <height>0</height>
          </size>
         </property>

@@ -20,10 +20,11 @@
 
 #include <boost/thread.hpp>
 
-// TODO complete
 void EventLog::checkEvents()
 {
+    sleep(5);
     Logger::getInstance()->debug("EventLog::checkEvents()");
+    unsigned int cnt_connection = 0;
     while (1) {
         m_mutex->lock();
         if (m_end) {
@@ -40,32 +41,39 @@ void EventLog::checkEvents()
                 return;
             }
 
-            int cnt = tmp->childCount();
-            for (int j = 0; j < cnt; j++) {
+            unsigned int cnt = tmp->childCount();
+            for (unsigned int j = 0; j < cnt; j++) {
                 QTreeWidgetItem *child = tmp->child(j);
                 std::string ip = child->text(0).toStdString();
 
                 if (m_connections->find(ip) == m_connections->end()) {
                     emit silentConnection(ip);
-                    child->setBackgroundColor(1, QColor(Qt::gray));
+                    if (cnt_connection >= cnt) {
+                        child->setToolTip(0, "Offline");
+                        emit iconChanged(child, ":/network-offline.png");
+                    }
+                    cnt_connection++;
                     continue;
                 }
 
-                child->setBackgroundColor(1, QColor(Qt::green));
-                CIMClient *client = m_connections->operator [](child->text(0).toStdString());
-                client->enumerateInstances(
-                            Pegasus::CIMNamespaceName("root/cimv2"),
-                            Pegasus::CIMName("CIM_RecordLog"),
-                            true,       // deep inheritance
-                            false,      // local only
-                            false,      // include qualifiers
-                            false       // include class origin
-                            );
+                child->setToolTip(0, "Connected");
+                emit iconChanged(child, ":/network-transmit-receive.png");
+
+                // TODO complete when class available
+//                CIMClient *client = m_connections->operator [](child->text(0).toStdString());
+//                client->enumerateInstances(
+//                            Pegasus::CIMNamespaceName("root/cimv2"),
+//                            Pegasus::CIMName("CIM_RecordLog"),
+//                            true,       // deep inheritance
+//                            false,      // local only
+//                            false,      // include qualifiers
+//                            false       // include class origin
+//                            );
             }
         }
 
 
-        sleep(5);
+        sleep(10);
     }
 }
 
@@ -76,6 +84,11 @@ EventLog::EventLog() :
     m_tree(NULL)
 {
     Logger::getInstance()->debug("EventLog::EventLog()");
+    connect(
+        this,
+        SIGNAL(iconChanged(QTreeWidgetItem*,std::string)),
+        this,
+        SLOT(setIcon(QTreeWidgetItem*,std::string)));
 }
 
 EventLog::~EventLog()
@@ -114,5 +127,9 @@ void EventLog::start()
     }
 
     m_thread = new boost::thread(boost::bind(&EventLog::checkEvents, this));
-    m_thread->start_thread();
+}
+
+void EventLog::setIcon(QTreeWidgetItem *item, std::string icon)
+{
+    item->setIcon(0, QIcon(icon.c_str()));
 }

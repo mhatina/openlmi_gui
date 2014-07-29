@@ -6,14 +6,15 @@
 
 extern const GnomeKeyringPasswordSchema *GNOME_KEYRING_NETWORK_PASSWORD;
 
-int Engine::Kernel::getSilentConnection(std::string ip)
+int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
 {
     Logger::getInstance()->debug("Engine::Kernel::getSilentConnection(std::string ip)");
     if (m_connections.find(ip) == m_connections.end()) {
         CIMClient *client = NULL;
-        GnomeKeyringAttributeList *list = gnome_keyring_attribute_list_new();
         GList *res_list;
 
+        m_mutex->lock();
+        GnomeKeyringAttributeList *list = gnome_keyring_attribute_list_new();        
         gnome_keyring_attribute_list_append_string(list, "server", ip.c_str());
 
         GnomeKeyringResult res = gnome_keyring_find_items_sync(
@@ -21,6 +22,7 @@ int Engine::Kernel::getSilentConnection(std::string ip)
                     list,
                     &res_list
                     );
+        m_mutex->unlock();
 
         if (res == GNOME_KEYRING_RESULT_NO_MATCH) {
             gnome_keyring_found_list_free(res_list);
@@ -32,6 +34,7 @@ int Engine::Kernel::getSilentConnection(std::string ip)
         }
 
         std::string username;
+        m_mutex->lock();
         GnomeKeyringFound *keyring = ((GnomeKeyringFound*) res_list->data);
         guint cnt = g_array_get_element_size(keyring->attributes);
         for (guint i = 0; i < cnt; i++) {
@@ -41,8 +44,10 @@ int Engine::Kernel::getSilentConnection(std::string ip)
                 break;
             }
         }
+        m_mutex->unlock();
 
         gchar* passwd;
+        m_mutex->lock();
         gnome_keyring_find_password_sync(
                     GNOME_KEYRING_NETWORK_PASSWORD,
                     &passwd,
@@ -51,6 +56,7 @@ int Engine::Kernel::getSilentConnection(std::string ip)
                     NULL
                     );
         gnome_keyring_found_list_free(res_list);
+        m_mutex->unlock();
 
         client = new CIMClient();
         try {
@@ -62,7 +68,8 @@ int Engine::Kernel::getSilentConnection(std::string ip)
             m_connections[ip] = client;
             return 0;
         } catch (Pegasus::Exception &ex) {
-            emit error(std::string(ex.getMessage().getCString()));
+            if (!silent)
+                emit error(std::string(ex.getMessage().getCString()));
             return -1;
         }
     }
@@ -92,6 +99,11 @@ void Engine::Kernel::deletePasswd(std::string id)
         Logger::getInstance()->info("Password deleted");
 }
 
+void Engine::Kernel::emitSilentConnection(std::string ip)
+{
+    m_event_log->setConnectionStorage(&m_connections);
+    boost::thread(boost::bind(&Engine::Kernel::getSilentConnection, this, ip, true));
+}
 
 void Engine::Kernel::enableSpecialButtons()
 {
@@ -157,7 +169,6 @@ void Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER
     if (state == PowerStateValues::NoPowerSetting) {
         QTabWidget* tab = m_main_window.getProviderWidget()->getTabWidget();
         IPlugin *plugin = (IPlugin*) tab->currentWidget();
-        m_main_window.getPcTreeWidget()->setComputerIcon(QIcon(":/computer.png"));
 
         if (plugin != NULL)
             plugin->refresh(client);

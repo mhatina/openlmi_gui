@@ -150,6 +150,7 @@ void PCTreeWidget::setComputerIcon(QIcon icon)
     Logger::getInstance()->debug("PCTreeWidget::setComputerIcon(QIcon icon)");
     QTreeWidgetItem *item = m_ui->tree->selectedItems()[0];
     m_data_of_item_changed = false;
+    item->setToolTip(0, "");
     item->setIcon(0, icon);
     m_data_of_item_changed = true;
 }
@@ -183,6 +184,7 @@ QTreeWidgetItem* PCTreeWidget::addPcToTree(std::string parent, std::string text)
                 | Qt::ItemIsEditable;
         m_data_of_item_changed = false;
         child->setFlags(flags);
+        child->setToolTip(0, "Unknown");
         child->setIcon(0, QIcon(":/computer.png"));
         m_data_of_item_changed = true;
 

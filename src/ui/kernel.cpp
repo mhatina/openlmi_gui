@@ -35,8 +35,9 @@
 
 extern const GnomeKeyringPasswordSchema *GNOME_KEYRING_NETWORK_PASSWORD;
 
-Engine::Kernel::Kernel() :
+Engine::Kernel::Kernel() :    
     m_refreshEnabled(true),
+    m_event_log(new EventLog()),
     m_mutex(new QMutex()),
     m_bar(new QProgressBar())
 {
@@ -132,6 +133,11 @@ Engine::Kernel::Kernel() :
         SIGNAL(triggered()),
         this,
         SLOT(resetKeyring()));
+    connect(
+        m_event_log,
+        SIGNAL(silentConnection(std::string)),
+        this,
+        SLOT(emitSilentConnection(std::string)));
     m_main_window.getStatusBar()->addPermanentWidget(m_bar);
     m_bar->setMaximumWidth(100);
     m_bar->hide();
@@ -139,14 +145,16 @@ Engine::Kernel::Kernel() :
     m_code_dialog.setTitle("LMIShell Code");
     createKeyring();        
 
-    m_event_log.setConnectionStorage(&m_connections);
-    m_event_log.setPCTree(m_main_window.getPcTreeWidget()->getTree());
+    m_event_log->setConnectionStorage(&m_connections);
+    m_event_log->setPCTree(m_main_window.getPcTreeWidget()->getTree());
+    m_event_log->start();
 }
 
 Engine::Kernel::~Kernel()
 {
-    Logger::getInstance()->debug("Engine::Kernel::~Kernel()");
-    Logger::removeInstance();
+    Logger::getInstance()->debug("Engine::Kernel::~Kernel()");    
+    m_event_log->end();
+    delete m_event_log;
     delete m_mutex;
     delete m_bar;
 
@@ -159,6 +167,7 @@ Engine::Kernel::~Kernel()
         loader->unload();
         delete loader;
     }
+    Logger::removeInstance();
 }
 
 int Engine::Kernel::getIndexOfTab(std::string name)
@@ -256,7 +265,7 @@ void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
     std::string ip = item->text(0).toStdString();
     Logger::getInstance()->info("Connecting to " + ip);
 
-    switch (getSilentConnection(ip)) {
+    switch (getSilentConnection(ip, false)) {
     case 0:
         emit doneConnecting(m_connections[ip], state);
         break;

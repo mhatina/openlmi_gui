@@ -23,10 +23,11 @@
 #include <boost/thread.hpp>
 #include <map>
 #include <string>
+#include <QIcon>
 #include <QMutex>
 #include <QTreeWidget>
 
-class EventLog : QObject
+class EventLog : public QObject
 {
     Q_OBJECT
 
@@ -45,12 +46,16 @@ public:
     EventLog();
     ~EventLog();
     void end();
-    void setConnectionStorage(connection_map *connections);
+    void setConnectionStorage(connection_map *connections);    
     void setPCTree(QTreeWidget *tree);
     void start();
 
+private slots:
+    void setIcon(QTreeWidgetItem *item, std::string icon);
+
 signals:
     void silentConnection(std::string ip);
+    void iconChanged(QTreeWidgetItem *item, std::string icon);
 };
 
 #endif // EVENTLOG_H

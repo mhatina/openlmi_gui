@@ -80,6 +80,7 @@ MainWindow::MainWindow(QWidget *parent) :
         button->setShortcut(QKeySequence(buttons[i].shortcut));
         button->setEnabled(!buttons[i].disabled);
         button->setCheckable(buttons[i].checkable);
+        button->setFlat(true);
         m_toolbar->addWidget(button);
     }
 
@@ -110,6 +111,7 @@ MainWindow::MainWindow(QWidget *parent) :
     button->setObjectName("power_button");
     button->setPopupMode(QToolButton::MenuButtonPopup);
     button->setMenu(menu);
+    button->setBackgroundRole(QPalette::Button);
     button->setEnabled(false);
     m_toolbar->insertWidget(m_toolbar->actions()[12], button); // after apply button
 

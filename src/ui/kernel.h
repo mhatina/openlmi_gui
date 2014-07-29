@@ -69,7 +69,7 @@ class Kernel : public QObject {
 private:    
     bool m_refreshEnabled;
     connection_map m_connections;
-    EventLog m_event_log;
+    EventLog *m_event_log;
     MainWindow m_main_window;
     plugin_map m_loaded_plugins;
     QMutex *m_mutex;
@@ -112,9 +112,10 @@ public:
     void showMainWindow();
 
 private slots:    
-    int getSilentConnection(std::string ip);
+    int getSilentConnection(std::string ip, bool silent = true);
     void deletePasswd();
     void deletePasswd(std::string id);
+    void emitSilentConnection(std::string ip);
     void enableSpecialButtons();
     void enableSpecialButtons(bool state);
     void handleAuthentication(PowerStateValues::POWER_VALUES state);
