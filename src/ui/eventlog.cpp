@@ -47,12 +47,12 @@ void EventLog::checkEvents()
                 std::string ip = child->text(0).toStdString();
 
                 if (m_connections->find(ip) == m_connections->end()) {
-                    emit silentConnection(ip);
-                    if (cnt_connection >= cnt) {
-                        child->setToolTip(0, "Offline");
-                        emit iconChanged(child, ":/network-offline.png");
-                    }
-                    cnt_connection++;
+//                    emit silentConnection(ip);
+//                    if (cnt_connection >= cnt) {
+//                        child->setToolTip(0, "Offline");
+//                        emit iconChanged(child, ":/network-offline.png");
+//                    }
+//                    cnt_connection++;
                     continue;
                 }
 
@@ -60,6 +60,7 @@ void EventLog::checkEvents()
                 emit iconChanged(child, ":/network-transmit-receive.png");
 
                 // TODO complete when class available
+
 //                CIMClient *client = m_connections->operator [](child->text(0).toStdString());
 //                client->enumerateInstances(
 //                            Pegasus::CIMNamespaceName("root/cimv2"),

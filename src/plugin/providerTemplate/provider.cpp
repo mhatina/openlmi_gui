@@ -54,8 +54,13 @@ std::string ProviderPlugin::getLabel()
     return "";
 }
 
+std::string ProviderPlugin::getRefreshInfo()
+{
+    return "";
+}
+
 void ProviderPlugin::getData(std::vector<void *> *data)
-    
+{    
     try {    
     } catch (Pegasus::Exception &ex) {
         emit doneFetchingData(NULL, std::string(ex.getMessage().getCString()));
