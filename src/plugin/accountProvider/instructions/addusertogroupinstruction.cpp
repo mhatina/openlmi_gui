@@ -50,7 +50,7 @@ void AddUserToGroupInstruction::run()
         Pegasus::CIMInstance member("LMI_MemberOfGroup");
         member.addProperty(Pegasus::CIMProperty(
                             Pegasus::CIMName("Collection"),
-                            Pegasus::CIMValue(group)
+                            Pegasus::CIMValue(group.getPath())
                             )
                    );
 

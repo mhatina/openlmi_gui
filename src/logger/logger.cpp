@@ -20,7 +20,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "logger.h"
-#include "config.h"
 
 #include <sstream>
 #include <fstream>

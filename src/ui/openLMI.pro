@@ -19,7 +19,7 @@ QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = openLMI
+TARGET = lmicc
 TEMPLATE = app
 QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
 LIBS += -lslp -lpegclient -lpegcommon -lboost_thread -lgnome-keyring
@@ -59,7 +59,6 @@ HEADERS  += mainwindow.h \
     plugin.h \
     widgets/pctreewidget.h \
     widgets/providerwidget.h \
-    config.h \
     discoverworker.h \
     authenticationdialog.h \
     lmiwbem_addr.h \
@@ -83,14 +82,14 @@ FORMS    += mainwindow.ui \
 
 CONFIG(debug, debug|release) {
     DEFINES+= "PLUGIN_PATH=\\\"../plugin/libs\\\""
-    LIBS += -L../logger -llogger
+    LIBS += -L../logger -llmicclogger
 } else {
     linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-        DEFINES+= "PLUGIN_PATH=\\\"/usr/lib64/openlmi\\\""
+        DEFINES+= "PLUGIN_PATH=\\\"/usr/lib64/lmicc\\\""
     } else {
-        DEFINES+= "PLUGIN_PATH=\\\"/usr/lib/openlmi\\\""
+        DEFINES+= "PLUGIN_PATH=\\\"/usr/lib/lmicc\\\""
     }
-    LIBS += -llogger
+    LIBS += -llmicclogger
 }
 
 target.path = /usr/bin

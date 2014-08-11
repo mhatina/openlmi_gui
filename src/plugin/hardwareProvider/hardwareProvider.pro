@@ -53,14 +53,14 @@ FORMS += \
 
 CONFIG(debug, debug|release) {
     target.path = ../libs
-    LIBS += -L../../logger -llogger
+    LIBS += -L../../logger -llmicclogger
 } else {
     linux-g++:contains(QMAKE_HOST.arch, x86_64):{
         target.path = /usr/lib64/openlmi
     } else {
         target.path = /usr/lib/openlmi
     }
-    LIBS += -llogger
+    LIBS += -llmicclogger
 }
 INSTALLS += target
 

@@ -19,7 +19,6 @@
 #define KERNEL_H
 
 #include "authenticationdialog.h"
-#include "config.h"
 #include "eventlog.h"
 #include "lmiwbem_client.h"
 #include "mainwindow.h"

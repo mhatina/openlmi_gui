@@ -15,7 +15,6 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
-#include "config.h"
 #include "logger.h"
 #include "showtextdialog.h"
 #include "ui_showtextdialog.h"

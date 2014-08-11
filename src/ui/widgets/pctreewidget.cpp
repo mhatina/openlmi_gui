@@ -15,7 +15,6 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
-#include "config.h"
 #include "discoverworker.h"
 #include "logger.h"
 #include "pctreewidget.h"

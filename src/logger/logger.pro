@@ -21,7 +21,7 @@
 
 QT       -= gui
 
-TARGET = logger
+TARGET = lmicclogger
 TEMPLATE = lib
 INCLUDEPATH += ../ui
 
