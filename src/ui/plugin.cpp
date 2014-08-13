@@ -37,28 +37,6 @@ bool Engine::IPlugin::isFileEmpty(std::string filename)
     return empty;
 }
 
-void Engine::IPlugin::setPluginEnabled(bool state)
-{
-    Logger::getInstance()->debug("Engine::IPlugin::setPluginEnabled(bool state)");
-    setEnabled(true);
-    QList<QWidget*> children = findChildren<QWidget*>();
-    int cnt = children.size();
-
-    for (int i = 0; i < cnt; i++)
-        children[i]->setEnabled(state);
-
-    QGroupBox* filter_box = findChild<QGroupBox*>("filter_box");
-
-    if (filter_box != NULL) {
-        filter_box->setEnabled(true);
-        QList<QWidget*> filter_box_children = filter_box->findChildren<QWidget*>();
-        int filter_box_children_cnt = filter_box_children.size();
-
-        for (int i = 0; i < filter_box_children_cnt; i++)
-            filter_box_children[i]->setEnabled(true);
-    }
-}
-
 int Engine::IPlugin::throwAwayChanges()
 {
     Logger::getInstance()->debug("Engine::IPlugin::throwAwayChanges()");
@@ -139,7 +117,8 @@ Engine::IPlugin::IPlugin() :
     m_changes_enabled(false),
     m_refreshed(false),
     m_client(NULL),
-    m_mutex(new QMutex(QMutex::Recursive))
+    m_mutex(new QMutex(QMutex::Recursive)),
+    m_system_id("")
 {
     Logger::getInstance()->debug("Engine::IPlugin::IPlugin()");
     qRegisterMetaType<std::string>("std::string");
@@ -174,6 +153,11 @@ bool Engine::IPlugin::isRefreshed()
 {
     Logger::getInstance()->debug("Engine::IPlugin::isRefreshed()");
     return m_refreshed;
+}
+
+std::string Engine::IPlugin::getSystemId()
+{
+    return m_system_id;
 }
 
 void Engine::IPlugin::applyChanges()
@@ -323,6 +307,32 @@ void Engine::IPlugin::handleDoneApplying()
     refresh(m_client);
 }
 
+void Engine::IPlugin::setPluginEnabled(bool state)
+{
+    Logger::getInstance()->debug("Engine::IPlugin::setPluginEnabled(bool state)");
+    setEnabled(true);
+    QList<QWidget*> children = findChildren<QWidget*>();
+    int cnt = children.size();
+
+    for (int i = 0; i < cnt; i++)
+        children[i]->setEnabled(state);
+
+    QGroupBox* filter_box = findChild<QGroupBox*>("filter_box");
+
+    if (filter_box != NULL) {
+        filter_box->setEnabled(true);
+        QList<QWidget*> filter_box_children = filter_box->findChildren<QWidget*>();
+        int filter_box_children_cnt = filter_box_children.size();
+
+        for (int i = 0; i < filter_box_children_cnt; i++)
+            filter_box_children[i]->setEnabled(true);
+    }
+}
+
+void Engine::IPlugin::setSystemId(std::string system_id)
+{
+    m_system_id = system_id;
+}
 
 void Engine::IPlugin::showFilter(bool show)
 {

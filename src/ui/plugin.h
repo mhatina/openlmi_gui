@@ -58,9 +58,10 @@ private:
 protected:
     bool m_active; /**< @brief whether provider is active and is being displayed */
     bool m_changes_enabled; /**< @brief whether any changes are enabled */
-    bool m_refreshed; /**< @brief represent refresh state of provider */
+    bool m_refreshed; /**< @brief represent refresh state of provider */    
     CIMClient *m_client; /**< @brief see CIMClient */
     QMutex *m_mutex; /**< @brief Qt mutex */
+    std::string m_system_id;
     std::vector<IInstruction*> m_instructions; /**< @brief vector where all instructions are stored*/
     std::vector<void*> *m_data; /**< @brief vector where data from provider are stored */
 
@@ -110,6 +111,7 @@ public:
      * @return refresh state
      */
     bool isRefreshed();    
+    std::string getSystemId();
     /**
      * @brief Virtual method for getting LMIShell code of all instructions
      * @return LMIShell code
@@ -136,6 +138,7 @@ public:
      * @param state
      */
     void setPluginEnabled(bool state);
+    void setSystemId(std::string system_id);
     /**
      * @brief Method for displaying filter
      * @param show - if true filter is displayed

@@ -19,9 +19,12 @@
 #define PCTREEWIDGET_H
 
 #include "discoverworker.h"
+#include "systemdetailsdialog.h"
+#include "treewidgetitem.h"
 
 #include <QPlainTextEdit>
 #include <QPushButton>
+#include <QTimer>
 #include <QToolBar>
 #include <QTreeWidgetItem>
 #include <QWidget>
@@ -69,13 +72,21 @@ class PCTreeWidget : public QWidget
     Q_OBJECT
 
 private:
+    bool m_change_text;
     bool m_data_of_item_changed;
     DiscoverWorker *m_worker;
+    int m_time_sec;
+    QTimer m_timer;
+    SystemDetailsDialog m_dialog;
+    TreeWidgetItem *m_item_to_show;
     Ui::PCTreeWidget *m_ui;
 
     bool parentContainsItem(QTreeWidgetItem *parent, std::string text);
-    QTreeWidgetItem* addPcToTree(std::string parent, std::string text);
-    QTreeWidgetItem* findTopLevelNode(std::string item_name);
+    std::string getHostName(std::string &ip, int &ai_family);
+    TreeWidgetItem* addPcToTree(std::string parent, std::string text);
+    TreeWidgetItem* findTopLevelNode(std::string item_name);
+    void changeSystemsText();
+    void getIp(std::string &name, std::string &ipv4, std::string &ipv6);
     void loadPcs(std::string filename);
     void saveAllPcs(std::string filename);
 
@@ -84,8 +95,9 @@ private slots:
     void onAddButtonClicked();
     void onDiscoverButtonClicked();
     void onRemoveButtonClicked();
-    void resendRemovedSignal(std::string id);
-    void validate(QTreeWidgetItem*, int column);
+    void showSystemDetails();
+    void startTime(QTreeWidgetItem *item, int column);
+    void validate(QTreeWidgetItem *, int column);
 
 signals:
     /**
@@ -114,7 +126,7 @@ public:
      * @param item_name -- parent node name
      * @return parent node
      */
-    QTreeWidgetItem* topLevelNode(std::string item_name);
+    QTreeWidgetItem *topLevelNode(std::string item_name);
     /**
      * @brief Connect buttons' signals with handlers
      * @param toolbar -- contains buttons
@@ -126,6 +138,8 @@ public:
      */
     void setEditState(bool state);
     void setComputerIcon(QIcon icon);
+    int getTimeSec() const;
+    void setTimeSec(int time_sec);
 };
 
 #endif // PCTREEWIDGET_H

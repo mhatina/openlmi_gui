@@ -170,8 +170,13 @@ void Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER
         QTabWidget* tab = m_main_window.getProviderWidget()->getTabWidget();
         IPlugin *plugin = (IPlugin*) tab->currentWidget();
 
-        if (plugin != NULL)
+        if (plugin != NULL) {
             plugin->refresh(client);
+            plugin->setSystemId(client->hostname());
+            std::string title = WINDOW_TITLE;
+            title += " @ " + client->hostname();
+            m_main_window.setWindowTitle(title.c_str());
+        }
     } else {
         setPowerState(client, state);
         handleProgressState(100);
@@ -279,8 +284,13 @@ void Engine::Kernel::setActivePlugin(int index)
             QPushButton *button = m_main_window.getToolbar()->findChild<QPushButton*>("filter_button");
             if (button != NULL)
                 button->setChecked((*it).second->isFilterShown());
-        } else
-            (*it).second->setActive(false);
+            std::string title = WINDOW_TITLE;
+            if (!(*it).second->getSystemId().empty())
+                title += " @ " + (*it).second->getSystemId();
+            m_main_window.setWindowTitle(title.c_str());
+        } else {
+            (*it).second->setActive(false);            
+        }
         i++;
     }
 }

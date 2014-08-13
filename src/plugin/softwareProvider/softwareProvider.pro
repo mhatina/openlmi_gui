@@ -79,9 +79,9 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../logger -llmicclogger
 } else {
     linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-        target.path = /usr/lib64/openlmi
+        target.path = /usr/lib64/lmicc
     } else {
-        target.path = /usr/lib/openlmi
+        target.path = /usr/lib/lmicc
     }
     LIBS += -llmicclogger
 }

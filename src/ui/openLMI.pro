@@ -52,7 +52,9 @@ SOURCES += main.cpp\
     eventlog.cpp \
     widgets/labeledlineedit.cpp \
     detailsdialog.cpp \
-    kernelslots.cpp
+    kernelslots.cpp \
+    treewidgetitem.cpp \
+    systemdetailsdialog.cpp
 
 HEADERS  += mainwindow.h \
     kernel.h \
@@ -70,7 +72,9 @@ HEADERS  += mainwindow.h \
     showtextdialog.h \
     eventlog.h \
     widgets/labeledlineedit.h \
-    detailsdialog.h
+    detailsdialog.h \
+    treewidgetitem.h \
+    systemdetailsdialog.h
 
 FORMS    += mainwindow.ui \
     widgets/providerwidget.ui \
@@ -78,7 +82,8 @@ FORMS    += mainwindow.ui \
     authenticationdialog.ui \
     showtextdialog.ui \
     widgets/labeledlineedit.ui \
-    detailsdialog.ui
+    detailsdialog.ui \
+    systemdetailsdialog.ui
 
 CONFIG(debug, debug|release) {
     DEFINES+= "PLUGIN_PATH=\\\"../plugin/libs\\\""

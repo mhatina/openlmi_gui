@@ -399,6 +399,7 @@ void SoftwareProviderPlugin::showPackageDetail(Pegasus::CIMInstance item)
     emit refreshProgress(100);
 
     DetailsDialog dialog("Package details", this);
+    dialog.hideCancelButton();
     dialog.setValues(item, true);
     dialog.exec();
 }
@@ -434,6 +435,7 @@ void SoftwareProviderPlugin::showRepoDetail(QListWidgetItem *item)
     }
 
     DetailsDialog dialog("Repo details", this);
+    dialog.hideCancelButton();
     dialog.setValues(repo, true);
     dialog.exec();
 }

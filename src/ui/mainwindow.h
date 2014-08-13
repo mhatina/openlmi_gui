@@ -25,6 +25,8 @@
 
 #include <QMainWindow>
 
+#define WINDOW_TITLE "LMI Command Center"
+
 /**
  * @brief Struct representation of push button in toolbar
  */

@@ -142,18 +142,20 @@ Engine::Kernel::Kernel() :
     m_bar->setMaximumWidth(100);
     m_bar->hide();
 
+    m_main_window.getPcTreeWidget()->setTimeSec(1.5);
+
     m_code_dialog.setTitle("LMIShell Code");
     createKeyring();        
 
     m_event_log->setConnectionStorage(&m_connections);
     m_event_log->setPCTree(m_main_window.getPcTreeWidget()->getTree());
-    m_event_log->start();
+//    m_event_log->start();
 }
 
 Engine::Kernel::~Kernel()
 {
     Logger::getInstance()->debug("Engine::Kernel::~Kernel()");    
-    m_event_log->end();
+//    m_event_log->end();
     delete m_event_log;
     delete m_mutex;
     delete m_bar;

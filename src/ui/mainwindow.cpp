@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
         SLOT(showMessage(QString))
         );
     m_log_dialog.setTitle("Log");
+//    m_log_dialog.setParent(this);
 
     int cnt = sizeof(buttons) / sizeof(buttons[0]);
     for (int i = 0; i < cnt; i++) {
