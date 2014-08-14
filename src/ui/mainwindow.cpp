@@ -108,6 +108,11 @@ MainWindow::MainWindow(QWidget *parent) :
     action->setIconVisibleInMenu(true);
     menu->addAction(action);
 
+    action = new QAction(QIcon(":/shutdown.png"), "Wake on Lan", menu);
+    action->setObjectName("wake_on_lan");
+    action->setIconVisibleInMenu(true);
+    menu->addAction(action);
+
     button->setObjectName("power_button");
     button->setPopupMode(QToolButton::MenuButtonPopup);
     button->setMenu(menu);

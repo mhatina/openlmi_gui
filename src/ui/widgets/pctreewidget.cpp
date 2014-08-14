@@ -153,6 +153,7 @@ void PCTreeWidget::setEditState(bool state)
     m_ui->tree->setSelectionMode(
                     state ? QAbstractItemView::ContiguousSelection : QAbstractItemView::SingleSelection);
 
+    m_data_of_item_changed = false;
     QTreeWidgetItem *parent = topLevelNode("Added");
     for (int i = 0; i < parent->childCount(); i++)
         parent->child(i)->setFlags(state ? flags_editable : flags_non_editable);
@@ -161,6 +162,7 @@ void PCTreeWidget::setEditState(bool state)
         for (int i = 0; i < parent->childCount(); i++)
             parent->child(i)->setFlags(state ? flags_editable : flags_non_editable);
     }
+    m_data_of_item_changed = true;
 }
 
 void PCTreeWidget::setComputerIcon(QIcon icon)
@@ -267,9 +269,17 @@ void PCTreeWidget::loadPcs(std::string filename)
                 continue;
             else if(in.name() == "computer") {
                 QXmlStreamAttributes attr = in.attributes();
-                TreeWidgetItem *item = addPcToTree("Added", attr.value("id").toString().toStdString());
-                if (item != NULL)
+                std::string id = attr.value("id").toString().toStdString();
+                if (id.empty())
+                    continue;
+
+                TreeWidgetItem *item = addPcToTree("Added", id);
+                if (item != NULL) {
+                    item->setIpv4(attr.value("ipv4").toString().toStdString());
+                    item->setIpv6(attr.value("ipv6").toString().toStdString());
+                    item->setName(attr.value("domain").toString().toStdString());
                     item->setMac(attr.value("mac").toString().toStdString());
+                }
             }
         }
 
@@ -301,6 +311,9 @@ void PCTreeWidget::saveAllPcs(std::string filename)
     for (int i = 0; i < parent->childCount(); i++) {
         out.writeStartElement("computer");
         out.writeAttribute("id", parent->child(i)->text(0));
+        out.writeAttribute("ipv4", ((TreeWidgetItem*) parent->child(i))->getIpv4().c_str());
+        out.writeAttribute("ipv6", ((TreeWidgetItem*) parent->child(i))->getIpv6().c_str());
+        out.writeAttribute("domain", ((TreeWidgetItem*) parent->child(i))->getName().c_str());
         out.writeAttribute("mac", ((TreeWidgetItem*) parent->child(i))->getMac().c_str());
         out.writeEndElement();
     }
@@ -451,7 +464,6 @@ void PCTreeWidget::validate(QTreeWidgetItem* item ,int column)
             // fetch missing ip (version 4 or 6)
             ((TreeWidgetItem*) item)->setName(hostname);
 
-            std::string ipv4, ipv6;
             getIp(hostname, ipv4, ipv6);
             if (!ipv4.empty())
                 ((TreeWidgetItem*) item)->setIpv4(ipv4);
@@ -497,7 +509,7 @@ std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)
     int err;
     struct sockaddr *sa = (ai_family == AF_INET ? (struct sockaddr*) &sa4 : (struct sockaddr*) &sa6);
 
-    // TODO not working for ipv6
+    // BUG not working for ipv6
     if ((err = getnameinfo(sa, sizeof(*sa), name, sizeof(name), NULL, 0, 0))) {
         Logger::getInstance()->error(gai_strerror(err));
         return "";

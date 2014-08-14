@@ -100,6 +100,7 @@ private slots:
     void validate(QTreeWidgetItem *, int column);
 
 signals:
+    void getMacAddress(TreeWidgetItem *item);
     /**
      * @brief Emitted when host is removed from list
      * @param id -- ip or domain name of host
@@ -116,6 +117,7 @@ public:
      * @brief Destructor
      */
     ~PCTreeWidget();
+    int getTimeSec() const;
     /**
      * @brief Getter
      * @return tree widget (list of hosts)
@@ -132,14 +134,13 @@ public:
      * @param toolbar -- contains buttons
      */
     void connectButtons(QToolBar *toolbar);
+    void setComputerIcon(QIcon icon);
     /**
      * @brief Setter
      * @param state -- true if items can be edited, else false
      */
-    void setEditState(bool state);
-    void setComputerIcon(QIcon icon);
-    int getTimeSec() const;
-    void setTimeSec(int time_sec);
+    void setEditState(bool state);    
+    void setTimeSec(int time_sec);    
 };
 
 #endif // PCTREEWIDGET_H

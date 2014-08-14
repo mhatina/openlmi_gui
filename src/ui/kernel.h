@@ -49,7 +49,8 @@ typedef enum {
     PowerOffHardGraceful = 13,
     MasterBusResetGraceful = 14,
     PowerCycleOffSoftGraceful = 15,
-    PowerCycleOffHardGraceful = 16
+    PowerCycleOffHardGraceful = 16,
+    WakeOnLan = 17
 } POWER_VALUES;
 } // end of namespace PowerStateValues
 
@@ -85,7 +86,9 @@ private:
      * @param refresh_button -- affect refresh_button?
      */
     void setButtonsEnabled(bool state, bool refresh_button = true);
+    void setMac(CIMClient *client);
     void setPowerState(CIMClient *client, PowerStateValues::POWER_VALUES power_state);
+    void wakeOnLan();
 
 public:
     /**

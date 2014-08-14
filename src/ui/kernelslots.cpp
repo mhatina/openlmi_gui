@@ -171,6 +171,8 @@ void Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER
         IPlugin *plugin = (IPlugin*) tab->currentWidget();
 
         if (plugin != NULL) {
+            // quick enough, maybe later move to another thread
+            setMac(client);
             plugin->refresh(client);
             plugin->setSystemId(client->hostname());
             std::string title = WINDOW_TITLE;
@@ -346,6 +348,9 @@ void Engine::Kernel::setPowerState(QAction *action)
     } else if (action->objectName().toStdString() == "shutdown_action") {
         message = "Force off system: ";
         boost::thread(boost::bind(&Engine::Kernel::getConnection, this, PowerStateValues::PowerOffHard));
+    } else if (action->objectName().toStdString() == "wake_on_lan") {
+        message = "Waking system: ";
+        wakeOnLan();
     }
 
     Logger::getInstance()->info(message + item->text(0).toStdString());

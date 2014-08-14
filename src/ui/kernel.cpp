@@ -17,6 +17,7 @@
 
 #include "eventlog.h"
 #include "kernel.h"
+#include "lmiwbem_value.h"
 #include "logger.h"
 
 #include <boost/thread.hpp>
@@ -33,7 +34,19 @@
 #include <sys/types.h>
 #include <pwd.h>
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#include "stdlib.h"
+#include "stdio.h"
+
 extern const GnomeKeyringPasswordSchema *GNOME_KEYRING_NETWORK_PASSWORD;
+
+bool isColon(int c)
+{
+    return (c == 0x3A);
+}
 
 Engine::Kernel::Kernel() :    
     m_refreshEnabled(true),
@@ -223,9 +236,53 @@ void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
     }    
 }
 
+void Engine::Kernel::setMac(CIMClient *client)
+{
+    QTreeWidget *tree = m_main_window.getPcTreeWidget()->getTree();
+    QList<QTreeWidgetItem*> list = tree->findItems(client->hostname().c_str(), Qt::MatchExactly | Qt::MatchRecursive);
+    if (list.empty())
+        return;
+
+    TreeWidgetItem *item = (TreeWidgetItem*) list[0];
+
+    try {
+        Pegasus::Array<Pegasus::CIMObject> lan =
+                client->execQuery(
+                    Pegasus::CIMNamespaceName("root/cimv2"),
+                    Pegasus::String("WQL"),
+                    Pegasus::String("SELECT * FROM LMI_LanEndpoint WHERE OperatingStatus = 16"));
+
+        if (lan.size() == 0)
+            return;
+        Pegasus::CIMObject endpoint = lan[0];
+
+        std::string mac = CIMValue::get_property_value(Pegasus::CIMInstance(endpoint), "MACAddress");
+        item->setMac(mac);
+
+        // temporary
+        Pegasus::Array<Pegasus::CIMObject> ip =
+                client->associators(
+                    Pegasus::CIMNamespaceName("root/cimv2"),
+                    endpoint.getPath(),
+                    Pegasus::CIMName(),
+                    Pegasus::CIMName("LMI_IPProtocolEndpoint"));
+
+        for (unsigned int i = 0; i < ip.size(); i++) {
+            std::string ipv6 = CIMValue::get_property_value(Pegasus::CIMInstance(ip[i]), "IPv6Address");
+            if (!ipv6.empty()) {
+                item->setIpv6(ipv6);
+                break;
+            }
+        }
+    } catch (Pegasus::Exception &ex) {
+        Logger::getInstance()->error(std::string(ex.getMessage().getCString()), false);
+    }
+}
+
 void Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VALUES power_state)
 {
     Logger::getInstance()->debug("Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VALUES power_state)");
+
     Pegasus::CIMObjectPath power_inst_name;
     try {
         power_inst_name = client->enumerateInstanceNames(
@@ -258,6 +315,72 @@ void Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VA
     } catch (const Pegasus::Exception &ex) {
         Logger::getInstance()->error(std::string(ex.getMessage().getCString()));
     }
+}
+
+
+#include <boost/exception/all.hpp>
+void Engine::Kernel::wakeOnLan()
+{
+    unsigned char to_send[102];
+    unsigned char mac[6];
+
+    TreeWidgetItem *item = ((TreeWidgetItem*) m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0]);
+    std::string mac_str = item->getMac();
+    if (mac_str.empty()) {
+        Logger::getInstance()->error("Unknown MAC address");
+        return;
+    }
+
+    /** first 6 bytes of 255 **/
+    for(int i = 0; i < 6; i++) {
+        to_send[i] = 0xFF;
+    }
+
+    mac_str.erase(remove_if(mac_str.begin(), mac_str.end(), isColon), mac_str.end());
+    /** store mac address **/
+    for (int i = 0; i < 6; i++) {
+        char *p;
+        int tmp = strtol(mac_str.substr(i * 2, 2).c_str(), & p, 16 );
+        mac[i] = tmp;
+    }
+
+    /** append it 16 times to packet **/
+    for(int i = 1; i <= 16; i++) {
+        memcpy(&to_send[i * 6], &mac, 6 * sizeof(unsigned char));
+    }
+
+    /** ******************************************************************** **/
+
+    int udp_socket;
+    struct sockaddr_in udp_client, udp_server;
+    int broadcast = 1;
+
+    udp_socket = socket(AF_INET, SOCK_DGRAM, 0);
+
+    /** you need to set this so you can broadcast **/
+    if (setsockopt(udp_socket, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof broadcast) == -1) {
+        Logger::getInstance()->error(strerror(errno));
+        return;
+    }
+    udp_client.sin_family = AF_INET;
+    udp_client.sin_addr.s_addr = INADDR_ANY;
+    udp_client.sin_port = 0;
+
+    bind(udp_socket, (struct sockaddr*)&udp_client, sizeof(udp_client));
+
+    /** set server end point (the broadcast addres)**/
+    udp_server.sin_family = AF_INET;
+
+    std::string ip = item->getIpv4();
+    ip = ip.substr(0, ip.rfind(".") + 1);
+    ip += "255";
+    udp_server.sin_addr.s_addr = inet_addr(ip.c_str());
+    udp_server.sin_port = htons(9);
+
+    /** send the packet **/
+    sendto(udp_socket, &to_send, sizeof(unsigned char) * 102, 0, (struct sockaddr*)&udp_server, sizeof(udp_server));
+
+    handleProgressState(100);
 }
 
 void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
