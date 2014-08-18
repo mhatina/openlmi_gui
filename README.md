@@ -1,6 +1,6 @@
 ABOUT
 ===========
-
+Keep in mind the program is still in alpha stage, so bugs and install issues are still very common.
 
 LATEST VERSION
 ===============
@@ -10,7 +10,7 @@ Latest sources of the software can be found at: [openlmi_gui][]
 INSTALLATION
 ============
 
-OPENLMI_GUI has several dependencies:
+LMI Command Center has several dependencies:
 
 - C++ compiler, which supports C++98 standard
 - tog-pegasus (2.12.0)
@@ -21,7 +21,12 @@ OPENLMI_GUI has several dependencies:
 
 To install the module, follow these steps:
 
+    $ cd src/logger
     $ qmake
+    $ make
+    # make install
+    $ cd -
+    $ qmake CONFIG+=manual_install
     $ make
     # make install
 
