@@ -259,6 +259,9 @@ void Engine::Kernel::setMac(CIMClient *client)
 
     TreeWidgetItem *item = (TreeWidgetItem*) list[0];
 
+    if (!item->getMac().empty())
+        return;
+
     try {
         Pegasus::Array<Pegasus::CIMObject> lan =
                 client->execQuery(
@@ -423,7 +426,6 @@ void Engine::Kernel::loadPlugin()
     Logger::getInstance()->debug("Engine::Kernel::loadPlugin()");
     QDir plugins_dir(qApp->applicationDirPath());
     plugins_dir.cd(STR(PLUGIN_PATH));
-    std::cerr << STR(PLUGIN_PATH) << "\n";
 
     foreach (QString file_name, plugins_dir.entryList(QDir::Files)) {
         QPluginLoader *plugin_loader = new QPluginLoader(plugins_dir.absoluteFilePath(file_name));
