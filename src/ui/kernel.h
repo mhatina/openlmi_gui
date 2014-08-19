@@ -136,6 +136,8 @@ private slots:
     void setPowerState(QAction *action);
     void showCodeDialog();
     void showFilter();
+    void startLMIShell();
+    void startSsh();
 
 signals:
     /**

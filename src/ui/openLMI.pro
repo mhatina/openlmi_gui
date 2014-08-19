@@ -86,17 +86,16 @@ FORMS    += mainwindow.ui \
     systemdetailsdialog.ui
 
 CONFIG(debug, debug|release) {
-    DEFINES+= "PLUGIN_PATH=\\\"../plugin/libs\\\""
+    DEFINES+= "PLUGIN_PATH=../plugin/libs"
     LIBS += -L../logger -llmicclogger
-} else {
-    linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-        DEFINES+= "PLUGIN_PATH=\\\"/usr/lib64/lmicc\\\""
+} else {        
+    manual_install {
+        DEFINES+="PLUGIN_PATH=/usr/lib/lmicc"
+        LIBS += -L/usr/lib/lmicc -llmicclogger
     } else {
-        DEFINES+= "PLUGIN_PATH=\\\"/usr/lib/lmicc\\\""
+        LIBS += -llmicclogger
     }
-    LIBS += -llmicclogger
 }
-
 target.path = /usr/bin
 INSTALLS += target
 

@@ -33,17 +33,13 @@ OBJECTS_DIR = objs
 
 SOURCES += logger.cpp
 
-HEADERS += logger.h\
+HEADERS += logger.h \
         logger_global.h
 
 CONFIG(debug, debug|release) {
     DEFINES += "DEBUGGING=true"
 } else {
-    linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-        target.path = /usr/lib64
-    } else {
-        target.path = /usr/lib
-    }
+    target.path = /usr/lib/lmicc
 }
 DEFINES +=DEFAULT_LOG_PATH="\\\"/tmp/openlmi_log\\\""
 INSTALLS += target

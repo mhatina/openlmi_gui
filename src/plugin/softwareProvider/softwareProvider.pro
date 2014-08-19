@@ -25,7 +25,7 @@ CONFIG       += plugin
 QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
 INCLUDEPATH  += ../../ui ../../ui/uics ../../logger
 
-TARGET        = $$qtLibraryTarget(softwareProvider)
+TARGET        = $$qtLibraryTarget(lmiccsoftware)
 DESTDIR       = ../libs
 DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
 
@@ -78,12 +78,12 @@ CONFIG(debug, debug|release) {
     target.path = ../libs
     LIBS += -L../../logger -llmicclogger
 } else {
-    linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-        target.path = /usr/lib64/lmicc
+    target.path = /usr/lib/lmicc
+    manual_install {
+        LIBS += -L/usr/lib/lmicc -llmicclogger
     } else {
-        target.path = /usr/lib/lmicc
+        LIBS += -llmicclogger
     }
-    LIBS += -llmicclogger
 }
 INSTALLS += target
 

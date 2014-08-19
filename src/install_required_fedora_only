@@ -1,3 +1,0 @@
-#!/bin/bash
-
-yum install -y tog-pegasus tog-pegasus-devel tog-pegasus-libs boost-thread boost boost-devel openslp openslp-devel libgnome-keyring-devel 

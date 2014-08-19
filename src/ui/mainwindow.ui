@@ -81,6 +81,9 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="action_start_LMIShell"/>
+    <addaction name="action_start_ssh"/>
+    <addaction name="separator"/>
     <addaction name="action_reset_password_storage"/>
     <addaction name="action_show_log"/>
     <addaction name="action_exit"/>
@@ -110,6 +113,16 @@
   <action name="action_reset_password_storage">
    <property name="text">
     <string>Reset password storage</string>
+   </property>
+  </action>
+  <action name="action_start_LMIShell">
+   <property name="text">
+    <string>Start LMIShell</string>
+   </property>
+  </action>
+  <action name="action_start_ssh">
+   <property name="text">
+    <string>Start ssh</string>
    </property>
   </action>
  </widget>

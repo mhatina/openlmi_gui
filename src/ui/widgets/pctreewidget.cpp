@@ -436,10 +436,10 @@ void PCTreeWidget::validate(QTreeWidgetItem* item ,int column)
     std::string str_ip = item->text(column).toStdString();
     char ip[MAX_LENGTH];
     strncpy(ip, str_ip.c_str(), MAX_LENGTH - 1);
-    int result;
+    bool result = false;
     if (QRegExp(PATTERN_TYPE_FQDN).exactMatch(item->text(column))) {
         ((TreeWidgetItem*) item)->setName(item->text(0).toStdString());
-        result = 0;
+        result = true;
         std::string ipv4, ipv6;
         getIp(str_ip, ipv4, ipv6);
         if (!ipv4.empty())
@@ -458,9 +458,7 @@ void PCTreeWidget::validate(QTreeWidgetItem* item ,int column)
             ((TreeWidgetItem*) item)->setIpv6(ipv6 = item->text(0).toStdString());
         }
 
-        if (hostname.empty())
-            result = -1;
-        else {
+        if ((result = !hostname.empty())) {
             // fetch missing ip (version 4 or 6)
             ((TreeWidgetItem*) item)->setName(hostname);
 
@@ -473,7 +471,7 @@ void PCTreeWidget::validate(QTreeWidgetItem* item ,int column)
         }
     }
 
-    if (!result) {
+    if (result) {
         item->setBackground(0, QBrush(QColor("white")));
     } else {
         item->setSelected(false);

@@ -38,8 +38,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "stdlib.h"
-#include "stdio.h"
+#include <stdlib.h>
+#include <stdio.h>
+
+#define STR(X)  __STRING(X)
 
 extern const GnomeKeyringPasswordSchema *GNOME_KEYRING_NETWORK_PASSWORD;
 
@@ -151,6 +153,18 @@ Engine::Kernel::Kernel() :
         SIGNAL(silentConnection(std::string)),
         this,
         SLOT(emitSilentConnection(std::string)));
+    QAction *action = m_main_window.findChild<QAction*>("action_start_LMIShell");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(startLMIShell()));
+    action = m_main_window.findChild<QAction*>("action_start_ssh");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(startSsh()));
     m_main_window.getStatusBar()->addPermanentWidget(m_bar);
     m_bar->setMaximumWidth(100);
     m_bar->hide();
@@ -317,10 +331,9 @@ void Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VA
     }
 }
 
-
-#include <boost/exception/all.hpp>
 void Engine::Kernel::wakeOnLan()
 {
+    // packet creating
     unsigned char to_send[102];
     unsigned char mac[6];
 
@@ -331,25 +344,26 @@ void Engine::Kernel::wakeOnLan()
         return;
     }
 
-    /** first 6 bytes of 255 **/
+    // first 6 bytes of 255
     for(int i = 0; i < 6; i++) {
         to_send[i] = 0xFF;
     }
 
     mac_str.erase(remove_if(mac_str.begin(), mac_str.end(), isColon), mac_str.end());
-    /** store mac address **/
+    // store mac address
     for (int i = 0; i < 6; i++) {
         char *p;
         int tmp = strtol(mac_str.substr(i * 2, 2).c_str(), & p, 16 );
         mac[i] = tmp;
     }
 
-    /** append it 16 times to packet **/
+    // append it 16 times to packet
     for(int i = 1; i <= 16; i++) {
         memcpy(&to_send[i * 6], &mac, 6 * sizeof(unsigned char));
     }
 
-    /** ******************************************************************** **/
+    // ********************************************************************
+    // sending packet
 
     int udp_socket;
     struct sockaddr_in udp_client, udp_server;
@@ -357,7 +371,7 @@ void Engine::Kernel::wakeOnLan()
 
     udp_socket = socket(AF_INET, SOCK_DGRAM, 0);
 
-    /** you need to set this so you can broadcast **/
+    // need to set this to be able to broadcast **/
     if (setsockopt(udp_socket, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof broadcast) == -1) {
         Logger::getInstance()->error(strerror(errno));
         return;
@@ -368,7 +382,7 @@ void Engine::Kernel::wakeOnLan()
 
     bind(udp_socket, (struct sockaddr*)&udp_client, sizeof(udp_client));
 
-    /** set server end point (the broadcast addres)**/
+    // set server end point (the broadcast addres)
     udp_server.sin_family = AF_INET;
 
     std::string ip = item->getIpv4();
@@ -377,7 +391,7 @@ void Engine::Kernel::wakeOnLan()
     udp_server.sin_addr.s_addr = inet_addr(ip.c_str());
     udp_server.sin_port = htons(9);
 
-    /** send the packet **/
+    // send the packet
     sendto(udp_socket, &to_send, sizeof(unsigned char) * 102, 0, (struct sockaddr*)&udp_server, sizeof(udp_server));
 
     handleProgressState(100);
@@ -408,7 +422,8 @@ void Engine::Kernel::loadPlugin()
 {
     Logger::getInstance()->debug("Engine::Kernel::loadPlugin()");
     QDir plugins_dir(qApp->applicationDirPath());
-    plugins_dir.cd(PLUGIN_PATH);    
+    plugins_dir.cd(STR(PLUGIN_PATH));
+    std::cerr << STR(PLUGIN_PATH) << "\n";
 
     foreach (QString file_name, plugins_dir.entryList(QDir::Files)) {
         QPluginLoader *plugin_loader = new QPluginLoader(plugins_dir.absoluteFilePath(file_name));
@@ -429,7 +444,7 @@ void Engine::Kernel::loadPlugin()
                 m_main_window.getProviderWidget()->getTabWidget()->addTab(loaded_plugin, loaded_plugin->getLabel().c_str());
             }
         } else {
-            Logger::getInstance()->error(plugin_loader->errorString().toStdString());
+            Logger::getInstance()->error(plugin_loader->errorString().toStdString(), false);
         }
     }
 }

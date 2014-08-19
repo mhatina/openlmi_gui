@@ -1,6 +1,7 @@
 #include "kernel.h"
 
 #include <gnome-keyring-1/gnome-keyring.h>
+#include <QProcess>
 #include <QStatusBar>
 #include <QToolButton>
 
@@ -380,4 +381,36 @@ void Engine::Kernel::showFilter()
     }
 
     plugin->showFilter(button->isChecked());
+}
+
+void Engine::Kernel::startLMIShell()
+{
+    std::string command;
+    QList<QTreeWidgetItem*> list = m_main_window.getPcTreeWidget()->getTree()->selectedItems();
+    if (list.empty())
+        // TODO add to settings
+        // TODO certificate
+        command = "/bin/xterm -e \" lmishell";
+    else {
+        TreeWidgetItem *item = (TreeWidgetItem*) list[0];
+        // TODO add to settings
+        command = "/bin/xterm -e \" lmishell"
+            + (!item->getIpv4().empty() ? item->getIpv4() : item->getIpv6()) + "\"";
+    }
+    QProcess *shell = new QProcess(this);
+    shell->startDetached(command.c_str());
+}
+
+void Engine::Kernel::startSsh()
+{
+    QList<QTreeWidgetItem*> list = m_main_window.getPcTreeWidget()->getTree()->selectedItems();
+    if (list.empty())
+        return;
+
+    TreeWidgetItem *item = (TreeWidgetItem*) list[0];
+    // TODO add to settings
+    std::string command = "/bin/xterm -e \"ssh "
+            + (!item->getIpv4().empty() ? item->getIpv4() : item->getIpv6()) + "\"";
+    QProcess *shell = new QProcess(this);
+    shell->startDetached(command.c_str());
 }

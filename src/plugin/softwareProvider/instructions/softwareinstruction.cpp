@@ -49,30 +49,28 @@ Pegasus::CIMValue SoftwareInstruction::invokeInstallMethod(Pegasus::Uint16 insta
     Pegasus::CIMObjectPath source;
     value_source.get(source);
 
-    Pegasus::CIMInstance instance_source = m_client->getInstance(
-                Pegasus::CIMNamespaceName("root/cimv2"),
-                source
-                );
+//    Pegasus::CIMInstance instance_source = m_client->getInstance(
+//                Pegasus::CIMNamespaceName("root/cimv2"),
+//                source
+//                );
 
     in_param.append(Pegasus::CIMParamValue(
                         Pegasus::String("Source"),
-                        Pegasus::CIMValue(instance_source)
-                        ));
+                        Pegasus::CIMValue(source)));
 
     prop_ind = m_instance.findProperty("System");
     Pegasus::CIMValue value_target = m_instance.getProperty(prop_ind).getValue();
     Pegasus::CIMObjectPath target;
     value_target.get(target);
 
-    Pegasus::CIMInstance instance_target = m_client->getInstance(
-                Pegasus::CIMNamespaceName("root/cimv2"),
-                target
-                );
+//    Pegasus::CIMInstance instance_target = m_client->getInstance(
+//                Pegasus::CIMNamespaceName("root/cimv2"),
+//                target
+//                );
 
     in_param.append(Pegasus::CIMParamValue(
                         Pegasus::String("Target"),
-                        Pegasus::CIMValue(instance_target)
-                        ));
+                        Pegasus::CIMValue(target)));
 
     return m_client->invokeMethod(
                 Pegasus::CIMNamespaceName("root/cimv2"),
