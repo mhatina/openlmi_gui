@@ -19,29 +19,30 @@
 #
 # ***** END LICENSE BLOCK ***** */
 
-QT       -= gui
+QT              -=      gui
 
-TARGET = lmicclogger
-TEMPLATE = lib
-INCLUDEPATH += ../ui
+TARGET          =       lmicclogger
+TEMPLATE        =       lib
+INCLUDEPATH     +=      ../ui
 
-DEFINES += LOGGER_LIBRARY
+DEFINES         +=      LOGGER_LIBRARY
 
-UI_DIR = uics
-MOC_DIR = mocs
-OBJECTS_DIR = objs
+UI_DIR          =       uics
+MOC_DIR         =       mocs
+OBJECTS_DIR     =       objs
 
-SOURCES += logger.cpp
+SOURCES         +=      logger.cpp
 
-HEADERS += logger.h \
-        logger_global.h
+HEADERS         +=      logger.h \
+                        logger_global.h
 
 CONFIG(debug, debug|release) {
-    DEFINES += "DEBUGGING=true"
+    DEFINES     +=      "DEBUGGING=true"
 } else {
-    target.path = /usr/lib
+    manual_install {
+        target.path =   /usr/lib
+    }
 }
-DEFINES +=DEFAULT_LOG_PATH="\\\"/tmp/openlmi_log\\\""
-INSTALLS += target
 
-RESOURCES +=
+DEFINES         +=      DEFAULT_LOG_PATH="\\\"/tmp/openlmi_log\\\""
+INSTALLS        +=      target

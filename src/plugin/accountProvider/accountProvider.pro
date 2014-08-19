@@ -19,88 +19,86 @@
 #
 # ***** END LICENSE BLOCK ***** */
 
-QT       += core gui
-TEMPLATE      = lib
-CONFIG       += plugin
-QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
-INCLUDEPATH  += ../../ui ../../ui/uics ../../logger
-TARGET        = $$qtLibraryTarget(lmiccaccount)
-DESTDIR       = ../libs
-LIBS += -lpegclient -lpegcommon -lboost_thread
-DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
-RESOURCES = \
-    icons.qrc
+QT              +=      core gui
+TEMPLATE        =       lib
+CONFIG          +=      plugin
+QMAKE_CXXFLAGS  +=      -ansi -pedantic -Wall -Wextra
+INCLUDEPATH     +=      ../../ui ../../ui/uics ../../logger
+TARGET          =       $$qtLibraryTarget(lmiccaccount)
+DESTDIR         =       ../libs
+LIBS            +=      -lpegclient -lpegcommon -lboost_thread
+DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
 
-UI_DIR = uics
-MOC_DIR = mocs
-OBJECTS_DIR = objs
-
-SOURCES += \
-    accountprovider.cpp \
-    instructions/accountinstruction.cpp \
-    instructions/groupinstruction.cpp \
-    ../../ui/instructions/instruction.cpp \
-    ../../ui/instructions/connectinstruction.cpp \
-    ../../ui/plugin.cpp \
-    dialogs/newuserdialog.cpp \
-    dialogs/newgroupdialog.cpp \
-    memberbox.cpp \
-    dialogs/groupmemberdialog.cpp \
-    instructions/getinstruction.cpp \
-    instructions/pushinstruction.cpp \
-    instructions/newgroupinstruction.cpp \
-    instructions/deletegroupinstruction.cpp \
-    instructions/addusertogroupinstruction.cpp \
-    instructions/removeuserfromgroupinstruction.cpp \
-    instructions/changegrouppropertyinstruction.cpp \
-    instructions/newuserinstruction.cpp \
-    instructions/deleteuserinstruction.cpp \
-    instructions/changeuserpropertyinstruction.cpp \
-    ../../ui/lmiwbem_value.cpp \
-    ../../ui/cimdatetimeconv.cpp \
-    ../../ui/detailsdialog.cpp \
-    ../../ui/widgets/labeledlineedit.cpp
-
-HEADERS += \
-    accountprovider.h \ 
-    instructions/accountinstruction.h \
-    instructions/groupinstruction.h \
-    dialogs/newuserdialog.h \
-    dialogs/newgroupdialog.h \
-    memberbox.h \
-    ../../ui/instructions/connectinstruction.h \
-    dialogs/groupmemberdialog.h \
-    instructions/getinstruction.h \
-    instructions/pushinstruction.h \
-    instructions/newgroupinstruction.h \
-    instructions/deletegroupinstruction.h \
-    instructions/addusertogroupinstruction.h \
-    instructions/removeuserfromgroupinstruction.h \
-    instructions/changegrouppropertyinstruction.h \
-    instructions/newuserinstruction.h \
-    instructions/deleteuserinstruction.h \
-    instructions/changeuserpropertyinstruction.h \
-    ../../ui/plugin.h \
-    ../../ui/instructions/instruction.h \
-    ../../ui/detailsdialog.h \
-    ../../ui/widgets/labeledlineedit.h
-
-FORMS += \
-    accountprovider.ui \
-    dialogs/newuserdialog.ui \
-    dialogs/newgroupdialog.ui \
-    memberbox.ui \
-    dialogs/groupmemberdialog.ui
+UI_DIR          =       uics
+MOC_DIR         =       mocs
+OBJECTS_DIR     =       objs
 
 CONFIG(debug, debug|release) {
-    target.path = ../libs
-    LIBS += -L../../logger -llmicclogger
-} else {    
-    target.path = /usr/lib/lmicc
+    target.path =       ../libs
+    LIBS        +=      -L../../logger -llmicclogger
+} else {
     manual_install {
-        LIBS += -L/usr/lib/lmicc -llmicclogger
+        target.path =   /usr/lib/lmicc
+        LIBS    +=      -L/usr/lib/lmicc -llmicclogger
     } else {
-        LIBS += -llmicclogger
+        LIBS    +=      -llmicclogger
     }
 }
-INSTALLS += target
+
+INSTALLS        +=      target
+
+SOURCES         +=      accountprovider.cpp \
+                        instructions/accountinstruction.cpp \
+                        instructions/groupinstruction.cpp \
+                        ../../ui/instructions/instruction.cpp \
+                        ../../ui/instructions/connectinstruction.cpp \
+                        ../../ui/plugin.cpp \
+                        dialogs/newuserdialog.cpp \
+                        dialogs/newgroupdialog.cpp \
+                        memberbox.cpp \
+                        dialogs/groupmemberdialog.cpp \
+                        instructions/getinstruction.cpp \
+                        instructions/pushinstruction.cpp \
+                        instructions/newgroupinstruction.cpp \
+                        instructions/deletegroupinstruction.cpp \
+                        instructions/addusertogroupinstruction.cpp \
+                        instructions/removeuserfromgroupinstruction.cpp \
+                        instructions/changegrouppropertyinstruction.cpp \
+                        instructions/newuserinstruction.cpp \
+                        instructions/deleteuserinstruction.cpp \
+                        instructions/changeuserpropertyinstruction.cpp \
+                        ../../ui/lmiwbem_value.cpp \
+                        ../../ui/cimdatetimeconv.cpp \
+                        ../../ui/detailsdialog.cpp \
+                        ../../ui/widgets/labeledlineedit.cpp
+
+HEADERS         +=      accountprovider.h \
+                        instructions/accountinstruction.h \
+                        instructions/groupinstruction.h \
+                        dialogs/newuserdialog.h \
+                        dialogs/newgroupdialog.h \
+                        memberbox.h \
+                        ../../ui/instructions/connectinstruction.h \
+                        dialogs/groupmemberdialog.h \
+                        instructions/getinstruction.h \
+                        instructions/pushinstruction.h \
+                        instructions/newgroupinstruction.h \
+                        instructions/deletegroupinstruction.h \
+                        instructions/addusertogroupinstruction.h \
+                        instructions/removeuserfromgroupinstruction.h \
+                        instructions/changegrouppropertyinstruction.h \
+                        instructions/newuserinstruction.h \
+                        instructions/deleteuserinstruction.h \
+                        instructions/changeuserpropertyinstruction.h \
+                        ../../ui/plugin.h \
+                        ../../ui/instructions/instruction.h \
+                        ../../ui/detailsdialog.h \
+                        ../../ui/widgets/labeledlineedit.h
+
+FORMS           +=      accountprovider.ui \
+                        dialogs/newuserdialog.ui \
+                        dialogs/newgroupdialog.ui \
+                        memberbox.ui \
+                        dialogs/groupmemberdialog.ui
+
+RESOURCES       =       icons.qrc

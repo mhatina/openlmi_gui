@@ -92,10 +92,10 @@ CONFIG(debug, debug|release) {
     manual_install {
         DEFINES+="PLUGIN_PATH=/usr/lib/lmicc"
         LIBS += -L/usr/lib -llmicclogger
+        target.path = /usr/bin
     } else {
         LIBS += -llmicclogger
     }
 }
-target.path = /usr/bin
 INSTALLS += target
 

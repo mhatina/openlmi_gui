@@ -19,50 +19,47 @@
 #
 # ***** END LICENSE BLOCK ***** */
 
-QT       += core gui
-TEMPLATE      = lib
-CONFIG       += plugin
-QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
-INCLUDEPATH  += ../../ui ../../ui/uics ../../logger
-TARGET        = $$qtLibraryTarget(lmicchardware)
-DESTDIR       = ../libs
-DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
+QT              +=      core gui
+TEMPLATE        =       lib
+CONFIG          +=      plugin
+QMAKE_CXXFLAGS  +=      -ansi -pedantic -Wall -Wextra
+INCLUDEPATH     +=      ../../ui ../../ui/uics ../../logger
+TARGET          =       $$qtLibraryTarget(lmicchardware)
+DESTDIR         =       ../libs
+DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
 
-UI_DIR = uics
-MOC_DIR = mocs
-OBJECTS_DIR = objs
-
-HEADERS += \
-    hardwareprovider.h \
-    ../../ui/plugin.h \
-    ../../ui/instructions/connectinstruction.h \
-    ../../ui/instructions/instruction.h \
-    labeledlabel.h
-
-SOURCES += \
-    hardwareprovider.cpp \
-    ../../ui/plugin.cpp \
-    ../../ui/instructions/connectinstruction.cpp \
-    ../../ui/instructions/instruction.cpp \
-    ../../ui/lmiwbem_value.cpp \
-    labeledlabel.cpp
-
-FORMS += \
-    hardwareprovider.ui \
-    labeledlabel.ui
+UI_DIR          =       uics
+MOC_DIR         =       mocs
+OBJECTS_DIR     =       objs
 
 CONFIG(debug, debug|release) {
-    target.path = ../libs
-    LIBS += -L../../logger -llmicclogger
+    target.path =       ../libs
+    LIBS        +=      -L../../logger -llmicclogger
 } else {
-    target.path = /usr/lib/lmicc
     manual_install {
-        LIBS += -L/usr/lib/lmicc -llmicclogger
+        target.path =   /usr/lib/lmicc
+        LIBS    +=      -L/usr/lib/lmicc -llmicclogger
     } else {
-        LIBS += -llmicclogger
+        LIBS    +=      -llmicclogger
     }
 }
-INSTALLS += target
 
-RESOURCES += \
-    icons.qrc
+INSTALLS        +=      target
+
+HEADERS         +=      hardwareprovider.h \
+                        ../../ui/plugin.h \
+                        ../../ui/instructions/connectinstruction.h \
+                        ../../ui/instructions/instruction.h \
+                        labeledlabel.h
+
+SOURCES         +=      hardwareprovider.cpp \
+                        ../../ui/plugin.cpp \
+                        ../../ui/instructions/connectinstruction.cpp \
+                        ../../ui/instructions/instruction.cpp \
+                        ../../ui/lmiwbem_value.cpp \
+                        labeledlabel.cpp
+
+FORMS           +=      hardwareprovider.ui \
+                        labeledlabel.ui
+
+RESOURCES       +=      icons.qrc

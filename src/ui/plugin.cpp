@@ -344,7 +344,7 @@ void Engine::IPlugin::showFilter(bool show)
     }
 
     if (show) {
-        filter_box->show();
+        filter_box->show();        
     } else {
         filter_box->hide();
     }
