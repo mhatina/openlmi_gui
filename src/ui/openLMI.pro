@@ -85,6 +85,10 @@ FORMS    += mainwindow.ui \
     detailsdialog.ui \
     systemdetailsdialog.ui
 
+isEmpty(PREFIX) {
+    PREFIX = /usr
+}
+
 CONFIG(debug, debug|release) {
     DEFINES+= "PLUGIN_PATH=../plugin/libs"
     LIBS += -L../logger -llmicclogger
@@ -97,5 +101,6 @@ CONFIG(debug, debug|release) {
         LIBS += -llmicclogger
     }
 }
+target.path = $$PREFIX/bin
 INSTALLS += target
 

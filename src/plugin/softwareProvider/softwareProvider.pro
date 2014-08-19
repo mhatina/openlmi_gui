@@ -74,12 +74,16 @@ FORMS += \
     listwidget.ui \
     installdialog.ui
 
+isEmpty(PREFIX) {
+    PREFIX = /usr
+}
+
 CONFIG(debug, debug|release) {
     target.path = ../libs
     LIBS += -L../../logger -llmicclogger
 } else {
+    target.path = $$PREFIX/lib/lmicc
     manual_install {
-        target.path = /usr/lib/lmicc
         LIBS += -L/usr/lib/lmicc -llmicclogger
     } else {
         LIBS += -llmicclogger

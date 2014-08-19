@@ -3,7 +3,6 @@ SUBDIRS += \
     accountProvider/accountProvider.pro \
     hardwareProvider/hardwareProvider.pro \
     serviceProvider/serviceProvider.pro \
-    softwareProvider/softwareProvider.pro \
-    networkProvider/networkProvider.pro
+    softwareProvider/softwareProvider.pro
 
 CONFIG += ordered

@@ -36,12 +36,14 @@ SOURCES         +=      logger.cpp
 HEADERS         +=      logger.h \
                         logger_global.h
 
+isEmpty(PREFIX) {
+    PREFIX = /usr
+}
+
 CONFIG(debug, debug|release) {
     DEFINES     +=      "DEBUGGING=true"
 } else {
-    manual_install {
-        target.path =   /usr/lib
-    }
+    target.path =   $$PREFIX/lib/lmicc
 }
 
 DEFINES         +=      DEFAULT_LOG_PATH="\\\"/tmp/openlmi_log\\\""
