@@ -62,8 +62,11 @@ int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
         client = new CIMClient();
         try {
             try {
-                client->connect("https://" + ip, 5989, false, username, passwd);
+                // TODO settings
+                client->setVerifyCertificate(false);
+                client->connect(ip, 5989, true, username, passwd);
             } catch (Pegasus::Exception &ex) {
+                Logger::getInstance()->info(std::string(ex.getMessage().getCString()) + " Trying another port.");
                 client->connect(ip, 5988, false, username, passwd);
             }
             m_connections[ip] = client;
@@ -174,6 +177,7 @@ void Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER
         if (plugin != NULL) {
             // quick enough, maybe later move to another thread
             setMac(client);
+
             plugin->refresh(client);
             plugin->setSystemId(client->hostname());
             std::string title = WINDOW_TITLE;
@@ -204,6 +208,9 @@ void Engine::Kernel::handleProgressState(int state)
     Logger::getInstance()->debug("Engine::Kernel::handleProgressState(int state)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     IPlugin *plugin = (IPlugin*) tab->currentWidget();
+    if (plugin == NULL)
+        return;
+
     if (state == 100) {
         tab->setEnabled(true);
         plugin->setPluginEnabled(true);
@@ -363,6 +370,8 @@ void Engine::Kernel::showCodeDialog()
     Logger::getInstance()->debug("Engine::Kernel::showCodeDialog()");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     IPlugin *plugin = (IPlugin*) tab->currentWidget();
+    if (plugin == NULL)
+        return;
     m_code_dialog.setText(plugin->getInstructionText(), false);
     m_code_dialog.show();
 }

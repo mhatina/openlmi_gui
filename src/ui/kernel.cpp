@@ -57,7 +57,14 @@ Engine::Kernel::Kernel() :
     m_bar(new QProgressBar())
 {
     Logger::getInstance()->debug("Engine::Kernel::Kernel()");
-    struct passwd *pw = getpwuid(getuid());
+
+    __uid_t uid = getuid();
+    if (uid == 0) {
+        Logger::getInstance()->error("Program does not work properly when run as root!");
+        exit(1);
+    }
+
+    struct passwd *pw = getpwuid(uid);
     std::string path = pw->pw_dir;
     path += "/.openlmi";
     if (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0 && errno != EEXIST) {
@@ -239,6 +246,8 @@ void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
     Logger::getInstance()->debug("Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     IPlugin *plugin = (IPlugin*) tab->currentWidget();
+    if (plugin == NULL)
+        return;
     bool refreshed = plugin->isRefreshed();
 
     ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("apply_button"))->setEnabled(state & refreshed);

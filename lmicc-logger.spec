@@ -23,7 +23,7 @@ Group:          Documentation
 
 %build
 cd src/logger
-qmake-qt4  target.path=%{buildroot}%{_libdir}
+qmake-qt4 PREFIX=%{buildroot} LIB_PATH=%{_libdir}
 make  
 cd -
 

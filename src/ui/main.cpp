@@ -18,9 +18,10 @@
 #include "kernel.h"
 #include <QApplication>
 
+#include <QStyleFactory>
+
 int main(int argc, char *argv[])
 {
-
     Logger::getInstance()->debug("main(int argc, char *argv[])");
     QApplication a(argc, argv);
 

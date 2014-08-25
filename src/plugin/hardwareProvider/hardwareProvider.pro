@@ -33,14 +33,17 @@ MOC_DIR         =       mocs
 OBJECTS_DIR     =       objs
 
 isEmpty(PREFIX) {
-    PREFIX = /usr
+    PREFIX      =       /usr
+}
+isEmpty(LIB_PATH) {
+    LIB_PATH    =       /lib
 }
 
 CONFIG(debug, debug|release) {
     target.path =       ../libs
     LIBS        +=      -L../../logger -llmicclogger
 } else {
-    target.path =   $$PREFIX/lib/lmicc
+    target.path =       $$PREFIX$$LIB_PATH/lmicc
     manual_install {
         LIBS    +=      -L/usr/lib/lmicc -llmicclogger
     } else {

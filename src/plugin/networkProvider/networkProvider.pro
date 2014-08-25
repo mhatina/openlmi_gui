@@ -24,9 +24,8 @@ TEMPLATE        =       lib
 CONFIG          +=      plugin
 QMAKE_CXXFLAGS  +=      -ansi -pedantic -Wall -Wextra
 INCLUDEPATH     +=      ../../ui ../../ui/uics ../../logger
-TARGET          =       $$qtLibraryTarget(lmiccservice)
+TARGET          =       $$qtLibraryTarget(lmiccnetwork)
 DESTDIR         =       ../libs
-LIBS            +=      -lpegclient -lpegcommon -lboost_thread
 DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
 
 UI_DIR          =       uics
@@ -53,41 +52,17 @@ CONFIG(debug, debug|release) {
 }
 INSTALLS        +=      target
 
-HEADERS         +=      serviceprovider.h \
+HEADERS         +=      networkprovider.h \
                         ../../ui/plugin.h \
-                        instructions/startserviceinstruction.h \
-                        instructions/stopserviceinstruction.h \
-                        instructions/enableserviceinstruction.h \
-                        instructions/getinstruction.h \
-                        instructions/disableserviceinstruction.h \
-                        instructions/serviceinstruction.h \
-                        actionbox.h \
                         ../../ui/instructions/connectinstruction.h \
-                        instructions/restartserviceinstruction.h \
-                        instructions/reloadserviceinstruction.h \
-                        ../../ui/instructions/instruction.h \
-                        ../../ui/detailsdialog.h \
-                        ../../ui/widgets/labeledlineedit.h
+                        ../../ui/instructions/instruction.h
 
-SOURCES         +=      serviceprovider.cpp \
+SOURCES         +=      networkprovider.cpp \
                         ../../ui/plugin.cpp \
-                        ../../ui/cimdatetimeconv.cpp \
-                        ../../ui/lmiwbem_value.cpp \
-                        instructions/startserviceinstruction.cpp \
-                        instructions/stopserviceinstruction.cpp \
-                        instructions/enableserviceinstruction.cpp \
-                        instructions/getinstruction.cpp \
-                        instructions/disableserviceinstruction.cpp \
-                        instructions/serviceinstruction.cpp \
-                        actionbox.cpp \
                         ../../ui/instructions/connectinstruction.cpp \
                         ../../ui/instructions/instruction.cpp \
-                        instructions/restartserviceinstruction.cpp \
-                        instructions/reloadserviceinstruction.cpp \
-                        ../../ui/detailsdialog.cpp \
-                        ../../ui/widgets/labeledlineedit.cpp
+                        ../../ui/lmiwbem_value.cpp
 
-FORMS           +=      serviceprovider.ui \
-                        actionbox.ui
+FORMS           +=      networkprovider.ui
 
 RESOURCES       +=      icons.qrc

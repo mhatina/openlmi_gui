@@ -39,11 +39,14 @@ HEADERS         +=      logger.h \
 isEmpty(PREFIX) {
     PREFIX = /usr
 }
+isEmpty(LIB_PATH) {
+    LIB_PATH    =       /lib
+}
 
 CONFIG(debug, debug|release) {
     DEFINES     +=      "DEBUGGING=true"
 } else {
-    target.path =   $$PREFIX/lib/lmicc
+    target.path =   $$PREFIX$$LIB_PATH
 }
 
 DEFINES         +=      DEFAULT_LOG_PATH="\\\"/tmp/openlmi_log\\\""
