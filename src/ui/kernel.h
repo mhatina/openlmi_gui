@@ -126,6 +126,7 @@ private slots:
     void handleInstructionText(std::string text);
     void handleProgressState(int state);    
     void refresh();
+    void reloadPlugins();
     void resetKeyring();
     void saveAsScripts();
     void saveScripts();

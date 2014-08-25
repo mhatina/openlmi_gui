@@ -172,6 +172,12 @@ Engine::Kernel::Kernel() :
         SIGNAL(triggered()),
         this,
         SLOT(startSsh()));
+    action = m_main_window.findChild<QAction*>("action_reload_plugins");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(reloadPlugins()));
     m_main_window.getStatusBar()->addPermanentWidget(m_bar);
     m_bar->setMaximumWidth(100);
     m_bar->hide();

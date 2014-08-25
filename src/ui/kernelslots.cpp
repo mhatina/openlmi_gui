@@ -247,6 +247,35 @@ void Engine::Kernel::refresh()
     boost::thread(boost::bind(&Engine::Kernel::getConnection, this, PowerStateValues::NoPowerSetting));
 }
 
+void Engine::Kernel::reloadPlugins()
+{
+    for (plugin_map::iterator it = m_loaded_plugins.begin(); it != m_loaded_plugins.end(); it++) {
+        (*it).second->disconnect();
+    }
+    disconnect(
+        m_main_window.getProviderWidget()->getTabWidget(),
+        0,
+        this,
+        0);
+    foreach (QPluginLoader *loader, m_loaders) {
+        loader->unload();
+        delete loader;
+    }
+    connect(
+        m_main_window.getProviderWidget()->getTabWidget(),
+        SIGNAL(currentChanged(int)),
+        this,
+        SLOT(setActivePlugin(int)));
+
+    m_loaded_plugins.clear();
+    m_loaders.clear();
+
+    for (; m_main_window.getProviderWidget()->getTabWidget()->count();)
+        m_main_window.getProviderWidget()->getTabWidget()->removeTab(0);
+
+    loadPlugin();
+}
+
 void Engine::Kernel::resetKeyring()
 {
     Logger::getInstance()->debug("Engine::Kernel::resetKeyring()");
