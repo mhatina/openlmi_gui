@@ -57,6 +57,7 @@ public:
      * @return Tab widget (provider display its data here)
      */
     QTabWidget* getTabWidget();
+    void setTitle(std::string title);
 };
 
 #endif // PROVIDERWIDGET_H

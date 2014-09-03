@@ -54,7 +54,8 @@ Engine::Kernel::Kernel() :
     m_refreshEnabled(true),
     m_event_log(new EventLog()),
     m_mutex(new QMutex()),
-    m_bar(new QProgressBar())
+    m_bar(new QProgressBar()),
+    settings(new SettingsDialog(&m_main_window))
 {
     Logger::getInstance()->debug("Engine::Kernel::Kernel()");
 
@@ -69,117 +70,12 @@ Engine::Kernel::Kernel() :
     path += "/.openlmi";
     if (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0 && errno != EEXIST) {
         Logger::getInstance()->error("Cannot create ~/.openlmi dir.\nError: " + std::string(strerror(errno)));
-    }    
-    QPushButton *button = m_main_window.getToolbar()->findChild<QPushButton*>("refresh_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(refresh())
-        );
-    QToolButton *power_button = m_main_window.getToolbar()->findChild<QToolButton*>("power_button");
-    connect(
-        power_button,
-        SIGNAL(triggered(QAction*)),
-        this,
-        SLOT(setPowerState(QAction*)));
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("edit_button");
-    connect(
-        button,
-        SIGNAL(toggled(bool)),
-        this,
-        SLOT(setEditState(bool)));
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("delete_passwd_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(deletePasswd()));
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("show_code_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(showCodeDialog()));
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("filter_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(showFilter()));
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("save_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(saveScripts()));
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("save_as_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(saveAsScripts()));
-    connect(
-        m_main_window.getPcTreeWidget(),
-        SIGNAL(removed(std::string)),
-        this,
-        SLOT(deletePasswd(std::string)));
-    connect(
-        m_main_window.getProviderWidget()->getTabWidget(),
-        SIGNAL(currentChanged(int)),
-        this,
-        SLOT(setActivePlugin(int)));
-    connect(
-        m_main_window.getPcTreeWidget()->getTree(),
-        SIGNAL(itemSelectionChanged()),
-        this,
-        SLOT(enableSpecialButtons()));
-    qRegisterMetaType<PowerStateValues::POWER_VALUES>("PowerStateValues::POWER_VALUES");
-    connect(
-        this,
-        SIGNAL(doneConnecting(CIMClient*,PowerStateValues::POWER_VALUES)),
-        this,
-        SLOT(handleConnecting(CIMClient*,PowerStateValues::POWER_VALUES)));
-    connect(
-        this,
-        SIGNAL(error(std::string)),
-        this,
-        SLOT(handleError(std::string)));
-    connect(
-        this,
-        SIGNAL(authenticate(PowerStateValues::POWER_VALUES)),
-        this,
-        SLOT(handleAuthentication(PowerStateValues::POWER_VALUES)));
-    connect(
-        m_main_window.getResetPasswdStorageAction(),
-        SIGNAL(triggered()),
-        this,
-        SLOT(resetKeyring()));
-    connect(
-        m_event_log,
-        SIGNAL(silentConnection(std::string)),
-        this,
-        SLOT(emitSilentConnection(std::string)));
-    QAction *action = m_main_window.findChild<QAction*>("action_start_LMIShell");
-    connect(
-        action,
-        SIGNAL(triggered()),
-        this,
-        SLOT(startLMIShell()));
-    action = m_main_window.findChild<QAction*>("action_start_ssh");
-    connect(
-        action,
-        SIGNAL(triggered()),
-        this,
-        SLOT(startSsh()));
-    action = m_main_window.findChild<QAction*>("action_reload_plugins");
-    connect(
-        action,
-        SIGNAL(triggered()),
-        this,
-        SLOT(reloadPlugins()));
+    }
+
+    initConnections();
+
     m_main_window.getStatusBar()->addPermanentWidget(m_bar);
-    m_bar->setMaximumWidth(100);
+    m_bar->setMaximumWidth(150);
     m_bar->hide();
 
     m_main_window.getPcTreeWidget()->setTimeSec(1.5);
@@ -199,6 +95,7 @@ Engine::Kernel::~Kernel()
     delete m_event_log;
     delete m_mutex;
     delete m_bar;
+    delete settings;
 
     disconnect(
         m_main_window.getProviderWidget()->getTabWidget(),
@@ -245,6 +142,125 @@ void Engine::Kernel::createKeyring()
         Logger::getInstance()->error("Cannot create " + std::string(OPENLMI_KEYRING_DEFAULT) + " keyring\nError: " + err[res]);
         exit(EXIT_FAILURE);
     }
+}
+
+void Engine::Kernel::initConnections()
+{
+    Logger::getInstance()->debug("Engine::Kernel::initConnections()");
+
+    QPushButton *button = m_main_window.getToolbar()->findChild<QPushButton*>("refresh_button");
+    connect(
+        button,
+        SIGNAL(clicked()),
+        this,
+        SLOT(refresh()));
+    button = m_main_window.getToolbar()->findChild<QPushButton*>("stop_refresh_button");
+    connect(
+        button,
+        SIGNAL(clicked()),
+        this,
+        SLOT(stopRefresh()));
+    QToolButton *power_button = m_main_window.getToolbar()->findChild<QToolButton*>("power_button");
+    connect(
+        power_button,
+        SIGNAL(triggered(QAction*)),
+        this,
+        SLOT(setPowerState(QAction*)));
+    button = m_main_window.getToolbar()->findChild<QPushButton*>("delete_passwd_button");
+    connect(
+        button,
+        SIGNAL(clicked()),
+        this,
+        SLOT(deletePasswd()));
+    button = m_main_window.getToolbar()->findChild<QPushButton*>("show_code_button");
+    connect(
+        button,
+        SIGNAL(clicked()),
+        this,
+        SLOT(showCodeDialog()));
+    button = m_main_window.getToolbar()->findChild<QPushButton*>("filter_button");
+    connect(
+        button,
+        SIGNAL(clicked()),
+        this,
+        SLOT(showFilter()));
+    button = m_main_window.getToolbar()->findChild<QPushButton*>("save_button");
+    connect(
+        button,
+        SIGNAL(clicked()),
+        this,
+        SLOT(saveScripts()));
+    button = m_main_window.getToolbar()->findChild<QPushButton*>("save_as_button");
+    connect(
+        button,
+        SIGNAL(clicked()),
+        this,
+        SLOT(saveAsScripts()));
+    connect(
+        m_main_window.getPcTreeWidget(),
+        SIGNAL(removed(std::string)),
+        this,
+        SLOT(deletePasswd(std::string)));
+    connect(
+        m_main_window.getProviderWidget()->getTabWidget(),
+        SIGNAL(currentChanged(int)),
+        this,
+        SLOT(setActivePlugin(int)));
+    connect(
+        m_main_window.getPcTreeWidget()->getTree(),
+        SIGNAL(itemSelectionChanged()),
+        this,
+        SLOT(selectionChanged()));
+    qRegisterMetaType<PowerStateValues::POWER_VALUES>("PowerStateValues::POWER_VALUES");
+    connect(
+        this,
+        SIGNAL(doneConnecting(CIMClient*,PowerStateValues::POWER_VALUES)),
+        this,
+        SLOT(handleConnecting(CIMClient*,PowerStateValues::POWER_VALUES)));
+    connect(
+        this,
+        SIGNAL(error(std::string)),
+        this,
+        SLOT(handleError(std::string)));
+    connect(
+        this,
+        SIGNAL(authenticate(PowerStateValues::POWER_VALUES)),
+        this,
+        SLOT(handleAuthentication(PowerStateValues::POWER_VALUES)));
+    connect(
+        m_main_window.getResetPasswdStorageAction(),
+        SIGNAL(triggered()),
+        this,
+        SLOT(resetKeyring()));
+    connect(
+        m_event_log,
+        SIGNAL(silentConnection(std::string)),
+        this,
+        SLOT(emitSilentConnection(std::string)));
+    QAction *action = m_main_window.findChild<QAction*>("action_start_LMIShell");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(startLMIShell()));
+    action = m_main_window.findChild<QAction*>("action_start_ssh");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(startSsh()));
+    action = m_main_window.findChild<QAction*>("action_reload_plugins");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(reloadPlugins()));
+    action = m_main_window.findChild<QAction*>("action_options");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(showSettings()));
 }
 
 void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
@@ -418,8 +434,8 @@ void Engine::Kernel::wakeOnLan()
 void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
 {    
     Logger::getInstance()->debug("Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)");
-    QTreeWidgetItem* item = m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
-    std::string ip = item->text(0).toStdString();
+    TreeWidgetItem *item = (TreeWidgetItem*) m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
+    std::string ip = item->getId();
     Logger::getInstance()->info("Connecting to " + ip);
 
     switch (getSilentConnection(ip, false)) {

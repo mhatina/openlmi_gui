@@ -116,7 +116,7 @@
          <bool>false</bool>
         </property>
         <property name="selectionMode">
-         <enum>QAbstractItemView::SingleSelection</enum>
+         <enum>QAbstractItemView::ContiguousSelection</enum>
         </property>
         <property name="selectionBehavior">
          <enum>QAbstractItemView::SelectRows</enum>
@@ -124,10 +124,16 @@
         <property name="indentation">
          <number>20</number>
         </property>
+        <property name="uniformRowHeights">
+         <bool>true</bool>
+        </property>
         <property name="sortingEnabled">
          <bool>true</bool>
         </property>
         <property name="allColumnsShowFocus">
+         <bool>true</bool>
+        </property>
+        <property name="wordWrap">
          <bool>true</bool>
         </property>
         <property name="headerHidden">
@@ -140,7 +146,7 @@
          <bool>false</bool>
         </attribute>
         <attribute name="headerDefaultSectionSize">
-         <number>250</number>
+         <number>270</number>
         </attribute>
         <attribute name="headerMinimumSectionSize">
          <number>20</number>

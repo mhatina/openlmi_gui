@@ -90,7 +90,14 @@
     <addaction name="action_show_log"/>
     <addaction name="action_exit"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="action_options"/>
+   </widget>
    <addaction name="menu_file"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QStatusBar" name="status_bar"/>
   <action name="action_exit">
@@ -130,6 +137,14 @@
   <action name="action_reload_plugins">
    <property name="text">
     <string>Reload plugins</string>
+   </property>
+  </action>
+  <action name="action_options">
+   <property name="text">
+    <string>Options...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
    </property>
   </action>
  </widget>

@@ -23,6 +23,7 @@
 #include "logger.h"
 #include "widgets/providerwidget.h"
 
+#include <boost/thread.hpp>
 #include <iostream>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -59,6 +60,7 @@ protected:
     bool m_active; /**< @brief whether provider is active and is being displayed */
     bool m_changes_enabled; /**< @brief whether any changes are enabled */
     bool m_refreshed; /**< @brief represent refresh state of provider */    
+    boost::thread m_refresh_thread;
     CIMClient *m_client; /**< @brief see CIMClient */
     QMutex *m_mutex; /**< @brief Qt mutex */
     std::string m_system_id;
@@ -111,6 +113,11 @@ public:
      * @return refresh state
      */
     bool isRefreshed();    
+    /**
+     * @brief Method for displaying filter
+     * @param show - if true filter is displayed
+     */
+    bool showFilter(bool show);
     std::string getSystemId();
     /**
      * @brief Virtual method for getting LMIShell code of all instructions
@@ -123,6 +130,7 @@ public:
      */
     virtual std::string getLabel() = 0;
     virtual std::string getRefreshInfo() = 0;
+    virtual void clear() = 0;
     /**
      * @brief Display all data
      * @param data
@@ -138,12 +146,7 @@ public:
      * @param state
      */
     void setPluginEnabled(bool state);
-    void setSystemId(std::string system_id);
-    /**
-     * @brief Method for displaying filter
-     * @param show - if true filter is displayed
-     */
-    void showFilter(bool show);
+    void setSystemId(std::string system_id);    
     /**
      * @brief Apply all changes
      *
@@ -180,6 +183,7 @@ public:
      * @param refreshed -- refresh state
      */
     void setRefreshed(bool refreshed);
+    void stopRefresh();
 
 protected slots:
     /**

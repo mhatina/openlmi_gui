@@ -70,3 +70,12 @@ void TreeWidgetItem::setMac(const std::string &mac)
 {
     m_mac = mac;
 }
+std::string TreeWidgetItem::getId() const
+{
+    return m_id;
+}
+
+void TreeWidgetItem::setId(const std::string &id)
+{
+    m_id = id;
+}

@@ -33,8 +33,9 @@
 Logger* Logger::m_instance = NULL;
 QMutex Logger::m_mutex;
 
-Logger::Logger()
-{
+Logger::Logger() :
+    m_show_debug_message(DEBUGGING)
+{    
     setLogPath(DEFAULT_LOG_PATH);
     connect(
         this,
@@ -95,7 +96,7 @@ bool Logger::info(std::string message, bool show_message)
 
 bool Logger::debug(std::string message, bool show_message)
 {
-    if (DEBUGGING) {
+    if (m_show_debug_message) {
         return log(
                 message,
                 DEBUG,
@@ -141,6 +142,11 @@ bool Logger::critical(std::string message, bool show_message)
                CRITICAL,
                false
                );
+}
+
+void Logger::setShowDebug(bool value)
+{
+    m_show_debug_message = value;
 }
 
 // private

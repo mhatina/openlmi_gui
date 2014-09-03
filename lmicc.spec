@@ -2,7 +2,7 @@
 
 Name:           lmicc
 Version:        0.0.1
-Release:        4%{?dist}
+Release:        3%{?dist}
 Summary:        GUI for OpenLMI
 License:        GPLv2.1+, LGPLv2.1+
 URL:            https://github.com/mhatina/openlmi_gui 
@@ -126,12 +126,9 @@ export QA_SKIP_BUILD_ROOT="true"
 %{_libdir}/%{lib_path}/liblmiccsoftware*
 
 %changelog
-* Mon Aug 25 2014 Martin Hatina <mhatina@redhat.com> - 0.0.1-4
--
+* Tue Aug 26 2014 Martin Hatina <mhatina@redhat.com> - 0.0.1-3
+- plugin path related bug fix
 
-* Mon Aug 25 2014 Martin Hatina <mhatina@redhat.com> - 0.0.1-3
--
-
-* Mon Aug 25 2014 mhatina@redhat.com - 0.0.1-2
+* Mon Aug 25 2014 Martin Hatina <mhatina@redhat.com> - 0.0.1-2
 - bug fixes, added network tab
 

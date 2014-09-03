@@ -23,6 +23,7 @@
 #include "lmiwbem_client.h"
 #include "mainwindow.h"
 #include "plugin.h"
+#include "settingsdialog.h"
 
 #include <map>
 #include <QApplication>
@@ -74,12 +75,14 @@ private:
     plugin_map m_loaded_plugins;
     QMutex *m_mutex;
     QProgressBar *m_bar;
+    SettingsDialog *settings;
     ShowTextDialog m_code_dialog;
     std::string m_save_script_path;
     std::vector<QPluginLoader*> m_loaders;
 
     int getIndexOfTab(std::string name);
     void createKeyring();
+    void initConnections();
     /**
      * @brief setButtonsEnabled -- enable/disable buttons
      * @param state
@@ -117,8 +120,7 @@ private slots:
     int getSilentConnection(std::string ip, bool silent = true);
     void deletePasswd();
     void deletePasswd(std::string id);
-    void emitSilentConnection(std::string ip);
-    void enableSpecialButtons();
+    void emitSilentConnection(std::string ip);    
     void enableSpecialButtons(bool state);
     void handleAuthentication(PowerStateValues::POWER_VALUES state);
     void handleConnecting(CIMClient *client, PowerStateValues::POWER_VALUES state);
@@ -130,15 +132,17 @@ private slots:
     void resetKeyring();
     void saveAsScripts();
     void saveScripts();
+    void selectionChanged();
     void setActivePlugin(int index);
-    void setEditState(bool state);
     void setPluginNoChanges(IPlugin *plugin);
     void setPluginUnsavedChanges(IPlugin *plugin);
     void setPowerState(QAction *action);
     void showCodeDialog();
     void showFilter();
+    void showSettings();
     void startLMIShell();
     void startSsh();
+    void stopRefresh();
 
 signals:
     /**

@@ -69,6 +69,7 @@ signals:
     void showDialog(std::string title, std::string text);
 
 private:
+    bool m_show_debug_message;
     std::ofstream m_log_file; 
     std::string m_log_path;
     static QMutex m_mutex;
@@ -162,6 +163,8 @@ public:
      * @return true if successful; otherwise false
      */
     bool critical(std::string message, bool show_message = true);
+
+    void setShowDebug(bool value);
 
 private slots:
     void displayDialog(std::string title, std::string text);

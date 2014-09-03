@@ -40,3 +40,8 @@ QTabWidget* ProviderWidget::getTabWidget()
     Logger::getInstance()->debug("ProviderWidget::getTabWidget()");
     return m_ui->tab_widget;
 }
+
+void ProviderWidget::setTitle(std::string title)
+{
+    m_ui->providers->setTitle(title.c_str());
+}

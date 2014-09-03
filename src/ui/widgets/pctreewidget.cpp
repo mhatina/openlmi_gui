@@ -24,6 +24,7 @@
 
 #include <boost/thread.hpp>
 #include <list>
+#include <QMenu>
 #include <QRegExp>
 #include <QTreeWidgetItem>
 #include <QXmlStreamReader>
@@ -51,7 +52,8 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
     Logger::getInstance()->debug("PCTreeWidget::PCTreeWidget(QWidget *parent)");
     m_ui->setupUi(this);
     std::string path = "/home/mhatina/.openlmi/openlmi_computers.xml";    
-    m_ui->tree->header()->resizeSection(0, 260);
+    m_ui->tree->header()->resizeSection(0, 278);
+    initContextMenu();
 
     connect(
         m_ui->tree,
@@ -68,11 +70,13 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
         &m_timer,
         SIGNAL(timeout()),
         this,
-        SLOT(showSystemDetails()));
+        SLOT(showSystemDetails()));    
+
+    m_ui->tree->setSelectionMode(
+                    QAbstractItemView::ContiguousSelection);
 
     topLevelNode("Added")->setExpanded(true);
     loadPcs(path);
-    setEditState(false);
 
     m_dialog.setWindowFlags(Qt::Popup);
 }
@@ -136,41 +140,11 @@ void PCTreeWidget::connectButtons(QToolBar *toolbar)
         );
 }
 
-void PCTreeWidget::setEditState(bool state)
-{
-    Logger::getInstance()->debug("PCTreeWidget::setEditState(bool state)");
-    Qt::ItemFlags flags_editable =
-              Qt::ItemIsSelectable
-            | Qt::ItemIsDragEnabled
-            | Qt::ItemIsEnabled
-            | Qt::ItemIsEditable;
-
-
-    Qt::ItemFlags flags_non_editable =
-              Qt::ItemIsSelectable
-            | Qt::ItemIsEnabled;
-
-    m_ui->tree->setSelectionMode(
-                    state ? QAbstractItemView::ContiguousSelection : QAbstractItemView::SingleSelection);
-
-    m_data_of_item_changed = false;
-    QTreeWidgetItem *parent = topLevelNode("Added");
-    for (int i = 0; i < parent->childCount(); i++)
-        parent->child(i)->setFlags(state ? flags_editable : flags_non_editable);
-    if (m_ui->tree->topLevelItemCount() > 1) {
-        parent = topLevelNode("Discovered");
-        for (int i = 0; i < parent->childCount(); i++)
-            parent->child(i)->setFlags(state ? flags_editable : flags_non_editable);
-    }
-    m_data_of_item_changed = true;
-}
-
 void PCTreeWidget::setComputerIcon(QIcon icon)
 {
     Logger::getInstance()->debug("PCTreeWidget::setComputerIcon(QIcon icon)");
     TreeWidgetItem *item = (TreeWidgetItem*) m_ui->tree->selectedItems()[0];
     m_data_of_item_changed = false;
-//    item->setToolTip(0, "");
     item->setIcon(0, icon);
     m_data_of_item_changed = true;
 }
@@ -192,7 +166,7 @@ bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text)
 {
     Logger::getInstance()->debug("PCTreeWidget::parentContainsItem(TreeWidgetItem *parent, std::string text)");
     for (int i = 0; i < parent->childCount(); i++)
-        if (parent->child(i)->text(0).toStdString() == text)
+        if (((TreeWidgetItem*) parent->child(i))->getId() == text)
             return true;
 
     return false;
@@ -213,13 +187,13 @@ TreeWidgetItem* PCTreeWidget::addPcToTree(std::string parent, std::string text)
                 | Qt::ItemIsEditable;
         m_data_of_item_changed = false;
         child->setFlags(flags);
-//        child->setToolTip(0, "Unknown");
-        child->setIcon(0, QIcon(":/computer.png"));
-        m_data_of_item_changed = true;
+        child->setIcon(0, QIcon(":/computer.png"));        
 
         if (text != "") {
             child->setText(0, text.c_str());
+            child->setId(text);
         }
+        m_data_of_item_changed = true;
 
         return child;
     }
@@ -278,6 +252,11 @@ void PCTreeWidget::loadPcs(std::string filename)
                     item->setIpv4(attr.value("ipv4").toString().toStdString());
                     item->setIpv6(attr.value("ipv6").toString().toStdString());
                     item->setName(attr.value("domain").toString().toStdString());
+                    if (!item->getName().empty()
+                            && (item->getName() != item->getIpv4() && item->getName() != item->getIpv6()))
+                        item->setText(0, std::string(item->getName() + " (" +
+                                                     (item->getIpv4().empty() ? item->getIpv6() : item->getIpv4())
+                                                    + ")").c_str());
                     item->setMac(attr.value("mac").toString().toStdString());
                 }
             }
@@ -310,7 +289,7 @@ void PCTreeWidget::saveAllPcs(std::string filename)
     out.writeStartElement("computers");
     for (int i = 0; i < parent->childCount(); i++) {
         out.writeStartElement("computer");
-        out.writeAttribute("id", parent->child(i)->text(0));
+        out.writeAttribute("id", ((TreeWidgetItem*) parent->child(i))->getId().c_str());
         out.writeAttribute("ipv4", ((TreeWidgetItem*) parent->child(i))->getIpv4().c_str());
         out.writeAttribute("ipv6", ((TreeWidgetItem*) parent->child(i))->getIpv6().c_str());
         out.writeAttribute("domain", ((TreeWidgetItem*) parent->child(i))->getName().c_str());
@@ -344,13 +323,13 @@ void PCTreeWidget::onAddButtonClicked()
 void PCTreeWidget::onRemoveButtonClicked()
 {
     Logger::getInstance()->debug("PCTreeWidget::onRemoveButtonClicked()");
-    QList<QTreeWidgetItem*> tmp = m_ui->tree->selectedItems();
+    QList<QTreeWidgetItem*> list = m_ui->tree->selectedItems();
 
-    if (tmp.empty())
+    if (list.empty())
         return;
 
-    for (QList<QTreeWidgetItem*>::Iterator it = tmp.begin(); it != tmp.end(); it++) {
-        emit removed((*it)->text(0).toStdString());
+    for (QList<QTreeWidgetItem*>::Iterator it = list.begin(); it != list.end(); it++) {
+        emit removed(((TreeWidgetItem*) (*it))->getId());
         int pos = (*it)->parent()->indexOfChild(*it);
         (*it)->parent()->takeChild(pos);
     }
@@ -424,6 +403,7 @@ void PCTreeWidget::validate(QTreeWidgetItem* item ,int column)
             || item->text(0) == "Discovered")
         return;    
     TreeWidgetItem *parent = (TreeWidgetItem*) item->parent();
+    TreeWidgetItem *tree_item = (TreeWidgetItem*) item;
     if (parent == NULL)
         return;
     m_ui->tree->sortByColumn(0, Qt::AscendingOrder);
@@ -433,29 +413,32 @@ void PCTreeWidget::validate(QTreeWidgetItem* item ,int column)
         return;
     }
 
-    std::string str_ip = item->text(column).toStdString();
+    if (tree_item->getId().empty())
+        tree_item->setId(item->text(0).toStdString());
+
+    std::string str_ip = tree_item->getId();
     char ip[MAX_LENGTH];
     strncpy(ip, str_ip.c_str(), MAX_LENGTH - 1);
     bool result = false;
-    if (QRegExp(PATTERN_TYPE_FQDN).exactMatch(item->text(column))) {
-        ((TreeWidgetItem*) item)->setName(item->text(0).toStdString());
+    if (QRegExp(PATTERN_TYPE_FQDN).exactMatch(tree_item->getId().c_str())) {
+        tree_item->setName(tree_item->getId());
         result = true;
         std::string ipv4, ipv6;
         getIp(str_ip, ipv4, ipv6);
         if (!ipv4.empty())
-            ((TreeWidgetItem*) item)->setIpv4(ipv4);
+            tree_item->setIpv4(ipv4);
 
         if (!ipv6.empty())
-            ((TreeWidgetItem*) item)->setIpv6(ipv6);
+            tree_item->setIpv6(ipv6);
     } else {
         int ai_family;
         std::string ipv4, ipv6;
         std::string hostname = getHostName(str_ip, ai_family);
 
         if (ai_family == AF_INET) {
-            ((TreeWidgetItem*) item)->setIpv4(ipv4 = item->text(0).toStdString());
+            tree_item->setIpv4(ipv4 = tree_item->getId());
         } else if (ai_family == AF_INET6) {
-            ((TreeWidgetItem*) item)->setIpv6(ipv6 = item->text(0).toStdString());
+            tree_item->setIpv6(ipv6 = tree_item->getId());
         }
 
         if ((result = !hostname.empty())) {
@@ -473,6 +456,15 @@ void PCTreeWidget::validate(QTreeWidgetItem* item ,int column)
 
     if (result) {
         item->setBackground(0, QBrush(QColor("white")));
+
+        m_data_of_item_changed = false;
+        Qt::ItemFlags flags =
+                  Qt::ItemIsSelectable
+                | Qt::ItemIsDragEnabled
+                | Qt::ItemIsEnabled;
+
+        item->setFlags(flags);
+        m_data_of_item_changed = true;
     } else {
         item->setSelected(false);
         item->setBackground(0, QBrush(QColor("red")));
@@ -558,4 +550,18 @@ void PCTreeWidget::getIp(std::string &name, std::string &ipv4, std::string &ipv6
     }
 
     free(dst);
+}
+
+void PCTreeWidget::initContextMenu()
+{
+    QMenu *context_menu = new QMenu(this);
+    QAction* delete_system = new QAction("Delete system", context_menu);
+    connect(
+        delete_system,
+        SIGNAL(triggered()),
+        this,
+        SLOT(onRemoveButtonClicked()));
+
+    m_ui->tree->setContextMenuPolicy(Qt::ActionsContextMenu);
+    m_ui->tree->addAction(delete_system);
 }

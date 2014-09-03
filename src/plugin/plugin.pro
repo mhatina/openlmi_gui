@@ -1,9 +1,9 @@
 TEMPLATE = subdirs
 SUBDIRS += \
-    accountProvider/accountProvider.pro \
-    hardwareProvider/hardwareProvider.pro \
-    networkProvider/networkProvider.pro \
-    serviceProvider/serviceProvider.pro \
-    softwareProvider/softwareProvider.pro
+    account/account.pro \
+    hardware/hardware.pro \
+    network/network.pro \
+    service/service.pro \
+    software/software.pro
 
 CONFIG += ordered

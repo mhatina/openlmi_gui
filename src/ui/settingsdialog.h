@@ -15,38 +15,28 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef TREEWIDGETITEM_H
-#define TREEWIDGETITEM_H
+#ifndef SETTINGSDIALOG_H
+#define SETTINGSDIALOG_H
 
-#include <QTreeWidgetItem>
+#include <QDialog>
 
-class TreeWidgetItem : public QTreeWidgetItem
+namespace Ui {
+class SettingsDialog;
+}
+
+class SettingsDialog : public QDialog
 {
-private:
-    std::string m_id;
-    std::string m_ipv4;
-    std::string m_ipv6;
-    std::string m_name;
-    std::string m_mac;
+    Q_OBJECT
 
 public:
-    explicit TreeWidgetItem(QTreeWidgetItem *parent = 0);
-    TreeWidgetItem(QTreeWidget *view);
+    explicit SettingsDialog(QWidget *parent = 0);
+    ~SettingsDialog();
 
-    std::string getIpv4() const;
-    void setIpv4(const std::string &value);
+    void load();
+    void save();
 
-    std::string getIpv6() const;
-    void setIpv6(const std::string &value);
-
-    std::string getName() const;
-    void setName(const std::string &value);
-
-    std::string getMac() const;
-    void setMac(const std::string &mac);
-
-    std::string getId() const;
-    void setId(const std::string &id);
+private:
+    Ui::SettingsDialog *m_ui;
 };
 
-#endif // TREEWIDGETITEM_H
+#endif // SETTINGSDIALOG_H

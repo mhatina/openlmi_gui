@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "settingsdialog.h"
 
 #include <gnome-keyring-1/gnome-keyring.h>
 #include <QProcess>
@@ -84,7 +85,8 @@ int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
 void Engine::Kernel::deletePasswd()
 {
     Logger::getInstance()->debug("Engine::Kernel::deletePasswd()");
-    std::string id = m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0]->text(0).toStdString();
+    TreeWidgetItem *item = (TreeWidgetItem*) m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
+    std::string id = item->getId();
     deletePasswd(id);
 }
 
@@ -98,7 +100,7 @@ void Engine::Kernel::deletePasswd(std::string id)
                 );
 
     if (res != GNOME_KEYRING_RESULT_OK)
-        Logger::getInstance()->error("Cannot delete password");
+        Logger::getInstance()->info("Cannot delete password");
     else
         Logger::getInstance()->info("Password deleted");
 }
@@ -107,12 +109,6 @@ void Engine::Kernel::emitSilentConnection(std::string ip)
 {
     m_event_log->setConnectionStorage(&m_connections);
     boost::thread(boost::bind(&Engine::Kernel::getSilentConnection, this, ip, true));
-}
-
-void Engine::Kernel::enableSpecialButtons()
-{
-    Logger::getInstance()->debug("Engine::Kernel::enableSpecialButtons()");
-    enableSpecialButtons(true);
 }
 
 void Engine::Kernel::enableSpecialButtons(bool state)
@@ -130,9 +126,9 @@ void Engine::Kernel::enableSpecialButtons(bool state)
 void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
 {
     Logger::getInstance()->debug("Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)");
-    QTreeWidgetItem* item = m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
-    std::string ip = item->text(0).toStdString();
-    AuthenticationDialog dialog(ip);
+    TreeWidgetItem* item = (TreeWidgetItem*) m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
+    std::string ip = item->getId();
+    AuthenticationDialog dialog(item->text(0).toStdString());
     if (dialog.exec()) {
         std::string username = dialog.getUsername();
         std::string passwd = dialog.getPasswd();
@@ -176,13 +172,13 @@ void Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER
 
         if (plugin != NULL) {
             // quick enough, maybe later move to another thread
-            setMac(client);
+            setMac(client);                        
 
-            plugin->refresh(client);
-            plugin->setSystemId(client->hostname());
-            std::string title = WINDOW_TITLE;
-            title += " @ " + client->hostname();
-            m_main_window.setWindowTitle(title.c_str());
+//            std::string id = client->hostname();
+//            plugin->setSystemId(id);
+            plugin->refresh(client);            
+            QPushButton *button = m_main_window.getToolbar()->findChild<QPushButton*>("stop_refresh_button");
+            button->setEnabled(true);
         }
     } else {
         setPowerState(client, state);
@@ -214,6 +210,7 @@ void Engine::Kernel::handleProgressState(int state)
     if (state == 100) {
         tab->setEnabled(true);
         plugin->setPluginEnabled(true);
+        plugin->setRefreshed(true);
         setButtonsEnabled(true);
 //        m_main_window.getStatusBar()->clearMessage();
         m_bar->hide();
@@ -236,6 +233,9 @@ void Engine::Kernel::refresh()
         return;
 
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
+    if (tab->currentIndex() == 0)
+        // TODO fill tab
+        return;
     IPlugin *plugin = (IPlugin*) tab->currentWidget();
 
     if (plugin == NULL)
@@ -243,7 +243,8 @@ void Engine::Kernel::refresh()
 
     tab->setEnabled(false);
     setButtonsEnabled(false);
-    handleProgressState(0);
+    handleProgressState(0);    
+
     boost::thread(boost::bind(&Engine::Kernel::getConnection, this, PowerStateValues::NoPowerSetting));
 }
 
@@ -302,8 +303,9 @@ void Engine::Kernel::saveScripts()
         QFileDialog dialog;
         dialog.setFileMode(QFileDialog::Directory);
         m_save_script_path = dialog.getExistingDirectory().toStdString();
-        m_save_script_path += "/" + m_main_window.getPcTreeWidget()->getTree()
-                ->selectedItems()[0]->text(0).toStdString();
+        TreeWidgetItem *item = (TreeWidgetItem*) m_main_window.getPcTreeWidget()->getTree()
+                ->selectedItems()[0];
+        m_save_script_path += "/" + item->getName();
     }
 
     plugin_map::iterator it;
@@ -311,45 +313,64 @@ void Engine::Kernel::saveScripts()
         it->second->saveScript(m_save_script_path);
 }
 
+void Engine::Kernel::selectionChanged()
+{
+    Logger::getInstance()->debug("Engine::Kernel::selectionChanged()");
+    enableSpecialButtons(true);
+
+    QList<QTreeWidgetItem*> list = m_main_window.getPcTreeWidget()->getTree()->selectedItems();
+    if (list.empty())
+        return;
+
+    QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
+    tab->setCurrentIndex(0);
+
+    std::string id = ((TreeWidgetItem*) list[0])->getId();
+    std::string title = WINDOW_TITLE;
+    title += " @ " + id;
+    m_main_window.setWindowTitle(title.c_str());
+
+    title = PROVIDER_BOX_TITLE;
+    title += id;
+    m_main_window.getProviderWidget()->setTitle(title);
+
+    int cnt = tab->count();
+    for (int i = 1; i < cnt; i++) {
+        IPlugin *plugin = (IPlugin*) tab->widget(i);
+        if (plugin == NULL)
+            return;
+
+        plugin->clear();
+        plugin->setRefreshed(false);
+//        plugin->setPluginEnabled(false);
+    }
+}
+
 void Engine::Kernel::setActivePlugin(int index)
 {
     Logger::getInstance()->debug("Engine::Kernel::setActivePlugin(int index)");
     int i = 0;
-    for (plugin_map::iterator it = m_loaded_plugins.begin(); it != m_loaded_plugins.end(); it++) {
+    for (plugin_map::iterator it = ++m_loaded_plugins.begin(); it != m_loaded_plugins.end(); it++) {
         if (i == index) {
             (*it).second->setActive(true);
             m_code_dialog.setText((*it).second->getInstructionText(), false);
-            setButtonsEnabled((*it).second->isRefreshed(), false);
+            setButtonsEnabled(true, false);
             QPushButton *button = m_main_window.getToolbar()->findChild<QPushButton*>("filter_button");
             if (button != NULL)
-                button->setChecked((*it).second->isFilterShown());
-            std::string title = WINDOW_TITLE;
-            if (!(*it).second->getSystemId().empty())
-                title += " @ " + (*it).second->getSystemId();
-            m_main_window.setWindowTitle(title.c_str());
+                button->setChecked((*it).second->isFilterShown());            
         } else {
-            (*it).second->setActive(false);            
+            (*it).second->setActive(false);
         }
         i++;
     }
-}
 
-void Engine::Kernel::setEditState(bool state)
-{
-    Logger::getInstance()->debug("Engine::Kernel::setEditState(bool state)");
-    PCTreeWidget* tree_widget = m_main_window.getPcTreeWidget();
-    m_refreshEnabled = !state;
-    m_main_window.getProviderWidget()->setEnabled(!state);
-    setButtonsEnabled(!state);
-    bool empty = m_main_window.getPcTreeWidget()->getTree()->selectedItems().empty();
-    ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("delete_passwd_button"))->setEnabled(state & !empty);
-    ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("add_button"))->setEnabled(state);
-    ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("remove_button"))->setEnabled(state);
-    ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("discover_button"))->setEnabled(state);
-    ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("edit_button"))->setIcon(
-                QIcon(!state ? ":/changes-prevent.png" : ":/changes-allow.png"));
+    QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
+    IPlugin *plugin = (IPlugin*) tab->currentWidget();
+    if (plugin == NULL || tab->currentIndex() == 0)
+        return;
 
-    tree_widget->setEditState(state);
+    if (!plugin->isRefreshed())
+        refresh();
 }
 
 void Engine::Kernel::setPluginNoChanges(IPlugin *plugin)
@@ -418,23 +439,29 @@ void Engine::Kernel::showFilter()
         return;
     }
 
-    plugin->showFilter(button->isChecked());
+    if (!plugin->showFilter(button->isChecked()))
+        button->setChecked(false);
+}
+
+void Engine::Kernel::showSettings()
+{
+    settings->exec();
 }
 
 void Engine::Kernel::startLMIShell()
 {
     std::string command;
     QList<QTreeWidgetItem*> list = m_main_window.getPcTreeWidget()->getTree()->selectedItems();
-    if (list.empty())
+//    if (list.empty())
         // TODO add to settings
         // TODO certificate
-        command = "/bin/xterm -e \" lmishell";
-    else {
-        TreeWidgetItem *item = (TreeWidgetItem*) list[0];
-        // TODO add to settings
-        command = "/bin/xterm -e \" lmishell"
-            + (!item->getIpv4().empty() ? item->getIpv4() : item->getIpv6()) + "\"";
-    }
+    command = "/bin/xterm -e \" lmishell";
+//    else {
+//        TreeWidgetItem *item = (TreeWidgetItem*) list[0];
+//        // TODO add to settings
+//        command = "/bin/xterm -e \" lmishell"
+//            + (!item->getIpv4().empty() ? item->getIpv4() : item->getIpv6()) + "\"";
+//    }
     QProcess *shell = new QProcess(this);
     shell->startDetached(command.c_str());
 }
@@ -451,4 +478,18 @@ void Engine::Kernel::startSsh()
             + (!item->getIpv4().empty() ? item->getIpv4() : item->getIpv6()) + "\"";
     QProcess *shell = new QProcess(this);
     shell->startDetached(command.c_str());
+}
+
+void Engine::Kernel::stopRefresh()
+{
+    QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
+    IPlugin *plugin = (IPlugin*) tab->currentWidget();
+
+    if (plugin == NULL) {
+        return;
+    }
+
+    plugin->stopRefresh();
+    QPushButton *button = m_main_window.getToolbar()->findChild<QPushButton*>("stop_refresh_button");
+    button->setEnabled(false);
 }

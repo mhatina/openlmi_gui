@@ -20,6 +20,7 @@
 #include "ui_mainwindow.h"
 
 #include <iostream>
+#include <QDesktopWidget>
 #include <QFile>
 #include <QMenu>
 #include <QScrollBar>
@@ -37,6 +38,10 @@ MainWindow::MainWindow(QWidget *parent) :
     Logger::getInstance()->setParent(this);
     Logger::getInstance()->debug("MainWindow::MainWindow(QWidget *parent)");
     m_ui->setupUi(this);
+
+    QRect frect = frameGeometry();
+    frect.moveCenter(QApplication::desktop()->screen()->geometry().center());
+    move(frect.topLeft());
 
     connect(
         m_ui->action_exit,

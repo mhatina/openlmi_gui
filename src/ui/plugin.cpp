@@ -155,6 +155,24 @@ bool Engine::IPlugin::isRefreshed()
     return m_refreshed;
 }
 
+bool Engine::IPlugin::showFilter(bool show)
+{
+    Logger::getInstance()->debug("Engine::IPlugin::showFilter(bool show)");
+    QGroupBox* filter_box = findChild<QGroupBox*>("filter_box");
+    if (filter_box == NULL) {
+        Logger::getInstance()->error("Unable to show/hide filter!");
+        return false;
+    }
+
+    if (show) {
+        filter_box->show();
+    } else {
+        filter_box->hide();
+    }
+
+    return true;
+}
+
 std::string Engine::IPlugin::getSystemId()
 {
     return m_system_id;
@@ -211,11 +229,10 @@ void Engine::IPlugin::refresh(CIMClient *client)
     m_client = client;
 
     emit refreshProgress(0);
-//    cancelChanges();
     m_instructions.clear();
     m_data = new std::vector<void *>();    
 
-    boost::thread(boost::bind(&Engine::IPlugin::getData, this, m_data));
+    m_refresh_thread = boost::thread(boost::bind(&Engine::IPlugin::getData, this, m_data));
 }
 
 void Engine::IPlugin::saveScript(std::string filename)
@@ -287,6 +304,8 @@ void Engine::IPlugin::cancel()
 void Engine::IPlugin::handleDataFetching(std::vector<void *> *data, std::string error_message)
 {
     Logger::getInstance()->debug("Engine::IPlugin::handleDataFetching(std::vector<void *> *data, std::string error_message)");
+    m_refresh_thread.join();
+
     if (data != NULL) {
         setRefreshed(true);
         emit refreshProgress(100);
@@ -334,18 +353,7 @@ void Engine::IPlugin::setSystemId(std::string system_id)
     m_system_id = system_id;
 }
 
-void Engine::IPlugin::showFilter(bool show)
+void Engine::IPlugin::stopRefresh()
 {
-    Logger::getInstance()->debug("Engine::IPlugin::showFilter(bool show)");
-    QGroupBox* filter_box = findChild<QGroupBox*>("filter_box");
-    if (filter_box == NULL) {
-        Logger::getInstance()->error("Unable to show/hide filter!");
-        return;
-    }
-
-    if (show) {
-        filter_box->show();        
-    } else {
-        filter_box->hide();
-    }
+    m_refresh_thread.join();
 }

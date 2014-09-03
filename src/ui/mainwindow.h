@@ -26,6 +26,7 @@
 #include <QMainWindow>
 
 #define WINDOW_TITLE "LMI Command Center"
+#define PROVIDER_BOX_TITLE "System: "
 
 /**
  * @brief Struct representation of push button in toolbar
@@ -40,13 +41,14 @@ typedef struct {
 } button;
 
 const button buttons[] = {
-    {"edit_button", ":/changes-prevent.png", "Edit", "", false, true},
-    {"add_button", ":/add.png", "Add", "", true, false},
-    {"remove_button", ":/remove.png", "Remove", "", true, false},
-    {"discover_button", ":/discover.png", "Discover", "", true, false},
+//    {"edit_button", ":/changes-prevent.png", "Edit", "", false, true},
+    {"add_button", ":/add.png", "Add", "", false, false},
+    {"remove_button", ":/remove.png", "Remove", "", false, false},
+    {"discover_button", ":/discover.png", "Discover", "", false, false},
     {"delete_passwd_button", ":/change-password.png", "Delete \npassword", "", true, false},
     {"", "", "", "", true, false},
     {"refresh_button", ":/refresh.png", "Refresh", "Ctrl+R", true, false},
+    {"stop_refresh_button", "", "Stop refresh", "Ctrl+S", true, false},
     {"cancel_button", ":/cancel.png", "Cancel", "", true, false},
     {"save_button", ":/save.png", "Save", "", true, false},
     {"save_as_button", ":/save-as.png", "Save as...", "", true, false},

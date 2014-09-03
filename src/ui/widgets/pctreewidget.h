@@ -87,6 +87,7 @@ private:
     TreeWidgetItem* findTopLevelNode(std::string item_name);
     void changeSystemsText();
     void getIp(std::string &name, std::string &ipv4, std::string &ipv6);
+    void initContextMenu();
     void loadPcs(std::string filename);
     void saveAllPcs(std::string filename);
 
@@ -107,7 +108,7 @@ signals:
      */
     void removed(std::string id);
 
-public:    
+public:
     /**
      * @brief Constructor
      * @param parent -- parent of widget
@@ -139,7 +140,6 @@ public:
      * @brief Setter
      * @param state -- true if items can be edited, else false
      */
-    void setEditState(bool state);    
     void setTimeSec(int time_sec);    
 };
 

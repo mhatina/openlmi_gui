@@ -43,13 +43,14 @@ isEmpty(LIB_PATH) {
 CONFIG(debug, debug|release) {
     DEFINES     +=      "PLUGIN_PATH=../plugin/libs"
     LIBS        +=      -L../logger -llmicclogger
-} else {
-    DEFINES     +=      "PLUGIN_PATH=$$PREFIX$$LIB_PATH/lmicc"
+} else {    
     target.path =       $$PREFIX/bin
     manual_install {
+        DEFINES +=      "PLUGIN_PATH=$$PREFIX$$LIB_PATH/lmicc"
         LIBS    +=      -L$$PREFIX$$LIB_PATH -llmicclogger
     } else {
-        LIBS    +=      -llmicclogger
+        DEFINES +=      "PLUGIN_PATH=/usr/$$LIB_PATH/lmicc"
+        LIBS    +=      -llmicclogger        
     }
 }
 INSTALLS        +=      target
@@ -74,7 +75,8 @@ SOURCES         +=      main.cpp \
                         detailsdialog.cpp \
                         kernelslots.cpp \
                         treewidgetitem.cpp \
-                        systemdetailsdialog.cpp
+                        systemdetailsdialog.cpp \
+                        settingsdialog.cpp
 
 HEADERS         +=      mainwindow.h \
                         kernel.h \
@@ -94,7 +96,8 @@ HEADERS         +=      mainwindow.h \
                         widgets/labeledlineedit.h \
                         detailsdialog.h \
                         treewidgetitem.h \
-                        systemdetailsdialog.h
+                        systemdetailsdialog.h \
+                        settingsdialog.h
 
 FORMS           +=      mainwindow.ui \
                         widgets/providerwidget.ui \
@@ -103,6 +106,7 @@ FORMS           +=      mainwindow.ui \
                         showtextdialog.ui \
                         widgets/labeledlineedit.ui \
                         detailsdialog.ui \
-                        systemdetailsdialog.ui
+                        systemdetailsdialog.ui \
+                        settingsdialog.ui
 
 
