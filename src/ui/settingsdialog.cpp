@@ -23,8 +23,22 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     m_ui(new Ui::SettingsDialog)
 {
     m_ui->setupUi(this);
+    load();    
 
-    load();
+    connect(
+        m_ui->list,
+        SIGNAL(itemSelectionChanged()),
+        this,
+        SLOT(change()));
+    connect(
+        m_ui->filter,
+        SIGNAL(textChanged(QString)),
+        this,
+        SLOT(updateList(QString)));
+
+    m_settings_items.push_back("General");
+    m_settings_items.push_back("Plugin general");
+    updateList("");
 }
 
 SettingsDialog::~SettingsDialog()
@@ -41,4 +55,29 @@ void SettingsDialog::load()
 void SettingsDialog::save()
 {
 
+}
+
+void SettingsDialog::change()
+{
+    QList<QListWidgetItem*> list = m_ui->list->selectedItems();
+    if (list.empty())
+        return;
+
+    m_ui->settings_box->setTitle(list[0]->text());
+    if (list[0]->text() == "General") {
+
+    } else if (list[0]->text() == "Plugin general") {
+
+    }
+}
+
+void SettingsDialog::updateList(QString text)
+{
+    m_ui->list->clear();
+    for (unsigned int i = 0; i < m_settings_items.size(); i++) {
+        std::string tmp = m_settings_items[i];
+        std::transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
+        if (tmp.find(text.toLower().toStdString()) != std::string::npos)
+            m_ui->list->addItem(m_settings_items[i].c_str());
+    }
 }

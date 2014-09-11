@@ -31,10 +31,7 @@
 const Engine::property serviceProperties[] = {
     {"Name", "Name", false},
     {"Caption", "Caption", false},
-//    {"Enabled default", "EnabledDefault", false},
-//    {"Enabled state", "EnabledState", false},
     {"Operational status", "OperationalStatus", false},
-//    {"Requested state", "RequestedState", false},
     {"Status", "Status", false}
 };
 
@@ -58,68 +55,6 @@ typedef enum {
     DISABLE
 } e_action;
 
-const char* const enabled_default_values[] = {
-    "Enabled",
-    "Disabled",
-    "Not Applicable",
-    "Enabled but Offline",
-    "No Default",
-    "Quiesce"
-};
-
-const char* const enabled_state_values[] = {
-    "Unknown",
-    "Other",
-    "Enabled",
-    "Disabled",
-    "Shutting Down",
-    "Not Applicable",
-    "Enabled but Offline",
-    "In Test",
-    "Deferred",
-    "Quiesce",
-    "Starting"
-};
-
-const char* const operational_status_values[] =  {
-    "Unknown",
-    "Other",
-    "OK",
-    "Degraded",
-    "Stressed",
-    "Predictive Failure",
-    "Error",
-    "Non-Recoverable Error",
-    "Starting",
-    "Stopping",
-    "Stopped",
-    "In Service",
-    "No Contact",
-    "Lost Communication",
-    "Aborted",
-    "Dormant",
-    "Supporting Entity in Error",
-    "Completed",
-    "Power Mode",
-    "Relocating"
-};
-
-const char* const requested_state_values[] = {
-    "Unknown",
-    "",
-    "Enabled",
-    "Disabled",
-    "Shut Down",
-    "No Change",
-    "Offline",
-    "Test",
-    "Deferred",
-    "Quiesce",
-    "Reboot",
-    "Reset",
-    "Not Applicable"
-};
-
 const Qt::ItemFlags item_flags =
         Qt::ItemIsSelectable |
         Qt::ItemIsEnabled;
@@ -140,8 +75,6 @@ private:
     std::vector<Pegasus::CIMInstance> m_service_instances;
     QTableWidget *m_services_table;
     Ui::ServicePlugin *m_ui;    
-
-    std::string valueToStr(Pegasus::CIMProperty property);
 
 public:
     /**

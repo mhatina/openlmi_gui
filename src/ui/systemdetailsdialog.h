@@ -42,6 +42,7 @@ public:
 
 protected:
     void leaveEvent(QEvent *event);
+    void mousePressEvent(QMouseEvent *event);
 
 private:
     Ui::SystemDetailsDialog *m_ui;

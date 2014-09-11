@@ -30,6 +30,7 @@
 class CIMValue {
 
 public:
+    static std::string decode_values(Pegasus::CIMProperty property);
     /**
      * @brief Convert CIMValue
      * @param value -- value to convert

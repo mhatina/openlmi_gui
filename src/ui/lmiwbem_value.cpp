@@ -20,12 +20,19 @@
 #include "cimdatetimeconv.h"
 #include "logger.h"
 
+#include <map>
 #include <sstream>
 #include <ctime>
 #include <Pegasus/Common/Array.h>
 #include <Pegasus/Common/CIMInstance.h>
+#include <Pegasus/Common/CIMProperty.h>
 
 namespace {
+
+bool is_not_digit(char c)
+{
+    return !(c >= '0' && c <= '9');
+}
 
 /**
  * @brief get_pegasus_value_core
@@ -201,6 +208,59 @@ std::string CIMValue::to_std_string(const Pegasus::CIMValue &value)
     }
 }
 
+std::string CIMValue::decode_values(Pegasus::CIMProperty property)
+{
+    std::map<std::string, std::string> decode;
+    Pegasus::Array<Pegasus::String> values;
+    Pegasus::Array<Pegasus::String> value_map;
+    Pegasus::Uint32 ind = property.findQualifier("Values");
+    if (ind == Pegasus::PEG_NOT_FOUND)
+        return "";
+    property.getQualifier(ind).getValue().get(values);
+
+    ind = property.findQualifier("ValueMap");
+    if (ind == Pegasus::PEG_NOT_FOUND)
+        return "";
+    property.getQualifier(ind).getValue().get(value_map);
+
+    for (unsigned int i = 0; i < values.size(); i++) {
+        decode.insert(std::pair<std::string, std::string>(
+                          std::string(value_map[i].getCString()),
+                          std::string(values[i].getCString())));
+    }
+
+    Pegasus::CIMValue cim_value = property.getValue();
+    std::string value = to_std_string(cim_value);
+    if (!cim_value.isArray()) {
+        return decode[value];
+    } else {
+        value.erase(std::remove_if(value.begin(), value.end(), is_not_digit), value.end());
+        std::string tmp = "{";
+
+        char *str = (char*) malloc((value.length() + 1) * sizeof(char));
+        char *token;
+        char delim = ' ';
+
+        strcpy(str, value.c_str());
+
+        for (int i = 0; ; i++) {
+            token = strtok(str, &delim);
+            str = NULL;
+            if (token == NULL)
+                break;
+            else if (i != 0)
+                tmp += ", ";
+
+            tmp += decode[token];
+        }
+        tmp += "}";
+
+        return tmp;
+    }
+
+    return "";
+}
+
 std::string CIMValue::get_property_value(Pegasus::CIMInstance instance,
                                          std::string propertyName, Pegasus::CIMProperty *property)
 {
@@ -212,8 +272,14 @@ std::string CIMValue::get_property_value(Pegasus::CIMInstance instance,
     if (property != NULL) {
         *property = prop;
     }
-    Pegasus::CIMValue value = prop.getValue();
-    return to_std_string(value);
+
+    std::string decoded_value = decode_values(prop);
+    if (decoded_value.empty()) {
+        Pegasus::CIMValue value = prop.getValue();
+        return to_std_string(value);
+    }
+
+    return decoded_value;
 }
 
 #include <sstream>

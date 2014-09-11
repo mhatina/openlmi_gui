@@ -192,7 +192,7 @@ void AccountPlugin::getData(std::vector<void *> *data)
                     Pegasus::CIMName("LMI_Account"),
                     true,       // deep inheritance
                     false,      // local only
-                    false,      // include qualifiers
+                    true,       // include qualifiers
                     false       // include class origin
                     );
 
@@ -220,7 +220,7 @@ void AccountPlugin::getData(std::vector<void *> *data)
                     Pegasus::CIMName("LMI_Group"),
                     true,       // deep inheritance
                     false,      // local only
-                    false,      // include qualifiers
+                    true,       // include qualifiers
                     false       // include class origin
                     );
 

@@ -19,6 +19,7 @@
 #define SETTINGSDIALOG_H
 
 #include <QDialog>
+#include <vector>
 
 namespace Ui {
 class SettingsDialog;
@@ -28,6 +29,10 @@ class SettingsDialog : public QDialog
 {
     Q_OBJECT
 
+private:
+    Ui::SettingsDialog *m_ui;
+    std::vector<std::string> m_settings_items;
+
 public:
     explicit SettingsDialog(QWidget *parent = 0);
     ~SettingsDialog();
@@ -35,8 +40,9 @@ public:
     void load();
     void save();
 
-private:
-    Ui::SettingsDialog *m_ui;
+private slots:
+    void change();
+    void updateList(QString text);
 };
 
 #endif // SETTINGSDIALOG_H

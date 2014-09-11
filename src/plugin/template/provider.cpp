@@ -59,6 +59,11 @@ std::string Plugin::getRefreshInfo()
     return "";
 }
 
+void Plugin::clear()
+{
+
+}
+
 void Plugin::getData(std::vector<void *> *data)
 {    
     try {    

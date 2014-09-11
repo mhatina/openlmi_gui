@@ -103,7 +103,7 @@ void DetailsDialog::setValues(Pegasus::CIMInstance instance, bool disableAll)
     int cnt = instance.getPropertyCount();
     for (int i = 0; i < cnt; i++) {
         std::string object_name = std::string(instance.getProperty(i).getName().getString().getCString());
-        std::string str_value = CIMValue::to_std_string(instance.getProperty(i).getValue());
+        std::string str_value = CIMValue::get_property_value(instance, object_name);
         values[object_name] = str_value;
     }
 

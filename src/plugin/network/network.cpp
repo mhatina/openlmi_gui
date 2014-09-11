@@ -34,16 +34,6 @@ QTableWidgetItem* createItem(std::string text)
     return item;
 }
 
-std::string NetworkPlugin::decodeValues(Pegasus::CIMProperty property)
-{
-    Pegasus::CIMValue value = property.getValue();
-    if (property.getName().equal(Pegasus::CIMName("OperatingStatus"))) {
-        return operating_status_values[atoi(value.toString().getCString())];
-    }
-
-    return "";
-}
-
 NetworkPlugin::NetworkPlugin() :
     IPlugin(),
     m_changes_enabled(false),
@@ -88,57 +78,13 @@ void NetworkPlugin::getData(std::vector<void *> *data)
     // LMI_IPNetworkConnection LMI_LANEndpoint LMI_NetworkRemoteServiceAccessPoint LMI_IPProtocolEndpoint
         // LMI_EthernetPort LMI_EthernetPortStatistics
 
-    // LMI_IPNetworkConnectionCapabilities
-    // LMI_IPNetworkConnectionElementCapabilities
-    // LMI_IPVersionSettingData
-    // LMI_NetworkHostedAccessPoint
-    // LMI_NetworkSystemDevice
-    // LMI_NetworkDeviceSAPImplementation
-    // LMI_BindsToLANEndpoint
-    // LMI_EndpointForIPNetworkConnection
-    // LMI_IPElementSettingData
-    // LMI_IPVersionElementSettingData
-    // LMI_IPAssignmentSettingData
-    // LMI_DHCPSettingData
-    // LMI_OrderedIPAssignmentComponent
-    // LMI_ExtendedStaticIPAssignmentSettingData
-    // LMI_IPConfigurationService
-    // LMI_HostedIPConfigurationService
-    // LMI_IPConfigurationServiceAffectsElement
-    // LMI_NetworkRemoteAccessAvailableToElement
-    // LMI_DNSProtocolEndpoint
-    // LMI_NetworkSAPSAPDependency
-    // LMI_DNSSettingData
-    // LMI_NetworkEnabledLogicalElementCapabilities
-    // LMI_NetworkElementCapabilities
-    // LMI_LAGPort8023ad
-    // LMI_LinkAggregator8023ad
-    // LMI_LinkAggregationBindsTo
-    // LMI_LinkAggregationConcreteIdentity
-    // LMI_NextHopIPRoute
-    // LMI_RouteUsesEndpoint
-    // LMI_IPRouteSettingData
-    // LMI_SwitchPort
-    // LMI_EndpointIdentity
-    // LMI_SwitchService
-    // LMI_SwitchesAmong
-    // LMI_BridgingMasterSettingData
-    // LMI_BridgingSlaveSettingData
-    // LMI_BondingMasterSettingData
-    // LMI_BondingSlaveSettingData
-    // LMI_NetworkInstCreation
-    // LMI_NetworkInstModification
-    // LMI_NetworkInstDeletion
-    // LMI_NetworkJob
-    // LMI_OwningNetworkJobElement
-    // LMI_AffectedNetworkJobElement        
         Pegasus::Array<Pegasus::CIMInstance> network =
                 m_client->enumerateInstances(
                         Pegasus::CIMNamespaceName("root/cimv2"),
                         Pegasus::CIMName("LMI_IPNetworkConnection"),
                         true,       // deep inheritance
                         false,      // local only
-                        false,      // include qualifiers
+                        true,       // include qualifiers
                         false       // include class origin
                     );
 
@@ -150,7 +96,12 @@ void NetworkPlugin::getData(std::vector<void *> *data)
             Pegasus::Array<Pegasus::CIMObject> net_assoc =
                     m_client->associators(
                         Pegasus::CIMNamespaceName("root/cimv2"),
-                        network[i].getPath()
+                        network[i].getPath(),
+                        Pegasus::CIMName(),
+                        Pegasus::CIMName(),
+                        Pegasus::String::EMPTY,
+                        Pegasus::String::EMPTY,
+                        true
                         );
 
             vector->push_back(network[i]);
@@ -210,13 +161,10 @@ void NetworkPlugin::fillTab(std::vector<void *> *data)
                                 createItem(CIMValue::get_property_value((*vector)[j], "Description"))
                                 );
 
-
-                    Pegasus::CIMProperty property;
-                    CIMValue::get_property_value((*vector)[j], "OperatingStatus", &property);
                     m_ui->networks_table->setItem(
                                 network_row_count,
                                 2,
-                                createItem(decodeValues(property))
+                                createItem(CIMValue::get_property_value((*vector)[j], "OperatingStatus"))
                                 );
                 } else if (CIMValue::get_property_value((*vector)[j], "CreationClassName") == "LMI_LANEndpoint") {
                     m_ui->networks_table->setItem(

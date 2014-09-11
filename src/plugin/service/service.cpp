@@ -35,32 +35,6 @@
 #include <sstream>
 #include <vector>
 
-std::string ServicePlugin::valueToStr(Pegasus::CIMProperty property)
-{
-    Pegasus::CIMValue value = property.getValue();
-    if (property.getName().equal(Pegasus::CIMName("EnabledDefault")))
-        return enabled_default_values[atoi(value.toString().getCString())];
-    else if (property.getName().equal(Pegasus::CIMName("EnabledState")))
-        return enabled_state_values[atoi(value.toString().getCString())];
-    else if (property.getName().equal(Pegasus::CIMName("OperationalStatus"))) {
-        Pegasus::Array<Pegasus::Uint16> raw_array;
-        std::stringstream ss;
-        value.get(raw_array);
-        const Pegasus::Uint32 cnt = value.getArraySize();
-        for (Pegasus::Uint32 i = 0; i < cnt; ++i) {
-            const Pegasus::Uint16 &raw_value = raw_array[i];
-            ss << operational_status_values[atoi(CIMValue::to_std_string(raw_value).c_str())];
-            if (i < cnt - 1)
-                ss << ", ";
-        }
-        return ss.str();
-    } else if (property.getName().equal(Pegasus::CIMName("RequestedState"))
-               || property.getName().equal(Pegasus::CIMName("TransitioningToState")))
-        return requested_state_values[atoi(value.toString().getCString())];
-    else
-        return CIMValue::to_std_string(value);
-}
-
 ServicePlugin::ServicePlugin() :
     IPlugin(),
     m_ui(new Ui::ServicePlugin)
@@ -128,7 +102,7 @@ void ServicePlugin::getData(std::vector<void *> *data)
                 Pegasus::CIMName("LMI_Service"),
                 true,       // deep inheritance
                 false,      // local only
-                false,      // include qualifiers
+                true,       // include qualifiers
                 false       // include class origin
                 );
     } catch (Pegasus::Exception &ex)
@@ -176,16 +150,15 @@ void ServicePlugin::fillTab(std::vector<void *> *data)
             int prop_cnt = sizeof(serviceProperties) / sizeof(serviceProperties[0]);
             std::string serv_name;
             for (int j = 0; j < prop_cnt; j++) {
-                Pegasus::Uint32 propIndex = ((Pegasus::CIMInstance *) (*data)[i])->findProperty(Pegasus::CIMName(serviceProperties[j].property));
+                Pegasus::CIMInstance *instance = ((Pegasus::CIMInstance*) (*data)[i]);
+                Pegasus::Uint32 propIndex = instance->findProperty(Pegasus::CIMName(serviceProperties[j].property));
                 if (propIndex == Pegasus::PEG_NOT_FOUND) {
                     Logger::getInstance()->error("property " + std::string(serviceProperties[j].property) + " not found");
                     continue;
                 }
 
-                Pegasus::CIMProperty property = ((Pegasus::CIMInstance *) (*data)[i])->getProperty(propIndex);                
-                std::string str_value;
-
-                str_value = valueToStr(property);
+                Pegasus::CIMProperty property = instance->getProperty(propIndex);
+                std::string str_value = CIMValue::get_property_value(*instance, (std::string) property.getName().getString().getCString());
 
                 if (property.getName().equal(Pegasus::CIMName("Name")))
                     serv_name = str_value;
@@ -270,7 +243,7 @@ void ServicePlugin::showDetails()
     cnt = service.getPropertyCount();
     for (int i = 0; i < cnt; i++) {
         std::string object_name = std::string(service.getProperty(i).getName().getString().getCString());
-        std::string str_value = valueToStr(service.getProperty(i));
+        std::string str_value = CIMValue::get_property_value(service, object_name);
         values[object_name] = str_value;
     }
 

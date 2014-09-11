@@ -29,7 +29,8 @@ LabeledLabel::LabeledLabel(std::string label, std::string text) :
     m_ui->setupUi(this);
     m_ui->label->setText(label.c_str());
     m_ui->text->setText(text.c_str());
-    setObjectName("labeledLabel");
+    m_ui->text->setWordWrap(true);
+    setObjectName("labeledLabel");    
 }
 
 LabeledLabel::~LabeledLabel()

@@ -233,9 +233,6 @@ void Engine::Kernel::refresh()
         return;
 
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
-    if (tab->currentIndex() == 0)
-        // TODO fill tab
-        return;
     IPlugin *plugin = (IPlugin*) tab->currentWidget();
 
     if (plugin == NULL)
@@ -335,7 +332,7 @@ void Engine::Kernel::selectionChanged()
     m_main_window.getProviderWidget()->setTitle(title);
 
     int cnt = tab->count();
-    for (int i = 1; i < cnt; i++) {
+    for (int i = 0; i < cnt; i++) {
         IPlugin *plugin = (IPlugin*) tab->widget(i);
         if (plugin == NULL)
             return;
@@ -344,32 +341,37 @@ void Engine::Kernel::selectionChanged()
         plugin->setRefreshed(false);
 //        plugin->setPluginEnabled(false);
     }
+
+    refresh();
 }
 
 void Engine::Kernel::setActivePlugin(int index)
 {
     Logger::getInstance()->debug("Engine::Kernel::setActivePlugin(int index)");
-    int i = 0;
-    for (plugin_map::iterator it = ++m_loaded_plugins.begin(); it != m_loaded_plugins.end(); it++) {
+    QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
+    IPlugin *plugin;
+
+    int cnt = tab->count();
+    for (int i = 0; i < cnt; i++) {
+        IPlugin *plugin = (IPlugin*) tab->widget(i);
+        if (plugin == NULL)
+            continue;
+
         if (i == index) {
-            (*it).second->setActive(true);
-            m_code_dialog.setText((*it).second->getInstructionText(), false);
+            plugin->setActive(true);
+            m_code_dialog.setText(plugin->getInstructionText(), false);
             setButtonsEnabled(true, false);
             QPushButton *button = m_main_window.getToolbar()->findChild<QPushButton*>("filter_button");
             if (button != NULL)
-                button->setChecked((*it).second->isFilterShown());            
+                button->setChecked(plugin->isFilterShown());
         } else {
-            (*it).second->setActive(false);
+            plugin->setActive(false);
         }
-        i++;
     }
 
-    QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
-    IPlugin *plugin = (IPlugin*) tab->currentWidget();
-    if (plugin == NULL || tab->currentIndex() == 0)
-        return;
-
-    if (!plugin->isRefreshed())
+    tab->setCurrentIndex(index);
+    plugin = (IPlugin*) tab->currentWidget();
+    if (plugin != NULL && !plugin->isRefreshed())
         refresh();
 }
 
@@ -455,7 +457,7 @@ void Engine::Kernel::startLMIShell()
 //    if (list.empty())
         // TODO add to settings
         // TODO certificate
-    command = "/bin/xterm -e \" lmishell";
+    command = "/bin/terminator -e \" lmishell";
 //    else {
 //        TreeWidgetItem *item = (TreeWidgetItem*) list[0];
 //        // TODO add to settings
@@ -474,7 +476,7 @@ void Engine::Kernel::startSsh()
 
     TreeWidgetItem *item = (TreeWidgetItem*) list[0];
     // TODO add to settings
-    std::string command = "/bin/xterm -e \"ssh "
+    std::string command = "/bin/terminator -e \"ssh "
             + (!item->getIpv4().empty() ? item->getIpv4() : item->getIpv6()) + "\"";
     QProcess *shell = new QProcess(this);
     shell->startDetached(command.c_str());
@@ -490,6 +492,7 @@ void Engine::Kernel::stopRefresh()
     }
 
     plugin->stopRefresh();
+    Logger::getInstance()->info(plugin->getLabel() + " has been stopped");
     QPushButton *button = m_main_window.getToolbar()->findChild<QPushButton*>("stop_refresh_button");
     button->setEnabled(false);
 }

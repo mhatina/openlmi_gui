@@ -113,9 +113,11 @@ int Engine::IPlugin::findInstruction(IInstruction::Subject subject, std::string 
 }
 
 Engine::IPlugin::IPlugin() :
+    m_stop_refresh(false),
     m_active(true),
     m_changes_enabled(false),
     m_refreshed(false),
+    m_still_refreshing(false),
     m_client(NULL),
     m_mutex(new QMutex(QMutex::Recursive)),
     m_system_id("")
@@ -231,6 +233,7 @@ void Engine::IPlugin::refresh(CIMClient *client)
     emit refreshProgress(0);
     m_instructions.clear();
     m_data = new std::vector<void *>();    
+    clear();
 
     m_refresh_thread = boost::thread(boost::bind(&Engine::IPlugin::getData, this, m_data));
 }
@@ -304,18 +307,25 @@ void Engine::IPlugin::cancel()
 void Engine::IPlugin::handleDataFetching(std::vector<void *> *data, std::string error_message)
 {
     Logger::getInstance()->debug("Engine::IPlugin::handleDataFetching(std::vector<void *> *data, std::string error_message)");
-    m_refresh_thread.join();
+    if (!m_stop_refresh && !m_still_refreshing)
+        m_refresh_thread.join();
 
-    if (data != NULL) {
+    if (!error_message.empty()) {
+        setRefreshed(false);
+        if (!m_stop_refresh)
+            Logger::getInstance()->error(error_message);
+        emit refreshProgress(1);
+    } else if (data != NULL) {
+        if (m_stop_refresh) {
+            m_stop_refresh = false;
+            return;
+        }
         setRefreshed(true);
-        emit refreshProgress(100);
+        if (!m_still_refreshing)
+            emit refreshProgress(100);
         fillTab(data);
         delete data;
         Logger::getInstance()->info(getLabel() + ": " + getRefreshInfo());
-    } else {
-        setRefreshed(false);
-        Logger::getInstance()->error(error_message);
-        emit refreshProgress(1);
     }
 }
 
@@ -355,5 +365,6 @@ void Engine::IPlugin::setSystemId(std::string system_id)
 
 void Engine::IPlugin::stopRefresh()
 {
-    m_refresh_thread.join();
+    m_stop_refresh = true;
+    handleDataFetching(NULL, "stop_refresh");
 }

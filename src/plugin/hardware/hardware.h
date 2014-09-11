@@ -107,30 +107,6 @@ const char* const values[] = {
     "adx", "smap"
 };
 
-const char* const memory_type_values[] = {
-    "Unknown", "Other", "DRAM",
-    "Synchronous DRAM", "Cache DRAM",
-    "EDO", "EDRAM", "VRAM", "SRAM",
-    "RAM", "ROM", "Flash", "EEPROM",
-    "FEPROM", "EPROM", "CDRAM", "3DRAM",
-    "SDRAM", "SGRAM", "RDRAM", "DDR",
-    "DDR-2", "BRAM", "FB-DIMM", "DDR3",
-    "FBD2", "DDR4"
-};
-
-const char* const access_values[] = {
-    "Unknown", "Readable", "Writeable",
-    "Read/Write Supported", "Write Once"
-};
-
-const char* const form_factor_values[] = {
-    "Unknown", "Other", "SIP", "DIP", "ZIP",
-    "SOJ", "Proprietary", "SIMM", "DIMM",
-    "TSOP", "PGA", "RIMM", "SODIMM", "SRIMM",
-    "SMD", "SSMP", "QFP", "TQFP", "SOIC",
-    "LCC", "PLCC", "BGA", "FPBGA", "LGA"
-};
-
 const char* const class_code_values[] = {
     "Pre 2.0", "Mass Storage", "Network",
     "Display", "Multimedia", "Memory",
@@ -140,27 +116,6 @@ const char* const class_code_values[] = {
     "Intelligent I/O", "Satellite Communication",
     "Encryption/Decryption",
     "Data Acquisition and Signal Processing"
-};
-
-const char* const chemistry_values[] = {
-    "", "Other", "Unknown", "Lead Acid",
-    "Nickel Cadmium", "Nickel Metal Hydride",
-    "Lithium-ion", "Zinc air", "Lithium Polymer"
-};
-
-const char* const connector_gender_values[] = {
-    "Unknown", "", "Male", "Female"
-};
-
-const char* const connector_layout_values[] = {
-    "Unknown", "Other", "RS232", "BNC",
-    "RJ11", "RJ45", "DB9", "Slot",
-    "SCSI High Density", "SCSI Low Density",
-    "Ribbon", "AUI", "Fiber SC", "Fiber ST",
-    "FDDI-MIC", "Fiber-RTMJ", "PCI", "PCI-X",
-    "PCI-E", "PCI-E x1", "PCI-E x2", "PCI-E x4",
-    "PCI-E x8", "PCI-E x16", "PCI-E x32",
-    "PCI-E x64"
 };
 
 namespace Ui {

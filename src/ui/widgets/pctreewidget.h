@@ -76,6 +76,8 @@ private:
     bool m_data_of_item_changed;
     DiscoverWorker *m_worker;
     int m_time_sec;
+    QMenu *m_context_menu;
+    QPoint m_item_pos;
     QTimer m_timer;
     SystemDetailsDialog m_dialog;
     TreeWidgetItem *m_item_to_show;
@@ -93,9 +95,12 @@ private:
 
 private slots:
     void addDiscoveredPcsToTree(std::list<std::string> *pc);
+    void addGroup();    
+    void deleteGroup();
     void onAddButtonClicked();
     void onDiscoverButtonClicked();
-    void onRemoveButtonClicked();
+    void onRemoveButtonClicked();    
+    void showContextMenu(QPoint pos);
     void showSystemDetails();
     void startTime(QTreeWidgetItem *item, int column);
     void validate(QTreeWidgetItem *, int column);

@@ -18,11 +18,15 @@
 #include "systemdetailsdialog.h"
 #include "ui_systemdetailsdialog.h"
 
+#include <QMouseEvent>
+
 SystemDetailsDialog::SystemDetailsDialog(QWidget *parent) :
     QDialog(parent),
     m_ui(new Ui::SystemDetailsDialog)
 {
     m_ui->setupUi(this);
+    setWindowFlags(Qt::Popup);
+    setWindowIcon(QIcon(":/openlmi-logo.png"));
 }
 
 SystemDetailsDialog::~SystemDetailsDialog()
@@ -61,5 +65,13 @@ void SystemDetailsDialog::reset()
 void SystemDetailsDialog::leaveEvent(QEvent *event)
 {
     Q_UNUSED(event)
+    setWindowFlags(Qt::Popup);
     hide();
+}
+
+void SystemDetailsDialog::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::RightButton) {
+        hide();
+    }
 }

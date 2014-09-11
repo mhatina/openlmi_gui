@@ -26,20 +26,6 @@
 
 #include <QtPlugin>
 
-const char* const operating_status_values[] = {
-    "Unknown", // 0
-    "Not Available", // 1
-    "",
-    "Starting", // 3
-    "Stopping", // 4
-    "Stopped", // 5
-    "Aborted", // 6
-    "Dormant", // 7
-    "", "", "", "",
-    "", "", "", "",
-    "In Service" // 16
-};
-
 namespace Ui {
 class NetworkPlugin;
 }
@@ -52,8 +38,6 @@ class NetworkPlugin : public Engine::IPlugin
 private:
     bool m_changes_enabled;
     Ui::NetworkPlugin *m_ui;
-
-    std::string decodeValues(Pegasus::CIMProperty property);
 
 public:
     explicit NetworkPlugin();

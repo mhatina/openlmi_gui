@@ -76,7 +76,8 @@ SOURCES         +=      main.cpp \
                         kernelslots.cpp \
                         treewidgetitem.cpp \
                         systemdetailsdialog.cpp \
-                        settingsdialog.cpp
+                        settingsdialog.cpp \
+    widgets/labeledlabel.cpp
 
 HEADERS         +=      mainwindow.h \
                         kernel.h \
@@ -97,7 +98,8 @@ HEADERS         +=      mainwindow.h \
                         detailsdialog.h \
                         treewidgetitem.h \
                         systemdetailsdialog.h \
-                        settingsdialog.h
+                        settingsdialog.h \
+    widgets/labeledlabel.h
 
 FORMS           +=      mainwindow.ui \
                         widgets/providerwidget.ui \
@@ -107,6 +109,7 @@ FORMS           +=      mainwindow.ui \
                         widgets/labeledlineedit.ui \
                         detailsdialog.ui \
                         systemdetailsdialog.ui \
-                        settingsdialog.ui
+                        settingsdialog.ui \
+    widgets/labeledlabel.ui
 
 

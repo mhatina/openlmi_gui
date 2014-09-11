@@ -53,13 +53,15 @@ class IPlugin : public QWidget
 {
     Q_OBJECT
 
-private:
+private:    
+    bool m_stop_refresh;
     bool isFileEmpty(std::string filename);
 
 protected:
     bool m_active; /**< @brief whether provider is active and is being displayed */
     bool m_changes_enabled; /**< @brief whether any changes are enabled */
     bool m_refreshed; /**< @brief represent refresh state of provider */    
+    bool m_still_refreshing;
     boost::thread m_refresh_thread;
     CIMClient *m_client; /**< @brief see CIMClient */
     QMutex *m_mutex; /**< @brief Qt mutex */

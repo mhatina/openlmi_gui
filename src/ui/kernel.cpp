@@ -78,7 +78,7 @@ Engine::Kernel::Kernel() :
     m_bar->setMaximumWidth(150);
     m_bar->hide();
 
-    m_main_window.getPcTreeWidget()->setTimeSec(1.5);
+    m_main_window.getPcTreeWidget()->setTimeSec(2);
 
     m_code_dialog.setTitle("LMIShell Code");
     createKeyring();        
@@ -276,6 +276,7 @@ void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
     ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("cancel_button"))->setEnabled(state & refreshed);
     ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("save_button"))->setEnabled(state & refreshed);
     ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("save_as_button"))->setEnabled(state & refreshed);
+    ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("stop_refresh_button"))->setEnabled(!state);
     if (refresh_button) {
         enableSpecialButtons(state);
     }    
@@ -436,7 +437,7 @@ void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
     Logger::getInstance()->debug("Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)");
     TreeWidgetItem *item = (TreeWidgetItem*) m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
     std::string ip = item->getId();
-    Logger::getInstance()->info("Connecting to " + ip);
+    Logger::getInstance()->info("Connecting to " + item->text(0).toStdString());
 
     switch (getSilentConnection(ip, false)) {
     case 0:
@@ -474,18 +475,21 @@ void Engine::Kernel::loadPlugin()
                 connect(loaded_plugin, SIGNAL(refreshProgress(int)), this, SLOT(handleProgressState(int)));
                 connect(loaded_plugin, SIGNAL(newInstructionText(std::string)), this, SLOT(handleInstructionText(std::string)));
 
-                m_main_window.getProviderWidget()->getTabWidget()->addTab(loaded_plugin, loaded_plugin->getLabel().c_str());
+                if (loaded_plugin->getLabel() == "Overview")
+                    m_main_window.getProviderWidget()->getTabWidget()->insertTab(0, loaded_plugin, loaded_plugin->getLabel().c_str());
+                else
+                    m_main_window.getProviderWidget()->getTabWidget()->addTab(loaded_plugin, loaded_plugin->getLabel().c_str());
             }
         } else {
             Logger::getInstance()->error(plugin_loader->errorString().toStdString(), false);
         }
     }
+    setActivePlugin(0);
 }
 
 void Engine::Kernel::showMainWindow()
 {
     Logger::getInstance()->debug("Engine::Kernel::showMainWindow()");
-    loadPlugin();
-    setActivePlugin(0);
+    loadPlugin();    
     m_main_window.show();
 }

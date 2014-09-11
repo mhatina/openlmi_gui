@@ -57,16 +57,15 @@ HEADERS         +=      hardware.h \
                         ../../ui/plugin.h \
                         ../../ui/instructions/connectinstruction.h \
                         ../../ui/instructions/instruction.h \
-                        labeledlabel.h
+                        ../../ui/widgets/labeledlabel.h
 
 SOURCES         +=      hardware.cpp \
                         ../../ui/plugin.cpp \
                         ../../ui/instructions/connectinstruction.cpp \
                         ../../ui/instructions/instruction.cpp \
                         ../../ui/lmiwbem_value.cpp \
-                        labeledlabel.cpp
+                        ../../ui/widgets/labeledlabel.cpp
 
-FORMS           +=      hardware.ui \
-                        labeledlabel.ui
+FORMS           +=      hardware.ui
 
 RESOURCES       +=      icons.qrc

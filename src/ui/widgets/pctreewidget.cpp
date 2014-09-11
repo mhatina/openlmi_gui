@@ -70,15 +70,18 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
         &m_timer,
         SIGNAL(timeout()),
         this,
-        SLOT(showSystemDetails()));    
+        SLOT(showSystemDetails()));
+    connect(
+        m_ui->tree,
+        SIGNAL(customContextMenuRequested(QPoint)),
+        this,
+        SLOT(showContextMenu(QPoint)));
 
     m_ui->tree->setSelectionMode(
                     QAbstractItemView::ContiguousSelection);
 
     topLevelNode("Added")->setExpanded(true);
-    loadPcs(path);
-
-    m_dialog.setWindowFlags(Qt::Popup);
+    loadPcs(path);    
 }
 
 PCTreeWidget::~PCTreeWidget()
@@ -233,6 +236,7 @@ void PCTreeWidget::loadPcs(std::string filename)
         return;
     }
 
+    QTreeWidgetItem *parent = NULL;
     while (!in.atEnd()) {
         QXmlStreamReader::TokenType token = in.readNext();
 
@@ -241,14 +245,20 @@ void PCTreeWidget::loadPcs(std::string filename)
         else {
             if (in.name() == "computers")
                 continue;
-            else if(in.name() == "computer") {
+            else if (in.name() == "group") {
+                QXmlStreamAttributes attr = in.attributes();
+                std::string name = attr.value("name").toString().toStdString();
+                if (name.empty())
+                    continue;
+                parent = topLevelNode(name);
+            } else if(in.name() == "computer") {
                 QXmlStreamAttributes attr = in.attributes();
                 std::string id = attr.value("id").toString().toStdString();
                 if (id.empty())
                     continue;
 
-                TreeWidgetItem *item = addPcToTree("Added", id);
-                if (item != NULL) {
+                TreeWidgetItem *item = addPcToTree(parent->text(0).toStdString(), id);
+                if (item != NULL && parent != NULL) {
                     item->setIpv4(attr.value("ipv4").toString().toStdString());
                     item->setIpv6(attr.value("ipv6").toString().toStdString());
                     item->setName(attr.value("domain").toString().toStdString());
@@ -280,20 +290,25 @@ void PCTreeWidget::saveAllPcs(std::string filename)
         return;
     }
 
-    QXmlStreamWriter out(&file);
-    QTreeWidgetItem* parent = topLevelNode("Added");
+    QXmlStreamWriter out(&file);    
 
     out.setAutoFormatting(true);
     out.writeStartDocument();
 
     out.writeStartElement("computers");
-    for (int i = 0; i < parent->childCount(); i++) {
-        out.writeStartElement("computer");
-        out.writeAttribute("id", ((TreeWidgetItem*) parent->child(i))->getId().c_str());
-        out.writeAttribute("ipv4", ((TreeWidgetItem*) parent->child(i))->getIpv4().c_str());
-        out.writeAttribute("ipv6", ((TreeWidgetItem*) parent->child(i))->getIpv6().c_str());
-        out.writeAttribute("domain", ((TreeWidgetItem*) parent->child(i))->getName().c_str());
-        out.writeAttribute("mac", ((TreeWidgetItem*) parent->child(i))->getMac().c_str());
+    for (int i = 0; i < m_ui->tree->topLevelItemCount(); i++) {
+        QTreeWidgetItem* parent = m_ui->tree->topLevelItem(i);
+        out.writeStartElement("group");
+        out.writeAttribute("name", parent->text(0));
+        for (int j = 0; j < parent->childCount(); j++) {
+            out.writeStartElement("computer");
+            out.writeAttribute("id", ((TreeWidgetItem*) parent->child(j))->getId().c_str());
+            out.writeAttribute("ipv4", ((TreeWidgetItem*) parent->child(j))->getIpv4().c_str());
+            out.writeAttribute("ipv6", ((TreeWidgetItem*) parent->child(j))->getIpv6().c_str());
+            out.writeAttribute("domain", ((TreeWidgetItem*) parent->child(j))->getName().c_str());
+            out.writeAttribute("mac", ((TreeWidgetItem*) parent->child(j))->getMac().c_str());
+            out.writeEndElement();
+        }
         out.writeEndElement();
     }
     out.writeEndElement();
@@ -363,10 +378,53 @@ void PCTreeWidget::addDiscoveredPcsToTree(std::list<std::string> *pc)
     Logger::getInstance()->info("Finished discovering.");
 }
 
+void PCTreeWidget::addGroup()
+{
+    Qt::ItemFlags flags =
+              Qt::ItemIsDropEnabled
+            | Qt::ItemIsEnabled
+            | Qt::ItemIsEditable;
+    QTreeWidgetItem *item = topLevelNode("");
+    item->setFlags(flags);
+    m_ui->tree->editItem(item);
+}
+
+void PCTreeWidget::deleteGroup()
+{
+    QTreeWidgetItem *item = m_ui->tree->itemAt(m_item_pos);
+    if (item == NULL || item->parent())
+        return;
+    int index = m_ui->tree->indexOfTopLevelItem(item);
+    m_ui->tree->takeTopLevelItem(index);
+}
+
+void PCTreeWidget::showContextMenu(QPoint pos)
+{
+    QPoint globalPos = m_ui->tree->mapToGlobal(pos);
+    QTreeWidgetItem *item = m_ui->tree->itemAt(pos);
+    m_item_pos = pos;
+
+    if (item == NULL) {
+        findChild<QAction*>("delete_system_action")->setEnabled(false);
+        findChild<QAction*>("delete_group_action")->setEnabled(false);
+        return;
+    }
+
+    if (item->parent()) {
+        findChild<QAction*>("delete_system_action")->setEnabled(true);
+        findChild<QAction*>("delete_group_action")->setEnabled(false);
+    } else {
+        findChild<QAction*>("delete_system_action")->setEnabled(false);
+        findChild<QAction*>("delete_group_action")->setEnabled(true);
+    }
+
+    m_context_menu->popup(globalPos);
+}
+
 void PCTreeWidget::showSystemDetails()
 {
     QTreeWidgetItem *item = m_ui->tree->itemAt(m_ui->tree->mapFromGlobal(QCursor::pos()));
-    if (item != m_item_to_show)
+    if (item != m_item_to_show || m_context_menu->isVisible() || !qApp->activeWindow())
         return;
     m_dialog.reset();
 
@@ -399,8 +457,7 @@ void PCTreeWidget::startTime(QTreeWidgetItem *item, int column)
 void PCTreeWidget::validate(QTreeWidgetItem* item ,int column)
 {
     Logger::getInstance()->debug("PCTreeWidget::validate(TreeWidgetItem* item ,int column)");
-    if (!m_data_of_item_changed || item->text(0) == "Added"
-            || item->text(0) == "Discovered")
+    if (!m_data_of_item_changed || !item->parent())
         return;    
     TreeWidgetItem *parent = (TreeWidgetItem*) item->parent();
     TreeWidgetItem *tree_item = (TreeWidgetItem*) item;
@@ -554,14 +611,28 @@ void PCTreeWidget::getIp(std::string &name, std::string &ipv4, std::string &ipv6
 
 void PCTreeWidget::initContextMenu()
 {
-    QMenu *context_menu = new QMenu(this);
-    QAction* delete_system = new QAction("Delete system", context_menu);
+    m_context_menu = new QMenu(this);
+    m_ui->tree->setContextMenuPolicy(Qt::CustomContextMenu);
+    QAction *action = m_context_menu->addAction("Delete system");
+    action->setObjectName("delete_system_action");
     connect(
-        delete_system,
+        action,
         SIGNAL(triggered()),
         this,
         SLOT(onRemoveButtonClicked()));
-
-    m_ui->tree->setContextMenuPolicy(Qt::ActionsContextMenu);
-    m_ui->tree->addAction(delete_system);
+    action->setEnabled(false);
+    m_context_menu->addSeparator();
+    action = m_context_menu->addAction("Create new group");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(addGroup()));
+    action = m_context_menu->addAction("Delete group");
+    action->setObjectName("delete_group_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(deleteGroup()));
 }
