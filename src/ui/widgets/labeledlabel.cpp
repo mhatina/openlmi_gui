@@ -30,7 +30,7 @@ LabeledLabel::LabeledLabel(std::string label, std::string text) :
     m_ui->label->setText(label.c_str());
     m_ui->text->setText(text.c_str());
     m_ui->text->setWordWrap(true);
-    setObjectName("labeledLabel");    
+    setObjectName("labeledLabel");
 }
 
 LabeledLabel::~LabeledLabel()
@@ -46,8 +46,9 @@ int LabeledLabel::getLabelWidth()
 void LabeledLabel::setAlignment(int alignment)
 {
     int tmp = m_ui->label->fontMetrics().boundingRect(m_ui->label->text()).width();
-    if (alignment - tmp > 0)
+    if (alignment - tmp > 0) {
         m_ui->label->setMinimumWidth(alignment);
+    }
 }
 
 void LabeledLabel::setVerticalAlignment(Qt::Alignment alignment)

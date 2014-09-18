@@ -38,7 +38,8 @@ public:
      * @param name -- group name
      * @param user_id -- user's id
      */
-    AddUserToGroupInstruction(CIMClient *client, std::string name, Pegasus::CIMValue user_id);
+    AddUserToGroupInstruction(CIMClient *client, std::string name,
+                              Pegasus::CIMValue user_id);
     IInstruction::Subject getSubject();
     std::string toString();
     void run();

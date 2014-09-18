@@ -27,7 +27,7 @@
  */
 class Address
 {
-public:    
+public:
     /**
      * @brief Constructor
      * @param url -- text representation of url
@@ -38,25 +38,37 @@ public:
      * @brief Getter
      * @return hostname
      */
-    std::string hostname() const { return m_hostname; }
+    std::string hostname() const
+    {
+        return m_hostname;
+    }
 
     /**
      * @brief Getter
      * @return port
      */
-    unsigned int port() const { return m_port; }
+    unsigned int port() const
+    {
+        return m_port;
+    }
 
     /**
      * @brief Check if https protocol is used
      * @return true if https is used, else false
      */
-    bool isHttps() const { return m_is_https; }
+    bool isHttps() const
+    {
+        return m_is_https;
+    }
 
     /**
      * @brief Check address validity
      * @return if address is valid return true, else false
      */
-    bool isValid() const { return m_is_valid; }
+    bool isValid() const
+    {
+        return m_is_valid;
+    }
 
 private:
     std::string m_hostname;

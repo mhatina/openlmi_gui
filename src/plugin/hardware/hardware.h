@@ -29,7 +29,7 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 
-const char* const valueMap[] = {
+const char *const valueMap[] = {
     "0", "1", "2", "3", "4", "5", "6", "7",
     "8", "9", "11", "12", "13", "14", "15",
     "16", "17", "18", "19", "21", "22", "23",
@@ -60,7 +60,7 @@ const char* const valueMap[] = {
     "308"
 };
 
-const char* const values[] = {
+const char *const values[] = {
     "fpu", "vme", "de", "pse", "tsc", "msr",
     "pae", "mce", "cx8", "apic", "sep",
     "mtrr", "pge", "mca", "cmov", "pat",
@@ -107,7 +107,7 @@ const char* const values[] = {
     "adx", "smap"
 };
 
-const char* const class_code_values[] = {
+const char *const class_code_values[] = {
     "Pre 2.0", "Mass Storage", "Network",
     "Display", "Multimedia", "Memory",
     "Bridge", "Simple Communications",
@@ -118,7 +118,8 @@ const char* const class_code_values[] = {
     "Data Acquisition and Signal Processing"
 };
 
-namespace Ui {
+namespace Ui
+{
 class HardwarePlugin;
 }
 
@@ -126,7 +127,7 @@ class HardwarePlugin : public Engine::IPlugin
 {
     Q_OBJECT
     Q_INTERFACES(Engine::IPlugin)
-    
+
 private:
     bool m_changes_enabled;
     std::map<std::string, std::string> m_values;
@@ -139,8 +140,8 @@ private:
     std::vector<std::vector<Pegasus::CIMInstance> > m_processor;
     Ui::HardwarePlugin *m_ui;
 
-    QTreeWidgetItem* findTopLevelNode(std::string item_name);
-    QTreeWidgetItem* topLevelNode(std::string item_name);
+    QTreeWidgetItem *findTopLevelNode(std::string item_name);
+    QTreeWidgetItem *topLevelNode(std::string item_name);
     std::string convertCapacity(std::string capacity, bool bit = false);
     std::string decodeValues(Pegasus::CIMProperty property);
     void fillBattery(Pegasus::CIMInstance battery);
@@ -155,7 +156,7 @@ public:
     explicit HardwarePlugin();
     ~HardwarePlugin();
     virtual std::string getInstructionText();
-    virtual std::string getLabel();    
+    virtual std::string getLabel();
     virtual std::string getRefreshInfo();
     virtual void clear();
     virtual void fillTab(std::vector<void *> *data);

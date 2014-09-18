@@ -25,7 +25,8 @@
 
 #include <sstream>
 
-UpdatePackageInstruction::UpdatePackageInstruction(CIMClient *client, Pegasus::CIMInstance package) :
+UpdatePackageInstruction::UpdatePackageInstruction(CIMClient *client,
+        Pegasus::CIMInstance package) :
     SoftwareInstruction(client, "update_package", package)
 {
 }

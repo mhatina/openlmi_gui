@@ -35,7 +35,7 @@ const Engine::property serviceProperties[] = {
     {"Status", "Status", false}
 };
 
-const char* const action_list[] = {
+const char *const action_list[] = {
     "-",
     "Reload",
     "Restart",
@@ -56,10 +56,11 @@ typedef enum {
 } e_action;
 
 const Qt::ItemFlags item_flags =
-        Qt::ItemIsSelectable |
-        Qt::ItemIsEnabled;
+    Qt::ItemIsSelectable |
+    Qt::ItemIsEnabled;
 
-namespace Ui {
+namespace Ui
+{
 class ServicePlugin;
 }
 
@@ -70,11 +71,11 @@ class ServicePlugin : public Engine::IPlugin
 {
     Q_OBJECT
     Q_INTERFACES(Engine::IPlugin)
-    
+
 private:
     std::vector<Pegasus::CIMInstance> m_service_instances;
     QTableWidget *m_services_table;
-    Ui::ServicePlugin *m_ui;    
+    Ui::ServicePlugin *m_ui;
 
 public:
     /**
@@ -86,7 +87,7 @@ public:
      */
     ~ServicePlugin();
     virtual std::string getInstructionText();
-    virtual std::string getLabel();    
+    virtual std::string getLabel();
     virtual std::string getRefreshInfo();
     virtual void clear();
     virtual void fillTab(std::vector<void *> *data);

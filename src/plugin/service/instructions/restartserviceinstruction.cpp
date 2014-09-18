@@ -23,7 +23,8 @@
 #include "logger.h"
 #include "restartserviceinstruction.h"
 
-RestartServiceInstruction::RestartServiceInstruction(CIMClient *client, std::string name) :
+RestartServiceInstruction::RestartServiceInstruction(CIMClient *client,
+        std::string name) :
     ServiceInstruction(client, "restart_service", name)
 {
 }
@@ -43,8 +44,9 @@ void RestartServiceInstruction::run()
     try {
         Pegasus::CIMValue ret = invokeMethod("RestartService");
 
-        if (!ret.equal(Pegasus::CIMValue(Pegasus::Uint32(0))))
+        if (!ret.equal(Pegasus::CIMValue(Pegasus::Uint32(0)))) {
             Logger::getInstance()->info("Unable to restart service.");
+        }
     } catch (Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

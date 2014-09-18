@@ -35,7 +35,7 @@ const Engine::property groupProperties[] = {
     {"Element Name", "ElementName", false}
 };
 
-const Engine::property userProperties[] = {    
+const Engine::property userProperties[] = {
     {"Name", "Name", false},
     {"Full Name", "ElementName", false},
     {"UID", "UserID", false},
@@ -44,10 +44,11 @@ const Engine::property userProperties[] = {
 };
 
 const Qt::ItemFlags item_flags =
-        Qt::ItemIsSelectable |
-        Qt::ItemIsEnabled;
+    Qt::ItemIsSelectable |
+    Qt::ItemIsEnabled;
 
-namespace Ui {
+namespace Ui
+{
 class AccountPlugin;
 }
 
@@ -66,25 +67,26 @@ private:
     std::string m_last_user_name;
     std::vector<Pegasus::CIMInstance> m_group_instances;
     std::vector<Pegasus::CIMInstance> m_user_instances;
-    std::vector<std::string> m_users;    
+    std::vector<std::string> m_users;
     Ui::AccountPlugin *m_ui;
 
     bool isKeyProperty(const char *property);
     int findGroupIndex(std::string name);
-    std::string convertNameToID(std::string name);    
-    void setSelectedLineColor(QList<QTableWidgetItem*> selectedItems, QColor color);
+    std::string convertNameToID(std::string name);
+    void setSelectedLineColor(QList<QTableWidgetItem *> selectedItems,
+                              QColor color);
 
 public:
     explicit AccountPlugin();
     ~AccountPlugin();
     virtual std::string getInstructionText();
-    virtual std::string getLabel();    
+    virtual std::string getLabel();
     virtual std::string getRefreshInfo();
     virtual void clear();
     virtual void fillTab(std::vector<void *> *data);
     virtual void getData(std::vector<void *> *data);
 
-private slots:    
+private slots:
     void add();
     void addUserToGroup(std::string group);
     void remove();

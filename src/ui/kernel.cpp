@@ -15,7 +15,6 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
-#include "eventlog.h"
 #include "kernel.h"
 #include "lmiwbem_value.h"
 #include "logger.h"
@@ -50,12 +49,11 @@ bool isColon(int c)
     return (c == 0x3A);
 }
 
-Engine::Kernel::Kernel() :    
+Engine::Kernel::Kernel() :
     m_refreshEnabled(true),
-    m_event_log(new EventLog()),
     m_mutex(new QMutex()),
     m_bar(new QProgressBar()),
-    settings(new SettingsDialog(&m_main_window))
+    m_settings(new SettingsDialog(&m_main_window))
 {
     Logger::getInstance()->debug("Engine::Kernel::Kernel()");
 
@@ -69,7 +67,8 @@ Engine::Kernel::Kernel() :
     std::string path = pw->pw_dir;
     path += "/.openlmi";
     if (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0 && errno != EEXIST) {
-        Logger::getInstance()->error("Cannot create ~/.openlmi dir.\nError: " + std::string(strerror(errno)));
+        Logger::getInstance()->error("Cannot create ~/.openlmi dir.\nError: " +
+                                     std::string(strerror(errno)));
     }
 
     initConnections();
@@ -81,28 +80,22 @@ Engine::Kernel::Kernel() :
     m_main_window.getPcTreeWidget()->setTimeSec(2);
 
     m_code_dialog.setTitle("LMIShell Code");
-    createKeyring();        
-
-    m_event_log->setConnectionStorage(&m_connections);
-    m_event_log->setPCTree(m_main_window.getPcTreeWidget()->getTree());
-//    m_event_log->start();
+    createKeyring();
 }
 
 Engine::Kernel::~Kernel()
 {
-    Logger::getInstance()->debug("Engine::Kernel::~Kernel()");    
-//    m_event_log->end();
-    delete m_event_log;
+    Logger::getInstance()->debug("Engine::Kernel::~Kernel()");
     delete m_mutex;
     delete m_bar;
-    delete settings;
+    delete m_settings;
 
     disconnect(
         m_main_window.getProviderWidget()->getTabWidget(),
         0,
         this,
         0);
-    foreach (QPluginLoader *loader, m_loaders) {
+    foreach (QPluginLoader * loader, m_loaders) {
         loader->unload();
         delete loader;
     }
@@ -114,8 +107,9 @@ int Engine::Kernel::getIndexOfTab(std::string name)
     Logger::getInstance()->debug("Engine::Kernel::getIndexOfTab(std::string name)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     for (int i = 0; i < tab->count(); i++) {
-       if (tab->tabText(i).contains(name.c_str()))
-           return i;
+        if (tab->tabText(i).contains(name.c_str())) {
+            return i;
+        }
     }
 
     return -1;
@@ -124,8 +118,10 @@ int Engine::Kernel::getIndexOfTab(std::string name)
 void Engine::Kernel::createKeyring()
 {
     Logger::getInstance()->debug("Engine::Kernel::createKeyring()");
-    GnomeKeyringResult res = gnome_keyring_create_sync(OPENLMI_KEYRING_DEFAULT, NULL);
-    if (res != GNOME_KEYRING_RESULT_OK && res != GNOME_KEYRING_RESULT_KEYRING_ALREADY_EXISTS) {
+    GnomeKeyringResult res = gnome_keyring_create_sync(OPENLMI_KEYRING_DEFAULT,
+                             NULL);
+    if (res != GNOME_KEYRING_RESULT_OK &&
+        res != GNOME_KEYRING_RESULT_KEYRING_ALREADY_EXISTS) {
         const std::string err[] = {
             "GNOME_KEYRING_RESULT_OK",
             "GNOME_KEYRING_RESULT_DENIED",
@@ -139,7 +135,8 @@ void Engine::Kernel::createKeyring()
             "GNOME_KEYRING_RESULT_NO_MATCH"
         };
 
-        Logger::getInstance()->error("Cannot create " + std::string(OPENLMI_KEYRING_DEFAULT) + " keyring\nError: " + err[res]);
+        Logger::getInstance()->error("Cannot create " + std::string(
+                                         OPENLMI_KEYRING_DEFAULT) + " keyring\nError: " + err[res]);
         exit(EXIT_FAILURE);
     }
 }
@@ -148,49 +145,51 @@ void Engine::Kernel::initConnections()
 {
     Logger::getInstance()->debug("Engine::Kernel::initConnections()");
 
-    QPushButton *button = m_main_window.getToolbar()->findChild<QPushButton*>("refresh_button");
+    QPushButton *button =
+        m_main_window.getToolbar()->findChild<QPushButton *>("refresh_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(refresh()));
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("stop_refresh_button");
+    button = m_main_window.getToolbar()->findChild<QPushButton *>("stop_refresh_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(stopRefresh()));
-    QToolButton *power_button = m_main_window.getToolbar()->findChild<QToolButton*>("power_button");
+    QToolButton *power_button =
+        m_main_window.getToolbar()->findChild<QToolButton *>("power_button");
     connect(
         power_button,
-        SIGNAL(triggered(QAction*)),
+        SIGNAL(triggered(QAction *)),
         this,
-        SLOT(setPowerState(QAction*)));
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("delete_passwd_button");
+        SLOT(setPowerState(QAction *)));
+    button = m_main_window.getToolbar()->findChild<QPushButton *>("delete_passwd_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(deletePasswd()));
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("show_code_button");
+    button = m_main_window.getToolbar()->findChild<QPushButton *>("show_code_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(showCodeDialog()));
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("filter_button");
+    button = m_main_window.getToolbar()->findChild<QPushButton *>("filter_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(showFilter()));
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("save_button");
+    button = m_main_window.getToolbar()->findChild<QPushButton *>("save_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(saveScripts()));
-    button = m_main_window.getToolbar()->findChild<QPushButton*>("save_as_button");
+    button = m_main_window.getToolbar()->findChild<QPushButton *>("save_as_button");
     connect(
         button,
         SIGNAL(clicked()),
@@ -214,9 +213,9 @@ void Engine::Kernel::initConnections()
     qRegisterMetaType<PowerStateValues::POWER_VALUES>("PowerStateValues::POWER_VALUES");
     connect(
         this,
-        SIGNAL(doneConnecting(CIMClient*,PowerStateValues::POWER_VALUES)),
+        SIGNAL(doneConnecting(CIMClient *, PowerStateValues::POWER_VALUES)),
         this,
-        SLOT(handleConnecting(CIMClient*,PowerStateValues::POWER_VALUES)));
+        SLOT(handleConnecting(CIMClient *, PowerStateValues::POWER_VALUES)));
     connect(
         this,
         SIGNAL(error(std::string)),
@@ -231,31 +230,26 @@ void Engine::Kernel::initConnections()
         m_main_window.getResetPasswdStorageAction(),
         SIGNAL(triggered()),
         this,
-        SLOT(resetKeyring()));
-    connect(
-        m_event_log,
-        SIGNAL(silentConnection(std::string)),
-        this,
-        SLOT(emitSilentConnection(std::string)));
-    QAction *action = m_main_window.findChild<QAction*>("action_start_LMIShell");
+        SLOT(resetKeyring()));    
+    QAction *action = m_main_window.findChild<QAction *>("action_start_LMIShell");
     connect(
         action,
         SIGNAL(triggered()),
         this,
         SLOT(startLMIShell()));
-    action = m_main_window.findChild<QAction*>("action_start_ssh");
+    action = m_main_window.findChild<QAction *>("action_start_ssh");
     connect(
         action,
         SIGNAL(triggered()),
         this,
         SLOT(startSsh()));
-    action = m_main_window.findChild<QAction*>("action_reload_plugins");
+    action = m_main_window.findChild<QAction *>("action_reload_plugins");
     connect(
         action,
         SIGNAL(triggered()),
         this,
         SLOT(reloadPlugins()));
-    action = m_main_window.findChild<QAction*>("action_options");
+    action = m_main_window.findChild<QAction *>("action_options");
     connect(
         action,
         SIGNAL(triggered()),
@@ -267,57 +261,74 @@ void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
 {
     Logger::getInstance()->debug("Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
-    IPlugin *plugin = (IPlugin*) tab->currentWidget();
-    if (plugin == NULL)
+    IPlugin *plugin = (IPlugin *) tab->currentWidget();
+    if (plugin == NULL) {
         return;
+    }
     bool refreshed = plugin->isRefreshed();
 
-    ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("apply_button"))->setEnabled(state & refreshed);
-    ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("cancel_button"))->setEnabled(state & refreshed);
-    ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("save_button"))->setEnabled(state & refreshed);
-    ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("save_as_button"))->setEnabled(state & refreshed);
-    ((QPushButton*) m_main_window.getToolbar()->findChild<QPushButton*>("stop_refresh_button"))->setEnabled(!state);
+    ((QPushButton *)
+     m_main_window.getToolbar()->findChild<QPushButton *>("apply_button"))->setEnabled(
+         state & refreshed);
+    ((QPushButton *)
+     m_main_window.getToolbar()->findChild<QPushButton *>("cancel_button"))->setEnabled(
+         state & refreshed);
+    ((QPushButton *)
+     m_main_window.getToolbar()->findChild<QPushButton *>("save_button"))->setEnabled(
+         state & refreshed);
+    ((QPushButton *)
+     m_main_window.getToolbar()->findChild<QPushButton *>("save_as_button"))->setEnabled(
+         state & refreshed);
+    ((QPushButton *)
+     m_main_window.getToolbar()->findChild<QPushButton *>("stop_refresh_button"))->setEnabled(
+         !state);
     if (refresh_button) {
         enableSpecialButtons(state);
-    }    
+    }
 }
 
 void Engine::Kernel::setMac(CIMClient *client)
 {
     QTreeWidget *tree = m_main_window.getPcTreeWidget()->getTree();
-    QList<QTreeWidgetItem*> list = tree->findItems(client->hostname().c_str(), Qt::MatchExactly | Qt::MatchRecursive);
-    if (list.empty())
+    QList<QTreeWidgetItem *> list = tree->findItems(client->hostname().c_str(),
+                                    Qt::MatchExactly | Qt::MatchRecursive);
+    if (list.empty()) {
         return;
+    }
 
-    TreeWidgetItem *item = (TreeWidgetItem*) list[0];
+    TreeWidgetItem *item = (TreeWidgetItem *) list[0];
 
-    if (!item->getMac().empty())
+    if (!item->getMac().empty()) {
         return;
+    }
 
     try {
         Pegasus::Array<Pegasus::CIMObject> lan =
-                client->execQuery(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    Pegasus::String("WQL"),
-                    Pegasus::String("SELECT * FROM LMI_LanEndpoint WHERE OperatingStatus = 16"));
+            client->execQuery(
+                Pegasus::CIMNamespaceName("root/cimv2"),
+                Pegasus::String("WQL"),
+                Pegasus::String("SELECT * FROM LMI_LanEndpoint WHERE OperatingStatus = 16"));
 
-        if (lan.size() == 0)
+        if (lan.size() == 0) {
             return;
+        }
         Pegasus::CIMObject endpoint = lan[0];
 
-        std::string mac = CIMValue::get_property_value(Pegasus::CIMInstance(endpoint), "MACAddress");
+        std::string mac = CIMValue::get_property_value(Pegasus::CIMInstance(endpoint),
+                          "MACAddress");
         item->setMac(mac);
 
         // temporary
         Pegasus::Array<Pegasus::CIMObject> ip =
-                client->associators(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    endpoint.getPath(),
-                    Pegasus::CIMName(),
-                    Pegasus::CIMName("LMI_IPProtocolEndpoint"));
+            client->associators(
+                Pegasus::CIMNamespaceName("root/cimv2"),
+                endpoint.getPath(),
+                Pegasus::CIMName(),
+                Pegasus::CIMName("LMI_IPProtocolEndpoint"));
 
         for (unsigned int i = 0; i < ip.size(); i++) {
-            std::string ipv6 = CIMValue::get_property_value(Pegasus::CIMInstance(ip[i]), "IPv6Address");
+            std::string ipv6 = CIMValue::get_property_value(Pegasus::CIMInstance(ip[i]),
+                               "IPv6Address");
             if (!ipv6.empty()) {
                 item->setIpv6(ipv6);
                 break;
@@ -328,16 +339,17 @@ void Engine::Kernel::setMac(CIMClient *client)
     }
 }
 
-void Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VALUES power_state)
+void Engine::Kernel::setPowerState(CIMClient *client,
+                                   PowerStateValues::POWER_VALUES power_state)
 {
     Logger::getInstance()->debug("Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VALUES power_state)");
 
     Pegasus::CIMObjectPath power_inst_name;
     try {
         power_inst_name = client->enumerateInstanceNames(
-            Pegasus::CIMNamespaceName("root/cimv2"),
-            Pegasus::CIMName("LMI_PowerManagementService")
-            )[0];
+                              Pegasus::CIMNamespaceName("root/cimv2"),
+                              Pegasus::CIMName("LMI_PowerManagementService")
+                          )[0];
     } catch (const Pegasus::Exception &ex) {
         Logger::getInstance()->error(std::string(ex.getMessage().getCString()));
     }
@@ -349,8 +361,8 @@ void Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VA
                         Pegasus::String("PowerState"),
                         Pegasus::CIMValue(
                             Pegasus::Uint16(power_state)
-                            )
-                        ));
+                        )
+                    ));
     try {
         client->invokeMethod(
             Pegasus::CIMNamespaceName("root/cimv2"),
@@ -358,7 +370,7 @@ void Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VA
             Pegasus::CIMName("RequestPowerStateChange"),
             in_param,
             out_param
-            );        
+        );
         m_connections.erase(m_connections.find(client->hostname()));
         client->disconnect();
     } catch (const Pegasus::Exception &ex) {
@@ -372,7 +384,8 @@ void Engine::Kernel::wakeOnLan()
     unsigned char to_send[102];
     unsigned char mac[6];
 
-    TreeWidgetItem *item = ((TreeWidgetItem*) m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0]);
+    TreeWidgetItem *item = ((TreeWidgetItem *)
+                            m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0]);
     std::string mac_str = item->getMac();
     if (mac_str.empty()) {
         Logger::getInstance()->error("Unknown MAC address");
@@ -380,11 +393,12 @@ void Engine::Kernel::wakeOnLan()
     }
 
     // first 6 bytes of 255
-    for(int i = 0; i < 6; i++) {
+    for (int i = 0; i < 6; i++) {
         to_send[i] = 0xFF;
     }
 
-    mac_str.erase(remove_if(mac_str.begin(), mac_str.end(), isColon), mac_str.end());
+    mac_str.erase(remove_if(mac_str.begin(), mac_str.end(), isColon),
+                  mac_str.end());
     // store mac address
     for (int i = 0; i < 6; i++) {
         char *p;
@@ -393,7 +407,7 @@ void Engine::Kernel::wakeOnLan()
     }
 
     // append it 16 times to packet
-    for(int i = 1; i <= 16; i++) {
+    for (int i = 1; i <= 16; i++) {
         memcpy(&to_send[i * 6], &mac, 6 * sizeof(unsigned char));
     }
 
@@ -407,7 +421,8 @@ void Engine::Kernel::wakeOnLan()
     udp_socket = socket(AF_INET, SOCK_DGRAM, 0);
 
     // need to set this to be able to broadcast **/
-    if (setsockopt(udp_socket, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof broadcast) == -1) {
+    if (setsockopt(udp_socket, SOL_SOCKET, SO_BROADCAST, &broadcast,
+                   sizeof broadcast) == -1) {
         Logger::getInstance()->error(strerror(errno));
         return;
     }
@@ -415,7 +430,7 @@ void Engine::Kernel::wakeOnLan()
     udp_client.sin_addr.s_addr = INADDR_ANY;
     udp_client.sin_port = 0;
 
-    bind(udp_socket, (struct sockaddr*)&udp_client, sizeof(udp_client));
+    bind(udp_socket, (struct sockaddr *)&udp_client, sizeof(udp_client));
 
     // set server end point (the broadcast addres)
     udp_server.sin_family = AF_INET;
@@ -427,15 +442,17 @@ void Engine::Kernel::wakeOnLan()
     udp_server.sin_port = htons(9);
 
     // send the packet
-    sendto(udp_socket, &to_send, sizeof(unsigned char) * 102, 0, (struct sockaddr*)&udp_server, sizeof(udp_server));
+    sendto(udp_socket, &to_send, sizeof(unsigned char) * 102, 0,
+           (struct sockaddr *)&udp_server, sizeof(udp_server));
 
     handleProgressState(100);
 }
 
 void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
-{    
+{
     Logger::getInstance()->debug("Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)");
-    TreeWidgetItem *item = (TreeWidgetItem*) m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
+    TreeWidgetItem *item = (TreeWidgetItem *)
+                           m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
     std::string ip = item->getId();
     Logger::getInstance()->info("Connecting to " + item->text(0).toStdString());
 
@@ -460,25 +477,33 @@ void Engine::Kernel::loadPlugin()
     plugins_dir.cd(STR(PLUGIN_PATH));
 
     foreach (QString file_name, plugins_dir.entryList(QDir::Files)) {
-        QPluginLoader *plugin_loader = new QPluginLoader(plugins_dir.absoluteFilePath(file_name));
+        QPluginLoader *plugin_loader = new QPluginLoader(plugins_dir.absoluteFilePath(
+                    file_name));
         QObject *plugin = plugin_loader->instance();
         IPlugin *loaded_plugin = NULL;
         m_loaders.push_back(plugin_loader);
-        if (plugin && (loaded_plugin = qobject_cast<IPlugin*>(plugin))) {
+        if (plugin && (loaded_plugin = qobject_cast<IPlugin *>(plugin))) {
             if (m_loaded_plugins.find(file_name.toStdString()) == m_loaded_plugins.end()) {
                 Logger::getInstance()->debug("Loaded: " + loaded_plugin->getLabel(), true);
                 m_loaded_plugins[file_name.toStdString()] = loaded_plugin;
 
                 loaded_plugin->connectButtons(m_main_window.getToolbar());
-                connect(loaded_plugin, SIGNAL(unsavedChanges(IPlugin*)), this, SLOT(setPluginUnsavedChanges(IPlugin*)));
-                connect(loaded_plugin, SIGNAL(noChanges(IPlugin*)), this, SLOT(setPluginNoChanges(IPlugin*)));
-                connect(loaded_plugin, SIGNAL(refreshProgress(int)), this, SLOT(handleProgressState(int)));
-                connect(loaded_plugin, SIGNAL(newInstructionText(std::string)), this, SLOT(handleInstructionText(std::string)));
+                connect(loaded_plugin, SIGNAL(unsavedChanges(IPlugin *)), this,
+                        SLOT(setPluginUnsavedChanges(IPlugin *)));
+                connect(loaded_plugin, SIGNAL(noChanges(IPlugin *)), this,
+                        SLOT(setPluginNoChanges(IPlugin *)));
+                connect(loaded_plugin, SIGNAL(refreshProgress(int)), this,
+                        SLOT(handleProgressState(int)));
+                connect(loaded_plugin, SIGNAL(newInstructionText(std::string)), this,
+                        SLOT(handleInstructionText(std::string)));
 
-                if (loaded_plugin->getLabel() == "Overview")
-                    m_main_window.getProviderWidget()->getTabWidget()->insertTab(0, loaded_plugin, loaded_plugin->getLabel().c_str());
-                else
-                    m_main_window.getProviderWidget()->getTabWidget()->addTab(loaded_plugin, loaded_plugin->getLabel().c_str());
+                if (loaded_plugin->getLabel() == "Overview") {
+                    m_main_window.getProviderWidget()->getTabWidget()->insertTab(0, loaded_plugin,
+                            loaded_plugin->getLabel().c_str());
+                } else {
+                    m_main_window.getProviderWidget()->getTabWidget()->addTab(loaded_plugin,
+                            loaded_plugin->getLabel().c_str());
+                }
             }
         } else {
             Logger::getInstance()->error(plugin_loader->errorString().toStdString(), false);
@@ -490,6 +515,6 @@ void Engine::Kernel::loadPlugin()
 void Engine::Kernel::showMainWindow()
 {
     Logger::getInstance()->debug("Engine::Kernel::showMainWindow()");
-    loadPlugin();    
+    loadPlugin();
     m_main_window.show();
 }

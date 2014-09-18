@@ -24,7 +24,8 @@
 
 #include <QDialog>
 
-namespace Ui {
+namespace Ui
+{
 class NewUserDialog;
 }
 
@@ -36,7 +37,7 @@ class NewUserDialog;
 class NewUserDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     /**
      * @brief Constructor
@@ -88,7 +89,7 @@ public:
      * @return what shell user uses
      */
     std::string getShell();
-    
+
 private:
     Ui::NewUserDialog *m_ui;
 

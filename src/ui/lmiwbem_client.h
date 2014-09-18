@@ -30,7 +30,7 @@
  */
 class CIMClient: public Pegasus::CIMClient
 {
-public:  
+public:
     /**
      * @brief Constructor
      */
@@ -86,38 +86,53 @@ public:
      * @brief Connection status
      * @return true if client is connected to host, else false
      */
-    bool isConnected() const { return m_is_connected; }
+    bool isConnected() const
+    {
+        return m_is_connected;
+    }
 
     /**
      * @brief Setter
      * @param verify
      */
-    void setVerifyCertificate(bool verify = true) { m_verify_cert = verify; }
+    void setVerifyCertificate(bool verify = true)
+    {
+        m_verify_cert = verify;
+    }
 
     /**
      * @brief Getter
      * @return true if verification is turned on, else false
      */
-    bool getVerifyCertificate() const { return m_verify_cert; }
+    bool getVerifyCertificate() const
+    {
+        return m_verify_cert;
+    }
 
     /**
      * @brief Getter
      * @return hostname
      */
-    std::string hostname() const { return m_hostname; }
+    std::string hostname() const
+    {
+        return m_hostname;
+    }
 
     /**
      * @brief Getter
      * @return username
      */
-    std::string username() const { return m_username; }
+    std::string username() const
+    {
+        return m_username;
+    }
 
 private:
     // We hide these from Pegasus::CIMClient
-    using Pegasus::CIMClient::connect;    
+    using Pegasus::CIMClient::connect;
 
     static Pegasus::Boolean dontVerifyCertificate(Pegasus::SSLCertificateInfo &ci);
-    static Pegasus::Boolean verifyCertificate(Pegasus::SSLCertificateInfo &ci);   
+    static Pegasus::Boolean verifyCertificate(Pegasus::SSLCertificateInfo &ci);
 
     std::string m_hostname;
     std::string m_username;

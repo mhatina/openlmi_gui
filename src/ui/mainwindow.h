@@ -60,7 +60,8 @@ const button buttons[] = {
     {"filter_button", ":/filter.png", "Filter", "Ctrl+F", false, true}
 };
 
-namespace Ui {
+namespace Ui
+{
 class MainWindow;
 }
 
@@ -94,23 +95,23 @@ public:
      * @brief Getter
      * @return PCTreeWidget
      */
-    PCTreeWidget* getPcTreeWidget();
+    PCTreeWidget *getPcTreeWidget();
     /**
      * @brief Getter
      * @return ProviderWidget
      */
-    ProviderWidget* getProviderWidget();   
-    QAction* getResetPasswdStorageAction();
+    ProviderWidget *getProviderWidget();
+    QAction *getResetPasswdStorageAction();
     /**
      * @brief Getter
      * @return StatusBar
      */
-    QStatusBar* getStatusBar();
+    QStatusBar *getStatusBar();
     /**
      * @brief Getter
      * @return ToolBar
      */
-    QToolBar* getToolbar();
+    QToolBar *getToolbar();
     /**
      * @brief Close all dialogs
      * @param event -- not used

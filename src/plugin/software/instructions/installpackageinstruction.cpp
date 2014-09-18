@@ -25,7 +25,8 @@
 
 #include <sstream>
 
-InstallPackageInstruction::InstallPackageInstruction(CIMClient *client, Pegasus::CIMInstance package, bool synchronous) :
+InstallPackageInstruction::InstallPackageInstruction(CIMClient *client,
+        Pegasus::CIMInstance package, bool synchronous) :
     SoftwareInstruction(client, "install_package", package),
     m_synchronous(synchronous)
 {
@@ -72,10 +73,10 @@ void InstallPackageInstruction::run()
         if (m_synchronous) {
             Pegasus::CIMInstance package("LMI_InstalledSoftwareIdentity");
             package.addProperty(Pegasus::CIMProperty(
-                                Pegasus::CIMName("InstalledSoftware"),
-                                Pegasus::CIMValue(m_instance)
+                                    Pegasus::CIMName("InstalledSoftware"),
+                                    Pegasus::CIMValue(m_instance)
                                 )
-                       );
+                               );
 
             Pegasus::Array<Pegasus::CIMInstance> system = m_client->enumerateInstances(
                         Pegasus::CIMNamespaceName("root/cimv2"),
@@ -84,17 +85,17 @@ void InstallPackageInstruction::run()
                         false,      // local only
                         false,      // include qualifiers
                         false       // include class origin
-                        );
+                    );
             package.addProperty(Pegasus::CIMProperty(
-                                   Pegasus::CIMName("System"),
-                                   Pegasus::CIMValue(system[0])
-                                   )
+                                    Pegasus::CIMName("System"),
+                                    Pegasus::CIMValue(system[0])
+                                )
                                );
 
             m_client->createInstance(
-                       Pegasus::CIMNamespaceName("root/cimv2"),
-                       package
-                       );
+                Pegasus::CIMNamespaceName("root/cimv2"),
+                package
+            );
         } else {
             invokeInstallMethod(4); // Install
         }

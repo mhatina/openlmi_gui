@@ -63,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
         SIGNAL(showMessage(QString)),
         m_ui->status_bar,
         SLOT(showMessage(QString))
-        );
+    );
     m_log_dialog.setTitle("Log");
 
     int cnt = sizeof(buttons) / sizeof(buttons[0]);
@@ -75,10 +75,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
         std::string path = buttons[i].icon_path;
         QPushButton *button;
-        if (!path.empty())
+        if (!path.empty()) {
             button = new QPushButton(QIcon(QPixmap(path.c_str())), "");
-        else
+        } else {
             button = new QPushButton(buttons[i].tooltip);
+        }
         button->setObjectName(buttons[i].object_name);
         button->setToolTip(buttons[i].tooltip);
         button->setShortcut(QKeySequence(buttons[i].shortcut));
@@ -131,34 +132,34 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     Logger::getInstance()->debug("MainWindow::~MainWindow()");
-    delete m_ui;    
+    delete m_ui;
 }
 
-PCTreeWidget* MainWindow::getPcTreeWidget()
+PCTreeWidget *MainWindow::getPcTreeWidget()
 {
     Logger::getInstance()->debug("MainWindow::getPcTreeWidget()");
     return m_ui->tree_widget;
 }
 
-ProviderWidget* MainWindow::getProviderWidget()
+ProviderWidget *MainWindow::getProviderWidget()
 {
     Logger::getInstance()->debug("MainWindow::getProviderWidget()");
     return m_ui->provider_widget;
 }
 
-QAction* MainWindow::getResetPasswdStorageAction()
+QAction *MainWindow::getResetPasswdStorageAction()
 {
     Logger::getInstance()->debug("MainWindow::getResetPasswdStorageAction()");
     return m_ui->action_reset_password_storage;
 }
 
-QStatusBar* MainWindow::getStatusBar()
+QStatusBar *MainWindow::getStatusBar()
 {
     Logger::getInstance()->debug("MainWindow::getStatusBar()");
     return m_ui->status_bar;
 }
 
-QToolBar* MainWindow::getToolbar()
+QToolBar *MainWindow::getToolbar()
 {
     Logger::getInstance()->debug("MainWindow::getToolbar()");
     return m_toolbar;

@@ -39,7 +39,8 @@ public:
      * @param name -- name of user
      * @param value -- value of change
      */
-    ChangeUserPropertyInstruction(CIMClient *client, std::string property, std::string name, Pegasus::CIMValue value);
+    ChangeUserPropertyInstruction(CIMClient *client, std::string property,
+                                  std::string name, Pegasus::CIMValue value);
     /**
      * @brief Compare two instructions
      * @param instruction -- another instruction

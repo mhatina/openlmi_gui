@@ -25,7 +25,8 @@
 
 #include <sstream>
 
-VerifyPackageInstruction::VerifyPackageInstruction(CIMClient *client, Pegasus::CIMInstance package) :
+VerifyPackageInstruction::VerifyPackageInstruction(CIMClient *client,
+        Pegasus::CIMInstance package) :
     SoftwareInstruction(client, "verify_package", package)
 {
 }
@@ -74,14 +75,14 @@ void VerifyPackageInstruction::run()
 {
     try {
         Pegasus::CIMInstance install_service =
-                m_client->enumerateInstances(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    Pegasus::CIMName("LMI_SoftwareInstallationService"),
-                    true,       // deep inheritance
-                    false,      // local only
-                    false,      // include qualifiers
-                    false       // include class origin
-                    )[0];
+            m_client->enumerateInstances(
+                Pegasus::CIMNamespaceName("root/cimv2"),
+                Pegasus::CIMName("LMI_SoftwareInstallationService"),
+                true,       // deep inheritance
+                false,      // local only
+                false,      // include qualifiers
+                false       // include class origin
+            )[0];
         Pegasus::Array<Pegasus::CIMParamValue> in_param;
         Pegasus::Array<Pegasus::CIMParamValue> out_param;
 
@@ -92,14 +93,14 @@ void VerifyPackageInstruction::run()
         value_source.get(source);
 
         Pegasus::CIMInstance instance_source = m_client->getInstance(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    source
-                    );
+                Pegasus::CIMNamespaceName("root/cimv2"),
+                source
+                                               );
 
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("Source"),
                             Pegasus::CIMValue(instance_source)
-                            ));
+                        ));
 
         prop_ind = m_instance.findProperty("System");
         Pegasus::CIMValue value_target = m_instance.getProperty(prop_ind).getValue();
@@ -107,21 +108,21 @@ void VerifyPackageInstruction::run()
         value_target.get(target);
 
         Pegasus::CIMInstance instance_target = m_client->getInstance(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    target
-                    );
+                Pegasus::CIMNamespaceName("root/cimv2"),
+                target
+                                               );
 
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("Target"),
                             Pegasus::CIMValue(instance_target)
-                            ));
+                        ));
 
         m_client->invokeMethod(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    install_service.getPath(),
-                    Pegasus::CIMName("VerifyInstalledIdentity"),
-                    in_param,
-                    out_param);
+            Pegasus::CIMNamespaceName("root/cimv2"),
+            install_service.getPath(),
+            Pegasus::CIMName("VerifyInstalledIdentity"),
+            in_param,
+            out_param);
     } catch (const Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

@@ -26,7 +26,8 @@
 
 #include <QWidget>
 
-namespace Ui {
+namespace Ui
+{
 class ActionBox;
 }
 
@@ -37,7 +38,7 @@ class ActionBox;
  */
 class ActionBox : public QWidget
 {
-    Q_OBJECT    
+    Q_OBJECT
 
 public:
     /**

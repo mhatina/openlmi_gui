@@ -60,7 +60,8 @@ void CIMClient::connect(
         return;
     }
 
-    connect(addr.hostname(), addr.port(), addr.isHttps(), username, password, trust_store);
+    connect(addr.hostname(), addr.port(), addr.isHttps(), username, password,
+            trust_store);
 }
 
 void CIMClient::connect(
@@ -81,7 +82,7 @@ void CIMClient::connect(
             Pegasus::String(username.c_str()),
             Pegasus::String(password.c_str()));
     } else {
-        Pegasus::Boolean (*verify_cb)(Pegasus::SSLCertificateInfo &ci) =
+        Pegasus::Boolean (*verify_cb)(Pegasus::SSLCertificateInfo & ci) =
             m_verify_cert ? verifyCertificate : dontVerifyCertificate;
         Pegasus::SSLContext ctx(
             Pegasus::String(trust_store.c_str()),
@@ -104,7 +105,8 @@ void CIMClient::disconnect()
     m_is_connected = false;
 }
 
-Pegasus::Boolean CIMClient::dontVerifyCertificate(Pegasus::SSLCertificateInfo &ci)
+Pegasus::Boolean CIMClient::dontVerifyCertificate(Pegasus::SSLCertificateInfo
+        &ci)
 {
     Logger::getInstance()->debug("CIMClient::dontVerifyCertificate(Pegasus::SSLCertificateInfo &ci)");
     return true;

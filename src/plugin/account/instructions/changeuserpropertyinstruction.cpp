@@ -26,17 +26,20 @@
 
 #include <sstream>
 
-ChangeUserPropertyInstruction::ChangeUserPropertyInstruction(CIMClient *client, std::string property, std::string name, Pegasus::CIMValue value) :
+ChangeUserPropertyInstruction::ChangeUserPropertyInstruction(CIMClient *client,
+        std::string property, std::string name, Pegasus::CIMValue value) :
     AccountInstruction(client, property, name, value)
 {
 }
 
-bool ChangeUserPropertyInstruction::equals(ChangeUserPropertyInstruction *instruction)
+bool ChangeUserPropertyInstruction::equals(ChangeUserPropertyInstruction
+        *instruction)
 {
     if (instruction->m_instruction == m_instruction
-            && instruction->m_value.equal(m_value)
-            && instruction->m_name == m_name)
+        && instruction->m_value.equal(m_value)
+        && instruction->m_name == m_name) {
         return true;
+    }
 
     return false;
 }
@@ -49,7 +52,8 @@ IInstruction::Subject ChangeUserPropertyInstruction::getSubject()
 std::string ChangeUserPropertyInstruction::toString()
 {
     std::stringstream ss;
-    ss << "acc." << m_instruction << " = \"" << CIMValue::to_std_string(m_value) << "\"\n";
+    ss << "acc." << m_instruction << " = \"" << CIMValue::to_std_string(
+           m_value) << "\"\n";
     return ss.str();
 }
 
@@ -57,14 +61,15 @@ void ChangeUserPropertyInstruction::run()
 {
     try {
         Pegasus::CIMInstance user(getUser());
-        Pegasus::Uint32 propInd = user.findProperty(Pegasus::CIMName(m_instruction.c_str()));
+        Pegasus::Uint32 propInd = user.findProperty(Pegasus::CIMName(
+                                      m_instruction.c_str()));
         Pegasus::CIMProperty prop(user.getProperty(propInd));
         prop.setValue(m_value);
         m_client->modifyInstance(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    user,
-                    false
-                    );
+            Pegasus::CIMNamespaceName("root/cimv2"),
+            user,
+            false
+        );
     } catch (Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

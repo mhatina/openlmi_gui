@@ -29,8 +29,8 @@
  * @brief The AccountInstruction class
  */
 class AccountInstruction : public IInstruction
-{ 
-protected:    
+{
+protected:
     CIMClient *m_client; /**< @brief see CIMClient */
     std::string m_name; /**< @brief Name of user */
 
@@ -48,18 +48,20 @@ public:
      * @param name -- name of user
      * @param value -- new property value
      */
-    AccountInstruction(CIMClient *client, std::string instruction, std::string name, Pegasus::CIMValue value);
+    AccountInstruction(CIMClient *client, std::string instruction, std::string name,
+                       Pegasus::CIMValue value);
     /**
      * @brief Constructor
      * @param client -- see CIMClient
      * @param instruction -- name of instruction
      * @param name -- name of user
      */
-    AccountInstruction(CIMClient *client, std::string instruction, std::string name);
+    AccountInstruction(CIMClient *client, std::string instruction,
+                       std::string name);
     /**
      * @brief Destructor
      */
-    ~AccountInstruction();    
+    ~AccountInstruction();
     std::string getUserName();
 };
 

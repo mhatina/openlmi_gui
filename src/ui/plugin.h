@@ -30,15 +30,15 @@
 #include <QToolBar>
 #include <QWidget>
 
-namespace Engine {
+namespace Engine
+{
 
 /**
  * @brief struct representation of property of LMI_{Account/Group/Service}
  */
-typedef struct
-{
-    const char* display_name; /**< @brief Display name of property */
-    const char* property; /**< @brief Actual name of property */
+typedef struct {
+    const char *display_name; /**< @brief Display name of property */
+    const char *property; /**< @brief Actual name of property */
     bool enabled; /**< @brief Whether the property is editable or not */
 } property;
 
@@ -53,21 +53,23 @@ class IPlugin : public QWidget
 {
     Q_OBJECT
 
-private:    
+private:
     bool m_stop_refresh;
     bool isFileEmpty(std::string filename);
 
 protected:
     bool m_active; /**< @brief whether provider is active and is being displayed */
     bool m_changes_enabled; /**< @brief whether any changes are enabled */
-    bool m_refreshed; /**< @brief represent refresh state of provider */    
+    bool m_refreshed; /**< @brief represent refresh state of provider */
     bool m_still_refreshing;
     boost::thread m_refresh_thread;
     CIMClient *m_client; /**< @brief see CIMClient */
     QMutex *m_mutex; /**< @brief Qt mutex */
     std::string m_system_id;
-    std::vector<IInstruction*> m_instructions; /**< @brief vector where all instructions are stored*/
-    std::vector<void*> *m_data; /**< @brief vector where data from provider are stored */
+    std::vector<IInstruction *>
+    m_instructions; /**< @brief vector where all instructions are stored*/
+    std::vector<void *>
+    *m_data; /**< @brief vector where data from provider are stored */
 
     /**
      * @brief Dialog with question for user whether throw away changes
@@ -94,7 +96,8 @@ protected:
      * @brief findInstruction -- find all occurences of instructions that fulfill requirements
      * @return position of instruction
      */
-    int findInstruction(IInstruction::Subject subject, std::string instructionName = "", int pos = 0);
+    int findInstruction(IInstruction::Subject subject,
+                        std::string instructionName = "", int pos = 0);
 
 public:
     /**
@@ -114,7 +117,7 @@ public:
      * @brief Refresh state of provider
      * @return refresh state
      */
-    bool isRefreshed();    
+    bool isRefreshed();
     /**
      * @brief Method for displaying filter
      * @param show - if true filter is displayed
@@ -148,7 +151,7 @@ public:
      * @param state
      */
     void setPluginEnabled(bool state);
-    void setSystemId(std::string system_id);    
+    void setSystemId(std::string system_id);
     /**
      * @brief Apply all changes
      *
@@ -163,7 +166,7 @@ public:
      * @brief Connect buttons' signals with handlers
      * @param toolbar -- contains buttons
      */
-    void connectButtons(QToolBar* toolbar);
+    void connectButtons(QToolBar *toolbar);
     /**
      * @brief Refresh whole provider
      * @param client -- see CIMClient
@@ -197,7 +200,7 @@ protected slots:
      *
      * Dialog with "Are you sure?" question is displayed.
      */
-    void cancel();    
+    void cancel();
     /**
      * @brief Process fetched data from @ref doneFetchingData
      * @param data
@@ -219,7 +222,8 @@ signals:
      * @param data
      * @param error_message -- if something occures when fetching data, error_message is filled with error message
      */
-    void doneFetchingData(std::vector<void *> *data, std::string error_message = std::string());
+    void doneFetchingData(std::vector<void *> *data,
+                          std::string error_message = std::string());
     /**
      * @brief @brief Emitted when new instruction is added/inserted
      * @param text -- text of new instruction

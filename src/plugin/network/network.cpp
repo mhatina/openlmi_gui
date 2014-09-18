@@ -26,7 +26,7 @@
 #include <sstream>
 #include <QTableWidgetItem>
 
-QTableWidgetItem* createItem(std::string text)
+QTableWidgetItem *createItem(std::string text)
 {
     QTableWidgetItem *item = new QTableWidgetItem(text.c_str());
     item->setToolTip(text.c_str());
@@ -75,39 +75,41 @@ std::string NetworkPlugin::getRefreshInfo()
 void NetworkPlugin::getData(std::vector<void *> *data)
 {
     try {
-    // LMI_IPNetworkConnection LMI_LANEndpoint LMI_NetworkRemoteServiceAccessPoint LMI_IPProtocolEndpoint
+        // LMI_IPNetworkConnection LMI_LANEndpoint LMI_NetworkRemoteServiceAccessPoint LMI_IPProtocolEndpoint
         // LMI_EthernetPort LMI_EthernetPortStatistics
 
         Pegasus::Array<Pegasus::CIMInstance> network =
-                m_client->enumerateInstances(
-                        Pegasus::CIMNamespaceName("root/cimv2"),
-                        Pegasus::CIMName("LMI_IPNetworkConnection"),
-                        true,       // deep inheritance
-                        false,      // local only
-                        true,       // include qualifiers
-                        false       // include class origin
-                    );
+            m_client->enumerateInstances(
+                Pegasus::CIMNamespaceName("root/cimv2"),
+                Pegasus::CIMName("LMI_IPNetworkConnection"),
+                true,       // deep inheritance
+                false,      // local only
+                true,       // include qualifiers
+                false       // include class origin
+            );
 
         int cnt = network.size();
         for (int i = 0; i < cnt; i++) {
-            std::vector<Pegasus::CIMInstance> *vector = new std::vector<Pegasus::CIMInstance>();
+            std::vector<Pegasus::CIMInstance> *vector = new
+            std::vector<Pegasus::CIMInstance>();
             data->push_back(vector);
 
             Pegasus::Array<Pegasus::CIMObject> net_assoc =
-                    m_client->associators(
-                        Pegasus::CIMNamespaceName("root/cimv2"),
-                        network[i].getPath(),
-                        Pegasus::CIMName(),
-                        Pegasus::CIMName(),
-                        Pegasus::String::EMPTY,
-                        Pegasus::String::EMPTY,
-                        true
-                        );
+                m_client->associators(
+                    Pegasus::CIMNamespaceName("root/cimv2"),
+                    network[i].getPath(),
+                    Pegasus::CIMName(),
+                    Pegasus::CIMName(),
+                    Pegasus::String::EMPTY,
+                    Pegasus::String::EMPTY,
+                    true
+                );
 
             vector->push_back(network[i]);
             int cnt_assoc = net_assoc.size();
-            for (int j = 0; j < cnt_assoc; j++)
+            for (int j = 0; j < cnt_assoc; j++) {
                 vector->push_back(Pegasus::CIMInstance(net_assoc[j]));
+            }
         }
 
 
@@ -139,7 +141,8 @@ void NetworkPlugin::fillTab(std::vector<void *> *data)
     try {
         int cnt = data->size();
         for (int i = 0; i < cnt; i++) {
-            std::vector<Pegasus::CIMInstance> *vector = ((std::vector<Pegasus::CIMInstance>*) (*data)[i]);
+            std::vector<Pegasus::CIMInstance> *vector = ((std::vector<Pegasus::CIMInstance>
+                    *) (*data)[i]);
 
             int network_row_count = m_ui->networks_table->rowCount();
             int interface_row_count;
@@ -148,69 +151,76 @@ void NetworkPlugin::fillTab(std::vector<void *> *data)
             m_ui->networks_table->insertRow(network_row_count);
 
             for (unsigned int j = 0; j < vector->size(); j++) {
-                if (CIMValue::get_property_value((*vector)[j], "CreationClassName") == "LMI_IPNetworkConnection") {
+                if (CIMValue::get_property_value((*vector)[j],
+                                                 "CreationClassName") == "LMI_IPNetworkConnection") {
                     m_ui->networks_table->setItem(
-                                network_row_count,
-                                0,
-                                createItem(CIMValue::get_property_value((*vector)[j], "ElementName"))
-                                );
+                        network_row_count,
+                        0,
+                        createItem(CIMValue::get_property_value((*vector)[j], "ElementName"))
+                    );
 
                     m_ui->networks_table->setItem(
-                                network_row_count,
-                                1,
-                                createItem(CIMValue::get_property_value((*vector)[j], "Description"))
-                                );
+                        network_row_count,
+                        1,
+                        createItem(CIMValue::get_property_value((*vector)[j], "Description"))
+                    );
 
                     m_ui->networks_table->setItem(
-                                network_row_count,
-                                2,
-                                createItem(CIMValue::get_property_value((*vector)[j], "OperatingStatus"))
-                                );
-                } else if (CIMValue::get_property_value((*vector)[j], "CreationClassName") == "LMI_LANEndpoint") {
+                        network_row_count,
+                        2,
+                        createItem(CIMValue::get_property_value((*vector)[j], "OperatingStatus"))
+                    );
+                } else if (CIMValue::get_property_value((*vector)[j],
+                                                        "CreationClassName") == "LMI_LANEndpoint") {
                     m_ui->networks_table->setItem(
-                                network_row_count,
-                                3,
-                                createItem(CIMValue::get_property_value((*vector)[j], "MACAddress"))
-                                );
-                } else if (CIMValue::get_property_value((*vector)[j], "CreationClassName") == "LMI_IPProtocolEndpoint") {
+                        network_row_count,
+                        3,
+                        createItem(CIMValue::get_property_value((*vector)[j], "MACAddress"))
+                    );
+                } else if (CIMValue::get_property_value((*vector)[j],
+                                                        "CreationClassName") == "LMI_IPProtocolEndpoint") {
                     interface_row_count = m_ui->interfaces_table->rowCount();
                     m_ui->interfaces_table->insertRow(interface_row_count);
 
                     m_ui->interfaces_table->setItem(
-                                interface_row_count,
-                                0,
-                                createItem(CIMValue::get_property_value((*vector)[j], "SystemName"))
-                                );
+                        interface_row_count,
+                        0,
+                        createItem(CIMValue::get_property_value((*vector)[j], "SystemName"))
+                    );
 
                     m_ui->interfaces_table->setItem(
-                                interface_row_count,
-                                1,
-                                createItem(CIMValue::get_property_value((*vector)[0], "ElementName"))
-                                );
+                        interface_row_count,
+                        1,
+                        createItem(CIMValue::get_property_value((*vector)[0], "ElementName"))
+                    );
 
                     std::string text = CIMValue::get_property_value((*vector)[j], "IPv4Address");
-                    if (text.empty())
+                    if (text.empty()) {
                         text = CIMValue::get_property_value((*vector)[j], "IPv6Address");
+                    }
                     m_ui->interfaces_table->setItem(
-                                interface_row_count,
-                                2,
-                                createItem(text)
-                                );
+                        interface_row_count,
+                        2,
+                        createItem(text)
+                    );
 
                     m_ui->interfaces_table->setItem(
-                                interface_row_count,
-                                3,
-                                createItem(CIMValue::get_property_value((*vector)[j], "SubnetMask"))
-                                );
+                        interface_row_count,
+                        3,
+                        createItem(CIMValue::get_property_value((*vector)[j], "SubnetMask"))
+                    );
 
-                    if (interface_row_sync == -1)
+                    if (interface_row_sync == -1) {
                         continue;
+                    }
 
                     std::string expected = CIMValue::get_property_value((*vector)[j], "Name");
-                    std::string test = CIMValue::get_property_value((*vector)[interface_row_sync], "Name");
+                    std::string test = CIMValue::get_property_value((*vector)[interface_row_sync],
+                                       "Name");
 
                     int tmp = interface_row_sync;
-                    while (CIMValue::get_property_value((*vector)[interface_row_sync], "CreationClassName") == "LMI_NetworkRemoteServiceAccessPoint"
+                    while (CIMValue::get_property_value((*vector)[interface_row_sync],
+                                                        "CreationClassName") == "LMI_NetworkRemoteServiceAccessPoint"
                            && expected[expected.length() - 1] != test[test.length() - 1]) {
                         interface_row_sync++;
                         expected = CIMValue::get_property_value((*vector)[j], "Name");
@@ -218,15 +228,18 @@ void NetworkPlugin::fillTab(std::vector<void *> *data)
                     }
 
                     m_ui->interfaces_table->setItem(
-                                interface_row_count,
-                                4,
-                                createItem(CIMValue::get_property_value((*vector)[interface_row_sync], "AccessInfo"))
-                                );
+                        interface_row_count,
+                        4,
+                        createItem(CIMValue::get_property_value((*vector)[interface_row_sync],
+                                   "AccessInfo"))
+                    );
                     interface_row_sync = tmp;
-                } else if (CIMValue::get_property_value((*vector)[j], "CreationClassName") == "LMI_NetworkRemoteServiceAccessPoint"
+                } else if (CIMValue::get_property_value((*vector)[j],
+                                                        "CreationClassName") == "LMI_NetworkRemoteServiceAccessPoint"
                            && CIMValue::get_property_value((*vector)[j], "AccessContext") == "2") {
-                    if (interface_row_sync == -1)
+                    if (interface_row_sync == -1) {
                         interface_row_sync = j;
+                    }
                 }
             }
         }

@@ -34,8 +34,9 @@ bool DetailsDialog::isKeyProperty(const char *property)
     Logger::getInstance()->debug("DetailsDialog::isKeyProperty(const char *property)");
     int cnt = sizeof(key_property) / sizeof(key_property[0]);
     for (int i = 0; i < cnt; i++) {
-        if (strcmp(key_property[i], property) == 0)
+        if (strcmp(key_property[i], property) == 0) {
             return true;
+        }
     }
 
     return false;
@@ -77,17 +78,18 @@ std::map<std::string, std::string> DetailsDialog::getChanges()
     return m_changes;
 }
 
-void DetailsDialog::alterProperties(std::map<std::string, std::string> instructions)
+void DetailsDialog::alterProperties(std::map<std::string, std::string>
+                                    instructions)
 {
     Logger::getInstance()->debug("DetailsDialog::alterProperties(std::map<std::string, std::string> instructions)");
     std::map<std::string, std::string>::iterator it;
     for (it = instructions.begin(); it != instructions.end(); it++) {
         LabeledLineEdit *line;
-        if ((line = findChild<LabeledLineEdit*>(it->first.c_str())) != NULL) {
+        if ((line = findChild<LabeledLineEdit *>(it->first.c_str())) != NULL) {
             line->textChanged();
             line->setText(it->second.c_str());
         }
-     }
+    }
 }
 
 void DetailsDialog::hideCancelButton()
@@ -102,7 +104,8 @@ void DetailsDialog::setValues(Pegasus::CIMInstance instance, bool disableAll)
     std::map<std::string, std::string> values;
     int cnt = instance.getPropertyCount();
     for (int i = 0; i < cnt; i++) {
-        std::string object_name = std::string(instance.getProperty(i).getName().getString().getCString());
+        std::string object_name = std::string(instance.getProperty(
+                i).getName().getString().getCString());
         std::string str_value = CIMValue::get_property_value(instance, object_name);
         values[object_name] = str_value;
     }
@@ -110,37 +113,41 @@ void DetailsDialog::setValues(Pegasus::CIMInstance instance, bool disableAll)
     setValues(values, disableAll);
 }
 
-void DetailsDialog::setValues(std::map<std::string, std::string> values, bool disableAll)
+void DetailsDialog::setValues(std::map<std::string, std::string> values,
+                              bool disableAll)
 {
     Logger::getInstance()->debug("DetailsDialog::setValues(std::map<std::string, std::string> values, bool disableAll)");
     m_changes_enabled = false;
     std::map<std::string, std::string>::iterator it;
 
-    std::vector<LabeledLineEdit*> lines;
+    std::vector<LabeledLineEdit *> lines;
     int max_width = 0;
     for (it = values.begin(); it != values.end(); it++) {
         std::string object_name = it->first;
         std::string str_name = insertSpaces(object_name);
         std::string str_value = it->second;
-        QWidget *widget_area = findChild<QWidget*>("widget_area");
+        QWidget *widget_area = findChild<QWidget *>("widget_area");
         QLayout *layout = widget_area->layout();
 
         bool key = isKeyProperty(object_name.c_str());
-        LabeledLineEdit *widget = new LabeledLineEdit(object_name, str_name, str_value, key);
+        LabeledLineEdit *widget = new LabeledLineEdit(object_name, str_name, str_value,
+                key);
         widget->setReadOnly(disableAll | key);
-        if (max_width < widget->getLabelWidth())
+        if (max_width < widget->getLabelWidth()) {
             max_width = widget->getLabelWidth();
+        }
         connect(
             widget,
-            SIGNAL(itemChanged(LabeledLineEdit*)),
+            SIGNAL(itemChanged(LabeledLineEdit *)),
             this,
-            SLOT(itemChanged(LabeledLineEdit*)));
+            SLOT(itemChanged(LabeledLineEdit *)));
         layout->addWidget(widget);
         lines.push_back(widget);
     }
     int cnt = lines.size();
-    for (int i = 0; i < cnt; i++)
+    for (int i = 0; i < cnt; i++) {
         lines[i]->setAlignment(max_width);
+    }
 
     m_changes_enabled = true;
 }
@@ -149,8 +156,9 @@ void DetailsDialog::setValues(std::map<std::string, std::string> values, bool di
 void DetailsDialog::itemChanged(LabeledLineEdit *item)
 {
     Logger::getInstance()->debug("DetailsDialog::itemChanged(LabeledLineEdit *item)");
-    if (!m_changes_enabled)
+    if (!m_changes_enabled) {
         return;
+    }
 
     std::string property_name = item->getObjectName();
     std::string value = item->getText();

@@ -26,7 +26,8 @@
 #include <QListWidget>
 #include <QWidget>
 
-namespace Ui {
+namespace Ui
+{
 class ListWidget;
 }
 
@@ -45,7 +46,7 @@ public:
     explicit ListWidget(QWidget *parent = 0);
     ~ListWidget();
 
-    QList<QListWidgetItem*> selectedItems() const;
+    QList<QListWidgetItem *> selectedItems() const;
     void addItem(QListWidgetItem *item);
     void removeItem(QListWidgetItem *item);
 
@@ -57,7 +58,7 @@ signals:
     void getFocus();
     void itemDoubleClicked(QListWidgetItem *item);
     void itemSelectionChanged();
-    void lostFocus();    
+    void lostFocus();
 };
 
 #endif // LISTWIDGET_H

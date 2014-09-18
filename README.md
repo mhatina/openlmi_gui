@@ -15,8 +15,11 @@ LMI Command Center has several dependencies:
 - C++ compiler, which supports C++98 standard
 - tog-pegasus (2.12.0)
 - tog-pegasus-libs (2.12.0)
+- tog-pegasus-devel (2.12.0)
 - boost-thread (1.54.0)
+- boost-devel (1.54.0)
 - openslp (1.2.1)
+- gnome-keyring (3.10.0)
 - build tools (autoconf, automake, make, qmake, ...)
 
 To install the module, follow these steps:

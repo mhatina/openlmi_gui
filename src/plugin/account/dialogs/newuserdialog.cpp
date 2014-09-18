@@ -25,11 +25,12 @@
 NewUserDialog::NewUserDialog(QWidget *parent) :
     QDialog(parent),
     m_ui(new Ui::NewUserDialog)
-{   
+{
     m_ui->setupUi(this);
     connect(m_ui->ok_button, SIGNAL(clicked()), this, SLOT(accept()));
     connect(m_ui->cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(m_ui->name_line, SIGNAL(textChanged(QString)), this, SLOT(changeHomeDir(QString)));
+    connect(m_ui->name_line, SIGNAL(textChanged(QString)), this,
+            SLOT(changeHomeDir(QString)));
     m_ui->name_line->setFocus();
 }
 

@@ -70,14 +70,16 @@ SOURCES         +=      main.cpp \
                         instructions/connectinstruction.cpp \
                         plugin.cpp \
                         showtextdialog.cpp \
-                        eventlog.cpp \
                         widgets/labeledlineedit.cpp \
                         detailsdialog.cpp \
                         kernelslots.cpp \
                         treewidgetitem.cpp \
                         systemdetailsdialog.cpp \
                         settingsdialog.cpp \
-    widgets/labeledlabel.cpp
+                        widgets/labeledlabel.cpp \
+                        settings/generalsettings.cpp \
+                        settings/isettings.cpp \
+    settings/generalpluginsettings.cpp
 
 HEADERS         +=      mainwindow.h \
                         kernel.h \
@@ -93,13 +95,15 @@ HEADERS         +=      mainwindow.h \
                         instructions/instruction.h \
                         instructions/connectinstruction.h \
                         showtextdialog.h \
-                        eventlog.h \
                         widgets/labeledlineedit.h \
                         detailsdialog.h \
                         treewidgetitem.h \
                         systemdetailsdialog.h \
                         settingsdialog.h \
-    widgets/labeledlabel.h
+                        widgets/labeledlabel.h \
+                        settings/generalsettings.h \
+                        settings/isettings.h \
+    settings/generalpluginsettings.h
 
 FORMS           +=      mainwindow.ui \
                         widgets/providerwidget.ui \
@@ -110,6 +114,8 @@ FORMS           +=      mainwindow.ui \
                         detailsdialog.ui \
                         systemdetailsdialog.ui \
                         settingsdialog.ui \
-    widgets/labeledlabel.ui
+                        widgets/labeledlabel.ui \
+                        settings/generalsettings.ui \
+    settings/generalpluginsettings.ui
 
 

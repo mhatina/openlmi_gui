@@ -24,13 +24,13 @@
 
 /**
  * @brief Macro for showing debug logs
- * 
- * Implicitly set to false (debug logs are hidden). If debug logs 
+ *
+ * Implicitly set to false (debug logs are hidden). If debug logs
  * shouldn't be hidden set to true when building project.
  *
  */
 #ifndef DEBUGGING
-#   define DEBUGGING false
+#define DEBUGGING false
 #endif
 
 #include "logger_global.h"
@@ -70,7 +70,7 @@ signals:
 
 private:
     bool m_show_debug_message;
-    std::ofstream m_log_file; 
+    std::ofstream m_log_file;
     std::string m_log_path;
     static QMutex m_mutex;
     static Logger *m_instance;
@@ -166,7 +166,8 @@ public:
 
     void setShowDebug(bool value);
 
-private slots:
+    private
+slots:
     void displayDialog(std::string title, std::string text);
 };
 

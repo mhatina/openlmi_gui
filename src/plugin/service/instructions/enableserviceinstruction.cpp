@@ -23,7 +23,8 @@
 #include "lmiwbem_value.h"
 #include "logger.h"
 
-EnableServiceInstruction::EnableServiceInstruction(CIMClient *client, std::string name) :
+EnableServiceInstruction::EnableServiceInstruction(CIMClient *client,
+        std::string name) :
     ServiceInstruction(client, "enable_service", name)
 {
 }
@@ -43,8 +44,9 @@ void EnableServiceInstruction::run()
     try {
         Pegasus::CIMValue ret = invokeMethod("TurnServiceOn");
 
-        if (!ret.equal(Pegasus::CIMValue(Pegasus::Uint32(0))))
+        if (!ret.equal(Pegasus::CIMValue(Pegasus::Uint32(0)))) {
             Logger::getInstance()->info("Unable to enable service.");
+        }
     } catch (Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

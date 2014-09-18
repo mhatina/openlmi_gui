@@ -25,7 +25,8 @@
 
 #include <sstream>
 
-AddUserToGroupInstruction::AddUserToGroupInstruction(CIMClient *client, std::string name, Pegasus::CIMValue user_id) :
+AddUserToGroupInstruction::AddUserToGroupInstruction(CIMClient *client,
+        std::string name, Pegasus::CIMValue user_id) :
     GroupInstruction(client, "add_user_to_group", name, user_id)
 {
 }
@@ -49,27 +50,28 @@ void AddUserToGroupInstruction::run()
         Pegasus::CIMInstance group(getGroup());
         Pegasus::CIMInstance member("LMI_MemberOfGroup");
         member.addProperty(Pegasus::CIMProperty(
-                            Pegasus::CIMName("Collection"),
-                            Pegasus::CIMValue(group.getPath())
-                            )
-                   );
+                               Pegasus::CIMName("Collection"),
+                               Pegasus::CIMValue(group.getPath())
+                           )
+                          );
 
         Pegasus::Array<Pegasus::CIMObject> identity = m_client->execQuery(
                     Pegasus::CIMNamespaceName("root/cimv2"),
                     Pegasus::String("WQL"),
-                    Pegasus::String(std::string("SELECT * FROM LMI_Identity WHERE InstanceID = \"LMI:UID:" +
-                                                CIMValue::to_std_string(m_value) + "\"").c_str())
-                    );
+                    Pegasus::String(
+                        std::string("SELECT * FROM LMI_Identity WHERE InstanceID = \"LMI:UID:" +
+                                    CIMValue::to_std_string(m_value) + "\"").c_str())
+                );
         member.addProperty(Pegasus::CIMProperty(
                                Pegasus::CIMName("Member"),
                                Pegasus::CIMValue(identity[0].getPath())
-                               )
-                           );
+                           )
+                          );
 
         m_client->createInstance(
-                   Pegasus::CIMNamespaceName("root/cimv2"),
-                   member
-                   );
+            Pegasus::CIMNamespaceName("root/cimv2"),
+            member
+        );
     } catch (const Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

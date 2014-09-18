@@ -38,8 +38,7 @@ int main(int argc, char *argv[])
     int opt;
     const char *shortopts = "gh";
     while ((opt = getopt(argc, argv, shortopts)) != -1)
-        switch (opt)
-        {
+        switch (opt) {
         case 'g':
             Logger::getInstance()->setShowDebug(true);
             break;
@@ -56,6 +55,6 @@ int main(int argc, char *argv[])
 
     Engine::Kernel kernel;
     kernel.showMainWindow();
-    
+
     return a.exec();
 }

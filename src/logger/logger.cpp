@@ -30,28 +30,27 @@
 
 #include <iostream>
 
-Logger* Logger::m_instance = NULL;
+Logger *Logger::m_instance = NULL;
 QMutex Logger::m_mutex;
 
 Logger::Logger() :
     m_show_debug_message(DEBUGGING)
-{    
+{
     setLogPath(DEFAULT_LOG_PATH);
     connect(
         this,
-        SIGNAL(showDialog(std::string,std::string)),
+        SIGNAL(showDialog(std::string, std::string)),
         this,
-        SLOT(displayDialog(std::string,std::string)));
+        SLOT(displayDialog(std::string, std::string)));
 }
 
 Logger::~Logger()
 {
 }
 
-Logger* Logger::getInstance()
+Logger *Logger::getInstance()
 {
-    if (m_instance == NULL)
-    {
+    if (m_instance == NULL) {
         m_mutex.lock();
         m_instance = new Logger();
         m_mutex.unlock();
@@ -61,8 +60,7 @@ Logger* Logger::getInstance()
 
 void Logger::removeInstance()
 {
-    if (m_instance != NULL)
-    {
+    if (m_instance != NULL) {
         m_mutex.lock();
         delete m_instance;
         m_instance = NULL;
@@ -76,7 +74,7 @@ const std::string Logger::getLogPath() const
 }
 
 void Logger::setLogPath(std::string file_path)
-{    
+{
     std::stringstream ss;
     m_log_path = file_path;
     ss << QDateTime().currentDateTime().date().day()
@@ -88,22 +86,23 @@ void Logger::setLogPath(std::string file_path)
 bool Logger::info(std::string message, bool show_message)
 {
     return log(
-            message,
-            INFO,
-            show_message
-            );
+               message,
+               INFO,
+               show_message
+           );
 }
 
 bool Logger::debug(std::string message, bool show_message)
 {
     if (m_show_debug_message) {
         return log(
-                message,
-                DEBUG,
-                show_message
-                );
-    } else
+                   message,
+                   DEBUG,
+                   show_message
+               );
+    } else {
         return false;
+    }
 }
 
 bool Logger::error(std::string message, bool show_message)
@@ -112,7 +111,7 @@ bool Logger::error(std::string message, bool show_message)
         log(message,
             ERROR,
             false
-            );
+           );
 
         emit showDialog("Warning", message);
 
@@ -122,7 +121,7 @@ bool Logger::error(std::string message, bool show_message)
     return log(message,
                ERROR,
                false
-               );
+              );
 }
 
 bool Logger::critical(std::string message, bool show_message)
@@ -131,7 +130,7 @@ bool Logger::critical(std::string message, bool show_message)
         log(message,
             CRITICAL,
             false
-            );
+           );
 
         emit showDialog("Critical", message);
 
@@ -141,7 +140,7 @@ bool Logger::critical(std::string message, bool show_message)
     return log(message,
                CRITICAL,
                false
-               );
+              );
 }
 
 void Logger::setShowDebug(bool value)
@@ -155,27 +154,27 @@ bool Logger::log(std::string message, log_mode mode, bool show_message)
 {
     m_mutex.lock();
     m_log_file.open(
-                m_log_path.c_str(),
-                std::ios_base::out | std::ios_base::app
-                );
-    if (!m_log_file.is_open())
-    {
+        m_log_path.c_str(),
+        std::ios_base::out | std::ios_base::app
+    );
+    if (!m_log_file.is_open()) {
         setLogPath(DEFAULT_LOG_PATH);
         m_mutex.unlock();
-        std::string err = "Log file cannot be opened! Possibly wrong path. Path changed to " + m_log_path;
-        if (message != err)
+        std::string err =
+            "Log file cannot be opened! Possibly wrong path. Path changed to " + m_log_path;
+        if (message != err) {
             error(err);
+        }
         return false;
     }
 
-    if (show_message)
-    {
+    if (show_message) {
         emit showMessage(message);
         emit showMessage(QString(message.c_str()));
     }
 
     m_log_file << "[" << getTime().c_str() << "] [" << getLogModeInfo(mode) << "] "
-              << message << (message.at(message.size() - 1) == '\n' ? "" : "\n");
+               << message << (message.at(message.size() - 1) == '\n' ? "" : "\n");
     m_log_file.close();
     m_mutex.unlock();
 
@@ -188,16 +187,16 @@ std::string Logger::getTime()
     time(&rawtime);
 
     std::string time = asctime(localtime(&rawtime));
-    if (time.at(time.size() - 1) == '\n')
+    if (time.at(time.size() - 1) == '\n') {
         time.at(time.size() - 1) = '\0';
+    }
 
     return std::string(time);
 }
 
 std::string Logger::getLogModeInfo(log_mode mode)
 {
-    std::string info[] =
-    {
+    std::string info[] = {
         "Info",
         "Debug",
         "Error",
@@ -209,8 +208,8 @@ std::string Logger::getLogModeInfo(log_mode mode)
 void Logger::displayDialog(std::string title, std::string text)
 {
     if (title == "Warning") {
-        QMessageBox::warning((QWidget*) parent(), title.c_str(), text.c_str());
+        QMessageBox::warning((QWidget *) parent(), title.c_str(), text.c_str());
     } else {
-        QMessageBox::critical((QWidget*) parent(), title.c_str(), text.c_str());
+        QMessageBox::critical((QWidget *) parent(), title.c_str(), text.c_str());
     }
 }

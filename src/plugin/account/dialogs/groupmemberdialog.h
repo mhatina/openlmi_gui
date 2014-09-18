@@ -24,7 +24,8 @@
 
 #include <QDialog>
 
-namespace Ui {
+namespace Ui
+{
 class GroupMemberDialog;
 }
 
@@ -36,7 +37,7 @@ class GroupMemberDialog;
 class GroupMemberDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     /**
      * @brief Constructor
@@ -44,7 +45,7 @@ public:
      */
     explicit GroupMemberDialog(QWidget *parent = 0);
     ~GroupMemberDialog();
-    
+
     /**
      * @brief Get selected users
      * @param available_users -- possible users for addition/deletion to/from group
@@ -52,7 +53,8 @@ public:
      *
      * Show dialog with available users.
      */
-    static void getUsers(std::vector<std::string> &available_users, std::vector<std::string> &selected);
+    static void getUsers(std::vector<std::string> &available_users,
+                         std::vector<std::string> &selected);
 
 private:
     Ui::GroupMemberDialog *m_ui;

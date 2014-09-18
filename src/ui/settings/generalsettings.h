@@ -15,47 +15,34 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef EVENTLOG_H
-#define EVENTLOG_H
+#ifndef GENERALSETTINGS_H
+#define GENERALSETTINGS_H
 
-#include "lmiwbem_client.h"
+#include "isettings.h"
 
-#include <boost/thread.hpp>
-#include <map>
-#include <string>
-#include <QIcon>
-#include <QMutex>
-#include <QTreeWidget>
+namespace Ui
+{
+class GeneralSettings;
+}
 
-class EventLog : public QObject
+class GeneralSettings : public ISettings
 {
     Q_OBJECT
 
-    typedef std::map<std::string, CIMClient*> connection_map;
-
 private:
-    bool m_end;
-    boost::thread *m_thread;
-    connection_map *m_connections;
-    QMutex *m_mutex;
-    QTreeWidget *m_tree;
-
-    void checkEvents();
+    Ui::GeneralSettings *m_ui;
 
 public:
-    EventLog();
-    ~EventLog();
-    void end();
-    void setConnectionStorage(connection_map *connections);    
-    void setPCTree(QTreeWidget *tree);
-    void start();
+    explicit GeneralSettings(QWidget *parent = 0);
+    ~GeneralSettings();
+
+    virtual std::string title();
+    virtual void init();
+    virtual void load(QFile &file);
+    virtual void save(QXmlStreamWriter &writer);
 
 private slots:
-    void setIcon(QTreeWidgetItem *item, std::string icon);
-
-signals:
-    void silentConnection(std::string ip);
-    void iconChanged(QTreeWidgetItem *item, std::string icon);
+    void changeCertificate(int state);
 };
 
-#endif // EVENTLOG_H
+#endif // GENERALSETTINGS_H

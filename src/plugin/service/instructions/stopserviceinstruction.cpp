@@ -23,7 +23,8 @@
 #include "logger.h"
 #include "stopserviceinstruction.h"
 
-StopServiceInstruction::StopServiceInstruction(CIMClient *client, std::string name) :
+StopServiceInstruction::StopServiceInstruction(CIMClient *client,
+        std::string name) :
     ServiceInstruction(client, "stop_service", name)
 {
 }
@@ -43,8 +44,9 @@ void StopServiceInstruction::run()
     try {
         Pegasus::CIMValue ret = invokeMethod("StopService");
 
-        if (!ret.equal(Pegasus::CIMValue(Pegasus::Uint32(0))))
+        if (!ret.equal(Pegasus::CIMValue(Pegasus::Uint32(0)))) {
             Logger::getInstance()->info("Unable to stop service.");
+        }
     } catch (Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

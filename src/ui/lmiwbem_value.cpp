@@ -27,7 +27,8 @@
 #include <Pegasus/Common/CIMInstance.h>
 #include <Pegasus/Common/CIMProperty.h>
 
-namespace {
+namespace
+{
 
 bool is_not_digit(char c)
 {
@@ -88,11 +89,12 @@ std::string get_pegasus_value_core(const Pegasus::CIMDateTime &value)
 template <typename T>
 std::string get_pegasus_value(const Pegasus::CIMValue &value)
 {
-    if (value.isNull())
-        return std::string(); 
+    if (value.isNull()) {
+        return std::string();
+    }
 
     if (!value.isArray()) {
-        T raw_value;        
+        T raw_value;
         value.get(raw_value);
         return get_pegasus_value_core<T>(raw_value);
     } else {
@@ -104,8 +106,9 @@ std::string get_pegasus_value(const Pegasus::CIMValue &value)
         for (Pegasus::Uint32 i = 0; i < cnt; ++i) {
             const T &raw_value = raw_array[i];
             ss << get_pegasus_value_core<T>(raw_value);
-            if (i < cnt - 1)
+            if (i < cnt - 1) {
                 ss << ", ";
+            }
         }
         ss << "}";
         return ss.str();
@@ -142,8 +145,9 @@ Pegasus::CIMDateTime get_value_from_std_string_core(const std::string &value)
 template <typename T>
 Pegasus::CIMValue get_value_from_std_string(std::string &value, bool isArray)
 {
-    if (!isArray)
+    if (!isArray) {
         return Pegasus::CIMValue(get_value_from_std_string_core<T>(value));
+    }
 
     if (value[0] == '{') {
         value = value.substr(1, value.size() - 2);
@@ -156,12 +160,14 @@ Pegasus::CIMValue get_value_from_std_string(std::string &value, bool isArray)
         pos = value.find(",");
         std::string tmp = value.substr(pos_start, pos);
         array.append(get_value_from_std_string_core<T>(tmp));
-        if (pos == std::string::npos)
+        if (pos == std::string::npos) {
             break;
+        }
 
         pos_start = pos + 1;
-        while (pos_start < value.size() && isspace(value[pos_start]))
+        while (pos_start < value.size() && isspace(value[pos_start])) {
             pos_start++;
+        }
         value = value.substr(pos_start);
         pos_start = 0;
     }
@@ -214,13 +220,15 @@ std::string CIMValue::decode_values(Pegasus::CIMProperty property)
     Pegasus::Array<Pegasus::String> values;
     Pegasus::Array<Pegasus::String> value_map;
     Pegasus::Uint32 ind = property.findQualifier("Values");
-    if (ind == Pegasus::PEG_NOT_FOUND)
+    if (ind == Pegasus::PEG_NOT_FOUND) {
         return "";
+    }
     property.getQualifier(ind).getValue().get(values);
 
     ind = property.findQualifier("ValueMap");
-    if (ind == Pegasus::PEG_NOT_FOUND)
+    if (ind == Pegasus::PEG_NOT_FOUND) {
         return "";
+    }
     property.getQualifier(ind).getValue().get(value_map);
 
     for (unsigned int i = 0; i < values.size(); i++) {
@@ -234,10 +242,11 @@ std::string CIMValue::decode_values(Pegasus::CIMProperty property)
     if (!cim_value.isArray()) {
         return decode[value];
     } else {
-        value.erase(std::remove_if(value.begin(), value.end(), is_not_digit), value.end());
+        value.erase(std::remove_if(value.begin(), value.end(), is_not_digit),
+                    value.end());
         std::string tmp = "{";
 
-        char *str = (char*) malloc((value.length() + 1) * sizeof(char));
+        char *str = (char *) malloc((value.length() + 1) * sizeof(char));
         char *token;
         char delim = ' ';
 
@@ -246,10 +255,11 @@ std::string CIMValue::decode_values(Pegasus::CIMProperty property)
         for (int i = 0; ; i++) {
             token = strtok(str, &delim);
             str = NULL;
-            if (token == NULL)
+            if (token == NULL) {
                 break;
-            else if (i != 0)
+            } else if (i != 0) {
                 tmp += ", ";
+            }
 
             tmp += decode[token];
         }
@@ -262,9 +272,10 @@ std::string CIMValue::decode_values(Pegasus::CIMProperty property)
 }
 
 std::string CIMValue::get_property_value(Pegasus::CIMInstance instance,
-                                         std::string propertyName, Pegasus::CIMProperty *property)
+        std::string propertyName, Pegasus::CIMProperty *property)
 {
-    Pegasus::Uint32 propIndex = instance.findProperty(Pegasus::CIMName(propertyName.c_str()));
+    Pegasus::Uint32 propIndex = instance.findProperty(Pegasus::CIMName(
+                                    propertyName.c_str()));
     if (propIndex == Pegasus::PEG_NOT_FOUND) {
         return "";
     }
@@ -284,7 +295,8 @@ std::string CIMValue::get_property_value(Pegasus::CIMInstance instance,
 
 #include <sstream>
 
-Pegasus::CIMValue CIMValue::to_cim_value(Pegasus::CIMType type, std::string value, bool isArray)
+Pegasus::CIMValue CIMValue::to_cim_value(Pegasus::CIMType type,
+        std::string value, bool isArray)
 {
     Logger::getInstance()->debug("CIMValue::to_cim_value(Pegasus::CIMType type, std::string value, bool isArray)");
     switch (type) {

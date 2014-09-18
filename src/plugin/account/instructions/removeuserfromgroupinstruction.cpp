@@ -25,7 +25,8 @@
 
 #include <sstream>
 
-RemoveUserFromGroupInstruction::RemoveUserFromGroupInstruction(CIMClient *client, std::string name, Pegasus::CIMValue user_id) :
+RemoveUserFromGroupInstruction::RemoveUserFromGroupInstruction(
+    CIMClient *client, std::string name, Pegasus::CIMValue user_id) :
     GroupInstruction(client, "remove_user_from_group", name, user_id)
 {
 }
@@ -49,14 +50,14 @@ void RemoveUserFromGroupInstruction::run()
 {
     try {
         Pegasus::Array<Pegasus::CIMInstance> members =
-                m_client->enumerateInstances(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    Pegasus::CIMName("LMI_MemberOfGroup"),
-                    true,       // deep inheritance
-                    false,      // local only
-                    false,      // include qualifiers
-                    false       // include class origin
-                    );
+            m_client->enumerateInstances(
+                Pegasus::CIMNamespaceName("root/cimv2"),
+                Pegasus::CIMName("LMI_MemberOfGroup"),
+                true,       // deep inheritance
+                false,      // local only
+                false,      // include qualifiers
+                false       // include class origin
+            );
 
         Pegasus::CIMObjectPath member;
         int cnt = members.size();
@@ -66,18 +67,20 @@ void RemoveUserFromGroupInstruction::run()
             ind  = members[i].findProperty("Collection");
             Pegasus::CIMProperty collection_prop = members[i].getProperty(ind);
             std::string member_property(member_prop.getValue().toString().getCString());
-            std::string collection_property(collection_prop.getValue().toString().getCString());
-            if (member_property.find("LMI:UID:" + CIMValue::to_std_string(m_value)) != std::string::npos
-                    && collection_property.find(m_name) != std::string::npos) {
+            std::string collection_property(
+                collection_prop.getValue().toString().getCString());
+            if (member_property.find("LMI:UID:" + CIMValue::to_std_string(
+                                         m_value)) != std::string::npos
+                && collection_property.find(m_name) != std::string::npos) {
                 member = members[i].getPath();
                 break;
             }
         }
 
         m_client->deleteInstance(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    member
-                    );
+            Pegasus::CIMNamespaceName("root/cimv2"),
+            member
+        );
     } catch (const Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

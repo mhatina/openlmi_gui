@@ -65,8 +65,8 @@ void Plugin::clear()
 }
 
 void Plugin::getData(std::vector<void *> *data)
-{    
-    try {    
+{
+    try {
     } catch (Pegasus::Exception &ex) {
         emit doneFetchingData(NULL, std::string(ex.getMessage().getCString()));
         return;

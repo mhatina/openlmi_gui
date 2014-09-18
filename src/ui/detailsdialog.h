@@ -29,14 +29,15 @@
 #include <QDialog>
 #include <QTableWidgetItem>
 
-const char* const key_property[] = {
+const char *const key_property[] = {
     "CreationClassName",
     "Name",
     "SystemCreationClassName",
     "SystemName"
 };
 
-namespace Ui {
+namespace Ui
+{
 class DetailsDialog;
 }
 
@@ -44,12 +45,12 @@ class DetailsDialog : public QDialog
 {
     Q_OBJECT
 
-private:    
+private:
     bool m_changes_enabled;
     std::map<std::string, std::string> m_changes;
     Ui::DetailsDialog *m_ui;
 
-    bool isKeyProperty(const char* property);
+    bool isKeyProperty(const char *property);
     std::string insertSpaces(std::string text);
 
 public:
@@ -60,7 +61,8 @@ public:
     void alterProperties(std::map<std::string, std::string> instructions);
     void hideCancelButton();
     void setValues(Pegasus::CIMInstance instance, bool disableAll = false);
-    void setValues(std::map<std::string, std::string> values, bool disableAll = false);
+    void setValues(std::map<std::string, std::string> values,
+                   bool disableAll = false);
 
 private slots:
     void itemChanged(LabeledLineEdit *item);

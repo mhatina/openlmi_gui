@@ -55,9 +55,9 @@ void Engine::IPlugin::addInstruction(IInstruction *instruction)
         std::string hostname = m_client->hostname();
         std::string username = m_client->username();
         m_instructions.push_back(new ConnectInstruction(
-                    hostname,
-                    username
-                    ));
+                                     hostname,
+                                     username
+                                 ));
     }
 
     m_instructions.push_back(instruction);
@@ -77,29 +77,33 @@ void Engine::IPlugin::insertInstruction(IInstruction *instruction, int pos)
 {
     Logger::getInstance()->debug("Engine::IPlugin::insertInstruction(IInstruction *instruction, int pos)");
     m_instructions.insert(
-                m_instructions.begin() + pos,
-                1,
-                instruction
-            );
-    connect(instruction, SIGNAL(error(std::string)), this, SLOT(handleError(std::string)));
+        m_instructions.begin() + pos,
+        1,
+        instruction
+    );
+    connect(instruction, SIGNAL(error(std::string)), this,
+            SLOT(handleError(std::string)));
     emit unsavedChanges(this);
     emit newInstructionText(getInstructionText());
 }
 
-int Engine::IPlugin::findInstruction(IInstruction::Subject subject, std::string instructionName, int pos)
+int Engine::IPlugin::findInstruction(IInstruction::Subject subject,
+                                     std::string instructionName, int pos)
 {
     Logger::getInstance()->debug("Engine::IPlugin::findInstruction(IInstruction::Subject subject, std::string instructionName, int pos)");
-    std::vector<IInstruction*>::iterator it;
+    std::vector<IInstruction *>::iterator it;
     unsigned int i = pos;
-    if (i > m_instructions.size())
+    if (i > m_instructions.size()) {
         return -1;
+    }
     for (it = m_instructions.begin() + pos; it != m_instructions.end(); it++) {
         bool found = true;
 
         found &= (*it)->getSubject() == subject;
 
-        if (!instructionName.empty())
+        if (!instructionName.empty()) {
             found &= (*it)->getInstructionName() == instructionName;
+        }
 
         if (!found) {
             i++;
@@ -126,9 +130,9 @@ Engine::IPlugin::IPlugin() :
     qRegisterMetaType<std::string>("std::string");
     connect(
         this,
-        SIGNAL(doneFetchingData(std::vector<void*>*,std::string)),
+        SIGNAL(doneFetchingData(std::vector<void *> *, std::string)),
         this,
-        SLOT(handleDataFetching(std::vector<void*>*,std::string)));
+        SLOT(handleDataFetching(std::vector<void *> *, std::string)));
     connect(
         this,
         SIGNAL(doneApplying()),
@@ -137,7 +141,7 @@ Engine::IPlugin::IPlugin() :
 }
 
 Engine::IPlugin::~IPlugin()
-{    
+{
     Logger::getInstance()->debug("Engine::IPlugin::~IPlugin()");
     delete m_mutex;
 }
@@ -145,9 +149,10 @@ Engine::IPlugin::~IPlugin()
 bool Engine::IPlugin::isFilterShown()
 {
     Logger::getInstance()->debug("Engine::IPlugin::isFilterShown()");
-    QGroupBox* filter_box = findChild<QGroupBox*>("filter_box");
-    if (filter_box != NULL)
+    QGroupBox *filter_box = findChild<QGroupBox *>("filter_box");
+    if (filter_box != NULL) {
         return !filter_box->isHidden();
+    }
     return false;
 }
 
@@ -160,7 +165,7 @@ bool Engine::IPlugin::isRefreshed()
 bool Engine::IPlugin::showFilter(bool show)
 {
     Logger::getInstance()->debug("Engine::IPlugin::showFilter(bool show)");
-    QGroupBox* filter_box = findChild<QGroupBox*>("filter_box");
+    QGroupBox *filter_box = findChild<QGroupBox *>("filter_box");
     if (filter_box == NULL) {
         Logger::getInstance()->error("Unable to show/hide filter!");
         return false;
@@ -195,62 +200,67 @@ void Engine::IPlugin::applyChanges()
 void Engine::IPlugin::cancelChanges()
 {
     Logger::getInstance()->debug("Engine::IPlugin::cancelChanges()");
-    for (unsigned int i = 0; i < m_instructions.size(); i++)
+    for (unsigned int i = 0; i < m_instructions.size(); i++) {
         delete m_instructions[i];
+    }
     m_instructions.clear();
-    emit noChanges(this);    
+    emit noChanges(this);
 }
 
 void Engine::IPlugin::connectButtons(QToolBar *toolbar)
 {
     Logger::getInstance()->debug("Engine::IPlugin::connectButtons(QToolBar *toolbar)");
-    QPushButton* button = toolbar->findChild<QPushButton*>("apply_button");
+    QPushButton *button = toolbar->findChild<QPushButton *>("apply_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(apply())
-        );
-    button = toolbar->findChild<QPushButton*>("cancel_button");
+    );
+    button = toolbar->findChild<QPushButton *>("cancel_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(cancel())
-        );
+    );
 }
 
 void Engine::IPlugin::refresh(CIMClient *client)
 {
     Logger::getInstance()->debug("Engine::IPlugin::refresh(CIMClient *client)");
 
-    if (client == NULL)
+    if (client == NULL) {
         return;
+    }
 
     Logger::getInstance()->info("Refreshing " + getLabel());
     m_client = client;
 
     emit refreshProgress(0);
     m_instructions.clear();
-    m_data = new std::vector<void *>();    
+    m_data = new std::vector<void *>();
     clear();
 
-    m_refresh_thread = boost::thread(boost::bind(&Engine::IPlugin::getData, this, m_data));
+    m_refresh_thread = boost::thread(boost::bind(&Engine::IPlugin::getData, this,
+                                     m_data));
 }
 
 void Engine::IPlugin::saveScript(std::string filename)
 {
     Logger::getInstance()->debug("Engine::IPlugin::saveScript(std::string filename)");
-    if (m_instructions.empty())
+    if (m_instructions.empty()) {
         return;
+    }
 
     std::ofstream out_file;
     out_file.open(filename.c_str(), std::fstream::out | std::fstream::app);
 
     unsigned int i;
     bool empty = isFileEmpty(filename);
-    if (!empty)
+    if (!empty) {
         out_file << "\n";
+    }
     for (i = empty ? 0 : 1; i < m_instructions.size(); i++) {
         out_file << m_instructions[i]->toString();
     }
@@ -268,14 +278,15 @@ void Engine::IPlugin::setRefreshed(bool refreshed)
 {
     Logger::getInstance()->debug("Engine::IPlugin::setRefreshed(bool refreshed)");
     setPluginEnabled(refreshed);
-    m_refreshed = refreshed;    
+    m_refreshed = refreshed;
 }
 
 void Engine::IPlugin::apply()
 {
     Logger::getInstance()->debug("Engine::IPlugin::apply()");
-    if (!m_active)
+    if (!m_active) {
         return;
+    }
     Logger::getInstance()->info("Applying");
     emit refreshProgress(0);
     boost::thread(boost::bind(&Engine::IPlugin::applyChanges, this));
@@ -284,10 +295,12 @@ void Engine::IPlugin::apply()
 void Engine::IPlugin::cancel()
 {
     Logger::getInstance()->debug("Engine::IPlugin::cancel()");
-    if (!m_active)
+    if (!m_active) {
         return;
-    if (m_instructions.empty())
+    }
+    if (m_instructions.empty()) {
         return;
+    }
 
     int ret = throwAwayChanges();
 
@@ -304,16 +317,19 @@ void Engine::IPlugin::cancel()
     }
 }
 
-void Engine::IPlugin::handleDataFetching(std::vector<void *> *data, std::string error_message)
+void Engine::IPlugin::handleDataFetching(std::vector<void *> *data,
+        std::string error_message)
 {
     Logger::getInstance()->debug("Engine::IPlugin::handleDataFetching(std::vector<void *> *data, std::string error_message)");
-    if (!m_stop_refresh && !m_still_refreshing)
+    if (!m_stop_refresh && !m_still_refreshing) {
         m_refresh_thread.join();
+    }
 
     if (!error_message.empty()) {
         setRefreshed(false);
-        if (!m_stop_refresh)
+        if (!m_stop_refresh) {
             Logger::getInstance()->error(error_message);
+        }
         emit refreshProgress(1);
     } else if (data != NULL) {
         if (m_stop_refresh) {
@@ -321,8 +337,9 @@ void Engine::IPlugin::handleDataFetching(std::vector<void *> *data, std::string 
             return;
         }
         setRefreshed(true);
-        if (!m_still_refreshing)
+        if (!m_still_refreshing) {
             emit refreshProgress(100);
+        }
         fillTab(data);
         delete data;
         Logger::getInstance()->info(getLabel() + ": " + getRefreshInfo());
@@ -340,21 +357,23 @@ void Engine::IPlugin::setPluginEnabled(bool state)
 {
     Logger::getInstance()->debug("Engine::IPlugin::setPluginEnabled(bool state)");
     setEnabled(true);
-    QList<QWidget*> children = findChildren<QWidget*>();
+    QList<QWidget *> children = findChildren<QWidget *>();
     int cnt = children.size();
 
-    for (int i = 0; i < cnt; i++)
+    for (int i = 0; i < cnt; i++) {
         children[i]->setEnabled(state);
+    }
 
-    QGroupBox* filter_box = findChild<QGroupBox*>("filter_box");
+    QGroupBox *filter_box = findChild<QGroupBox *>("filter_box");
 
     if (filter_box != NULL) {
         filter_box->setEnabled(true);
-        QList<QWidget*> filter_box_children = filter_box->findChildren<QWidget*>();
+        QList<QWidget *> filter_box_children = filter_box->findChildren<QWidget *>();
         int filter_box_children_cnt = filter_box_children.size();
 
-        for (int i = 0; i < filter_box_children_cnt; i++)
+        for (int i = 0; i < filter_box_children_cnt; i++) {
             filter_box_children[i]->setEnabled(true);
+        }
     }
 }
 

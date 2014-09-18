@@ -15,57 +15,30 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef DISCOVERWORKER_H
-#define DISCOVERWORKER_H
+#ifndef GENERALPLUGINSETTINGS_H
+#define GENERALPLUGINSETTINGS_H
 
-#include <iostream>
-#include <list>
-#include <QObject>
-#include <slp.h>
-#include <string>
+#include "isettings.h"
 
-/**
- * @brief The DiscoverWorker class
- *
- * Discover hosts with tog-pegasus service.
- */
-class DiscoverWorker : public QObject
+namespace Ui {
+class GeneralPluginSettings;
+}
+
+class GeneralPluginSettings : public ISettings
 {
     Q_OBJECT
 
 private:
-    std::string m_pc_lang;
-    bool m_async;
-    SLPHandle m_hslp;
-    SLPError m_errcode;
+    Ui::GeneralPluginSettings *m_ui;
 
 public:
-    /**
-     * @brief Constructor
-     */
-    DiscoverWorker();
-    /**
-     * @brief Close SLP
-     */
-    void close();
-    /**
-     * @brief Open SLP
-     */
-    void open();
+    explicit GeneralPluginSettings(QWidget *parent = 0);
+    ~GeneralPluginSettings();
 
-public slots:
-    /**
-     * @brief Discover hosts
-     */
-    void discover();
-
-signals:
-    /**
-     * @brief Represent end of discovering
-     * @param pc -- all discovered hosts
-     */
-    void finished(std::list<std::string> *pc);
-
+    virtual std::string title();
+    virtual void init();
+    virtual void load(QFile &file);
+    virtual void save(QXmlStreamWriter &writer);
 };
 
-#endif // DISCOVERWORKER_H
+#endif // GENERALPLUGINSETTINGS_H

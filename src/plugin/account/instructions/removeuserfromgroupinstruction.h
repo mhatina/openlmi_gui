@@ -38,7 +38,8 @@ public:
      * @param name -- name of group
      * @param user_id -- user's id
      */
-    RemoveUserFromGroupInstruction(CIMClient *client, std::string name, Pegasus::CIMValue user_id);
+    RemoveUserFromGroupInstruction(CIMClient *client, std::string name,
+                                   Pegasus::CIMValue user_id);
     IInstruction::Subject getSubject();
     std::string toString();
     void run();

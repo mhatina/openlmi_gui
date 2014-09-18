@@ -21,7 +21,8 @@
 
 #include "serviceinstruction.h"
 
-ServiceInstruction::ServiceInstruction(CIMClient *client, std::string instruction, std::string name) :
+ServiceInstruction::ServiceInstruction(CIMClient *client,
+                                       std::string instruction, std::string name) :
     IInstruction(instruction),
     m_client(client),
     m_name(name)
@@ -37,13 +38,15 @@ Pegasus::CIMInstance ServiceInstruction::getService()
 {
     Pegasus::Array<Pegasus::CIMObject> services;
     services = m_client->execQuery(
-                Pegasus::CIMNamespaceName("root/cimv2"),
-                Pegasus::String("WQL"),
-                Pegasus::String(std::string("SELECT * FROM LMI_Service WHERE Name = \"" + m_name + "\"").c_str())
-                );
+                   Pegasus::CIMNamespaceName("root/cimv2"),
+                   Pegasus::String("WQL"),
+                   Pegasus::String(std::string("SELECT * FROM LMI_Service WHERE Name = \"" + m_name
+                                   + "\"").c_str())
+               );
 
     if (services.size() != 1) {
-        throw Pegasus::Exception(std::string("No service with name: " + m_name + "\n").c_str());
+        throw Pegasus::Exception(std::string("No service with name: " + m_name +
+                                             "\n").c_str());
     }
 
     return Pegasus::CIMInstance(services[0]);
@@ -56,10 +59,10 @@ Pegasus::CIMValue ServiceInstruction::invokeMethod(std::string method)
     Pegasus::Array<Pegasus::CIMParamValue> out_param;
 
     return m_client->invokeMethod(
-                Pegasus::CIMNamespaceName("root/cimv2"),
-                service.getPath(),
-                Pegasus::CIMName(method.c_str()),
-                in_param,
-                out_param
-                );
+               Pegasus::CIMNamespaceName("root/cimv2"),
+               service.getPath(),
+               Pegasus::CIMName(method.c_str()),
+               in_param,
+               out_param
+           );
 }

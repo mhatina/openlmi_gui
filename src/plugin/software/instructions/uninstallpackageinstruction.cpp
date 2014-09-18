@@ -25,7 +25,8 @@
 
 #include <sstream>
 
-UninstallPackageInstruction::UninstallPackageInstruction(CIMClient *client, Pegasus::CIMInstance package, bool synchronous) :
+UninstallPackageInstruction::UninstallPackageInstruction(CIMClient *client,
+        Pegasus::CIMInstance package, bool synchronous) :
     SoftwareInstruction(client, "uninstall_package", package),
     m_synchronous(synchronous)
 {
@@ -71,8 +72,8 @@ void UninstallPackageInstruction::run()
     try {
         if (m_synchronous) {
             m_client->deleteInstance(
-                        Pegasus::CIMNamespaceName("root/cimv2"),
-                        m_instance.getPath());
+                Pegasus::CIMNamespaceName("root/cimv2"),
+                m_instance.getPath());
         } else {
             invokeInstallMethod(9); // Uninstall
         }

@@ -48,7 +48,8 @@ public:
      * @param name -- name of group
      * @param value -- new property value
      */
-    GroupInstruction(CIMClient *client, std::string instruction, std::string name, Pegasus::CIMValue value);
+    GroupInstruction(CIMClient *client, std::string instruction, std::string name,
+                     Pegasus::CIMValue value);
     /**
      * @brief Constructor
      * @param client -- see CIMClient

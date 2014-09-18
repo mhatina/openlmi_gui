@@ -31,7 +31,8 @@ private:
     bool m_synchronous;
 
 public:
-    InstallPackageInstruction(CIMClient *client, Pegasus::CIMInstance package, bool synchronous);
+    InstallPackageInstruction(CIMClient *client, Pegasus::CIMInstance package,
+                              bool synchronous);
     IInstruction::Subject getSubject();
     std::string toString();
     void run();

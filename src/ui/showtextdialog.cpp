@@ -39,8 +39,9 @@ void ShowTextDialog::setText(std::string text, bool move_to_end)
 {
     Logger::getInstance()->debug("ShowTextDialog::setText(std::string text, bool move_to_end)");
     m_ui->text_edit->setText(text.c_str());
-    if (move_to_end)
+    if (move_to_end) {
         m_ui->text_edit->moveCursor(QTextCursor::End);
+    }
 }
 
 void ShowTextDialog::setTitle(std::string title)

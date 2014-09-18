@@ -45,17 +45,17 @@ ServicePlugin::ServicePlugin() :
     m_services_table->setColumnCount(prop_cnt + 1);
     for (int i = 0; i < prop_cnt; i++)
         m_services_table->setHorizontalHeaderItem(
-                    i,
-                    new QTableWidgetItem(serviceProperties[i].display_name)
-                    );
+            i,
+            new QTableWidgetItem(serviceProperties[i].display_name)
+        );
     m_services_table->setHorizontalHeaderItem(
-                prop_cnt,
-                new QTableWidgetItem("Action")
-                );
+        prop_cnt,
+        new QTableWidgetItem("Action")
+    );
     m_services_table->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     connect(
         m_ui->services_table,
-        SIGNAL(itemDoubleClicked(QTableWidgetItem*)),
+        SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
         this,
         SLOT(showDetails()));
     showFilter(false);
@@ -76,9 +76,9 @@ std::string ServicePlugin::getInstructionText()
     return ss.str();
 }
 
-std::string ServicePlugin::getLabel() 
+std::string ServicePlugin::getLabel()
 {
-    return "Services";
+    return "Service";
 }
 
 std::string ServicePlugin::getRefreshInfo()
@@ -93,20 +93,18 @@ void ServicePlugin::getData(std::vector<void *> *data)
     Pegasus::Array<Pegasus::CIMInstance> services;
     std::string filter = m_ui->filter_line->text().toStdString();
 
-    try
-    {
+    try {
         m_client->setTimeout(Pegasus::Uint32(600000));
 
         services = m_client->enumerateInstances(
-                Pegasus::CIMNamespaceName("root/cimv2"),
-                Pegasus::CIMName("LMI_Service"),
-                true,       // deep inheritance
-                false,      // local only
-                true,       // include qualifiers
-                false       // include class origin
-                );
-    } catch (Pegasus::Exception &ex)
-    {
+                       Pegasus::CIMNamespaceName("root/cimv2"),
+                       Pegasus::CIMName("LMI_Service"),
+                       true,       // deep inheritance
+                       false,      // local only
+                       true,       // include qualifiers
+                       false       // include class origin
+                   );
+    } catch (Pegasus::Exception &ex) {
         emit doneFetchingData(NULL, std::string(ex.getMessage().getCString()));
         return;
     }
@@ -116,10 +114,13 @@ void ServicePlugin::getData(std::vector<void *> *data)
         Pegasus::CIMInstance instance;
         if (!filter.empty()) {
             instance = services[i];
-            if (CIMValue::get_property_value(instance, "Name").find(filter) == std::string::npos)
+            if (CIMValue::get_property_value(instance,
+                                             "Name").find(filter) == std::string::npos) {
                 continue;
-        } else
+            }
+        } else {
             instance = services[i];
+        }
 
         data->push_back(new Pegasus::CIMInstance(instance));
         m_service_instances.push_back(instance);
@@ -138,10 +139,9 @@ void ServicePlugin::clear()
 void ServicePlugin::fillTab(std::vector<void *> *data)
 {
     clear();
-    m_changes_enabled = false;    
+    m_changes_enabled = false;
 
-    try
-    {
+    try {
         Pegasus::Uint32 services_cnt = data->size();
         for (unsigned int i = 0; i < services_cnt; i++) {
             int row_count = m_services_table->rowCount();
@@ -150,53 +150,58 @@ void ServicePlugin::fillTab(std::vector<void *> *data)
             int prop_cnt = sizeof(serviceProperties) / sizeof(serviceProperties[0]);
             std::string serv_name;
             for (int j = 0; j < prop_cnt; j++) {
-                Pegasus::CIMInstance *instance = ((Pegasus::CIMInstance*) (*data)[i]);
-                Pegasus::Uint32 propIndex = instance->findProperty(Pegasus::CIMName(serviceProperties[j].property));
+                Pegasus::CIMInstance *instance = ((Pegasus::CIMInstance *) (*data)[i]);
+                Pegasus::Uint32 propIndex = instance->findProperty(Pegasus::CIMName(
+                                                serviceProperties[j].property));
                 if (propIndex == Pegasus::PEG_NOT_FOUND) {
-                    Logger::getInstance()->error("property " + std::string(serviceProperties[j].property) + " not found");
+                    Logger::getInstance()->error("property " + std::string(
+                                                     serviceProperties[j].property) + " not found");
                     continue;
                 }
 
                 Pegasus::CIMProperty property = instance->getProperty(propIndex);
-                std::string str_value = CIMValue::get_property_value(*instance, (std::string) property.getName().getString().getCString());
+                std::string str_value = CIMValue::get_property_value(*instance,
+                                        (std::string) property.getName().getString().getCString());
 
-                if (property.getName().equal(Pegasus::CIMName("Name")))
+                if (property.getName().equal(Pegasus::CIMName("Name"))) {
                     serv_name = str_value;
+                }
 
                 QTableWidgetItem *item =
-                        new QTableWidgetItem(str_value.c_str());
+                    new QTableWidgetItem(str_value.c_str());
 
                 item->setToolTip(str_value.c_str());
                 m_services_table->setItem(
-                            row_count,
-                            j,
-                            item
-                            );
+                    row_count,
+                    j,
+                    item
+                );
 
-                if (!serviceProperties[j].enabled)
+                if (!serviceProperties[j].enabled) {
                     m_services_table->item(row_count, j)->setFlags(item_flags);
+                }
             }
 
             ActionBox *box = new ActionBox(serv_name);
             connect(
                 box,
-                SIGNAL(performAction(std::string,e_action)),
+                SIGNAL(performAction(std::string, e_action)),
                 this,
-                SLOT(actionHandle(std::string,e_action)));
+                SLOT(actionHandle(std::string, e_action)));
             m_services_table->setCellWidget(
-                        row_count,
-                        prop_cnt,
-                        box);
+                row_count,
+                prop_cnt,
+                box);
         }
 
         m_services_table->sortByColumn(0, Qt::AscendingOrder);
-    } catch (Pegasus::Exception &ex)
-    {
+    } catch (Pegasus::Exception &ex) {
         Logger::getInstance()->error(std::string(ex.getMessage().getCString()));
     }
 
-    for (unsigned int i = 0; i < data->size(); i++)
+    for (unsigned int i = 0; i < data->size(); i++) {
         delete ((Pegasus::CIMInstance *)(*data)[i]);
+    }
 
     m_changes_enabled = true;
 }
@@ -232,17 +237,21 @@ void ServicePlugin::actionHandle(std::string name, e_action action)
 void ServicePlugin::showDetails()
 {
     Pegasus::CIMInstance service;
-    std::string name_expected = m_ui->services_table->selectedItems()[0]->text().toStdString();
+    std::string name_expected =
+        m_ui->services_table->selectedItems()[0]->text().toStdString();
     int cnt = m_service_instances.size();
     for (int i = 0; i < cnt; i++) {
-        if (name_expected == CIMValue::get_property_value(m_service_instances[i], "Name"))
+        if (name_expected == CIMValue::get_property_value(m_service_instances[i],
+                "Name")) {
             service = m_service_instances[i];
+        }
     }
 
     std::map<std::string, std::string> values;
     cnt = service.getPropertyCount();
     for (int i = 0; i < cnt; i++) {
-        std::string object_name = std::string(service.getProperty(i).getName().getString().getCString());
+        std::string object_name = std::string(service.getProperty(
+                i).getName().getString().getCString());
         std::string str_value = CIMValue::get_property_value(service, object_name);
         values[object_name] = str_value;
     }

@@ -27,7 +27,8 @@
  *
  * Convert CIMValue to better std::string
  */
-class CIMValue {
+class CIMValue
+{
 
 public:
     static std::string decode_values(Pegasus::CIMProperty property);
@@ -38,8 +39,9 @@ public:
      */
     static std::string to_std_string(const Pegasus::CIMValue &value);
     static std::string get_property_value(Pegasus::CIMInstance instance,
-                            std::string propertyName, Pegasus::CIMProperty *property = NULL);
-    static Pegasus::CIMValue to_cim_value(Pegasus::CIMType type, std::string value, bool isArray = false);
+                                          std::string propertyName, Pegasus::CIMProperty *property = NULL);
+    static Pegasus::CIMValue to_cim_value(Pegasus::CIMType type, std::string value,
+                                          bool isArray = false);
 
 };
 

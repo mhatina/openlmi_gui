@@ -29,9 +29,9 @@ ListWidget::ListWidget(QWidget *parent) :
     m_ui->setupUi(this);
     connect(
         m_ui->listWidget,
-        SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+        SIGNAL(itemDoubleClicked(QListWidgetItem *)),
         this,
-        SLOT(doubleClicked(QListWidgetItem*)));
+        SLOT(doubleClicked(QListWidgetItem *)));
     connect(
         m_ui->listWidget,
         SIGNAL(itemSelectionChanged()),
@@ -44,7 +44,7 @@ ListWidget::~ListWidget()
     delete m_ui;
 }
 
-QList<QListWidgetItem*> ListWidget::selectedItems() const
+QList<QListWidgetItem *> ListWidget::selectedItems() const
 {
     return m_ui->listWidget->selectedItems();
 }

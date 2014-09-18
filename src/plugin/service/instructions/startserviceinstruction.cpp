@@ -23,7 +23,8 @@
 #include "logger.h"
 #include "startserviceinstruction.h"
 
-StartServiceInstruction::StartServiceInstruction(CIMClient *client, std::string name) :
+StartServiceInstruction::StartServiceInstruction(CIMClient *client,
+        std::string name) :
     ServiceInstruction(client, "start_service", name)
 {
 }
@@ -43,8 +44,9 @@ void StartServiceInstruction::run()
     try {
         Pegasus::CIMValue ret = invokeMethod("StartService");
 
-        if (!ret.equal(Pegasus::CIMValue(Pegasus::Uint32(0))))
+        if (!ret.equal(Pegasus::CIMValue(Pegasus::Uint32(0)))) {
             Logger::getInstance()->info("Unable to start service.");
+        }
     } catch (Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

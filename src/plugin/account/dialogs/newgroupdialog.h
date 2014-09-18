@@ -24,7 +24,8 @@
 
 #include <QDialog>
 
-namespace Ui {
+namespace Ui
+{
 class NewGroupDialog;
 }
 
@@ -57,7 +58,7 @@ public:
      * @brief Getter
      * @return name of group
      */
-    std::string getName();    
+    std::string getName();
 
 private:
     Ui::NewGroupDialog *m_ui;

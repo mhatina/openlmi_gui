@@ -26,7 +26,8 @@
 
 #include <QtPlugin>
 
-namespace Ui {
+namespace Ui
+{
 class Plugin;
 }
 
@@ -34,7 +35,7 @@ class Plugin : public Engine::IPlugin
 {
     Q_OBJECT
     Q_INTERFACES(Engine::IPlugin)
-    
+
 private:
     bool m_changes_enabled;
     Ui::Plugin *m_ui;
@@ -43,7 +44,7 @@ public:
     explicit Plugin();
     ~Plugin();
     virtual std::string getInstructionText();
-    virtual std::string getLabel();  
+    virtual std::string getLabel();
     virtual std::string getRefreshInfo();
     virtual void clear();
     virtual void fillTab(std::vector<void *> *data);

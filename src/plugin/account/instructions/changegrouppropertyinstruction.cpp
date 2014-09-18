@@ -25,17 +25,21 @@
 
 #include <sstream>
 
-ChangeGroupPropertyInstruction::ChangeGroupPropertyInstruction(CIMClient *client, std::string property, std::string name, Pegasus::CIMValue value) :
+ChangeGroupPropertyInstruction::ChangeGroupPropertyInstruction(
+    CIMClient *client, std::string property, std::string name,
+    Pegasus::CIMValue value) :
     GroupInstruction(client, property, name, value)
 {
 }
 
-bool ChangeGroupPropertyInstruction::equals(ChangeGroupPropertyInstruction *instruction)
+bool ChangeGroupPropertyInstruction::equals(ChangeGroupPropertyInstruction
+        *instruction)
 {
     if (instruction->m_instruction == m_instruction
-            && instruction->m_value.equal(m_value)
-            && instruction->m_name == m_name)
+        && instruction->m_value.equal(m_value)
+        && instruction->m_name == m_name) {
         return true;
+    }
 
     return false;
 }
@@ -48,7 +52,8 @@ IInstruction::Subject ChangeGroupPropertyInstruction::getSubject()
 std::string ChangeGroupPropertyInstruction::toString()
 {
     std::stringstream ss;
-    ss << "gr." << m_instruction << " = \"" << CIMValue::to_std_string(m_value) << "\"\n";
+    ss << "gr." << m_instruction << " = \"" << CIMValue::to_std_string(
+           m_value) << "\"\n";
     return ss.str();
 }
 
@@ -56,14 +61,15 @@ void ChangeGroupPropertyInstruction::run()
 {
     try {
         Pegasus::CIMInstance group(getGroup());
-        Pegasus::Uint32 propInd = group.findProperty(Pegasus::CIMName(m_instruction.c_str()));
+        Pegasus::Uint32 propInd = group.findProperty(Pegasus::CIMName(
+                                      m_instruction.c_str()));
         Pegasus::CIMProperty prop = group.getProperty(propInd);
         prop.setValue(m_value);
         m_client->modifyInstance(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    group,
-                    false
-                    );
+            Pegasus::CIMNamespaceName("root/cimv2"),
+            group,
+            false
+        );
     } catch (Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

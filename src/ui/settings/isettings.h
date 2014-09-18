@@ -15,57 +15,29 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef DISCOVERWORKER_H
-#define DISCOVERWORKER_H
+#ifndef ISETTINGS_H
+#define ISETTINGS_H
 
-#include <iostream>
-#include <list>
-#include <QObject>
-#include <slp.h>
-#include <string>
+#include <map>
+#include <QFile>
+#include <QWidget>
+#include <QXmlStreamWriter>
 
-/**
- * @brief The DiscoverWorker class
- *
- * Discover hosts with tog-pegasus service.
- */
-class DiscoverWorker : public QObject
+class ISettings : public QWidget
 {
     Q_OBJECT
 
-private:
-    std::string m_pc_lang;
-    bool m_async;
-    SLPHandle m_hslp;
-    SLPError m_errcode;
-
 public:
-    /**
-     * @brief Constructor
-     */
-    DiscoverWorker();
-    /**
-     * @brief Close SLP
-     */
-    void close();
-    /**
-     * @brief Open SLP
-     */
-    void open();
-
-public slots:
-    /**
-     * @brief Discover hosts
-     */
-    void discover();
+    explicit ISettings(QWidget *parent = 0);
+    virtual std::string title() = 0;
+    virtual void init() = 0;
+    virtual void load(QFile &file) = 0;
+    virtual void save(QXmlStreamWriter &writer) = 0;
 
 signals:
-    /**
-     * @brief Represent end of discovering
-     * @param pc -- all discovered hosts
-     */
-    void finished(std::list<std::string> *pc);
+
+public slots:
 
 };
 
-#endif // DISCOVERWORKER_H
+#endif // ISETTINGS_H

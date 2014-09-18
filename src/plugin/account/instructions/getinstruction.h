@@ -43,7 +43,8 @@ public:
      * @param name -- name of account/group
      * @param save_to -- save to account/group file
      */
-    GetInstruction(IInstruction::Subject s, std::string name, IInstruction::Subject save_to);
+    GetInstruction(IInstruction::Subject s, std::string name,
+                   IInstruction::Subject save_to);
     /**
      * @brief Constructor
      * @param s -- subject

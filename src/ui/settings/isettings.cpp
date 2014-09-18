@@ -15,50 +15,9 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef SHOWLOGDIALOG_H
-#define SHOWLOGDIALOG_H
+#include "isettings.h"
 
-#include <QDialog>
-
-namespace Ui
+ISettings::ISettings(QWidget *parent) :
+    QWidget(parent)
 {
-class ShowTextDialog;
 }
-
-/**
- * @brief The ShowTextDialog class
- *
- * Show text in dialog.
- */
-class ShowTextDialog : public QDialog
-{
-    Q_OBJECT
-
-public:
-    /**
-     * @brief Constructor
-     * @param parent -- parent of dialog
-     */
-    explicit ShowTextDialog(QWidget *parent = 0);
-    /**
-     * @brief Destructor
-     */
-    ~ShowTextDialog();
-
-    /**
-     * @brief Set text of dialog
-     * @param text
-     * @param move_to_end -- whether to move cursor to end
-     */
-    void setText(std::string text, bool move_to_end = true);
-    /**
-     * @brief Set title of dialog
-     * @param title
-     */
-    void setTitle(std::string title);
-
-private:
-    Ui::ShowTextDialog *m_ui;
-};
-
-#endif // SHOWLOGDIALOG_H

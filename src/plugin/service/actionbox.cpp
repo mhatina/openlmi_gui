@@ -30,8 +30,9 @@ ActionBox::ActionBox(std::string name) :
 {
     m_ui->setupUi(this);
     int action_cnt = sizeof(action_list) / sizeof(action_list[0]);
-    for (int i = 0; i < action_cnt; i++)
+    for (int i = 0; i < action_cnt; i++) {
         m_ui->action_box->addItem(action_list[i]);
+    }
 
     connect(
         m_ui->action_box,
@@ -47,8 +48,9 @@ ActionBox::~ActionBox()
 
 void ActionBox::currentChanged(int i)
 {
-    if (m_ui->action_box->currentText().toStdString() == action_list[0])
+    if (m_ui->action_box->currentText().toStdString() == action_list[0]) {
         return;
+    }
 
     emit performAction(m_name, (e_action) i);
 }

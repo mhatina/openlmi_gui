@@ -26,7 +26,8 @@
 #include <QLineEdit>
 #include <QWidget>
 
-namespace Ui {
+namespace Ui
+{
 class LabeledLineEdit;
 }
 
@@ -39,13 +40,14 @@ private:
     Ui::LabeledLineEdit *m_ui;
 
 public:
-    explicit LabeledLineEdit(std::string objectName, std::string label, std::string text, bool key = false);
+    explicit LabeledLineEdit(std::string objectName, std::string label,
+                             std::string text, bool key = false);
     ~LabeledLineEdit();
 
     int getLabelWidth();
     std::string getLabelText();
     std::string getObjectName();
-    std::string getText();    
+    std::string getText();
     void setAlignment(int alignment);
     void setLabelText(std::string text);
     void setReadOnly(bool state);

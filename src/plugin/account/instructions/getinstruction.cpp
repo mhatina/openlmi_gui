@@ -50,10 +50,12 @@ std::string GetInstruction::toString()
     std::stringstream ss;
     switch (m_subject) {
     case ACCOUNT:
-        ss << "acc = c.root.cimv2.LMI_Account.first_instance({\"Name\": \"" << m_name << "\"})\n";
+        ss << "acc = c.root.cimv2.LMI_Account.first_instance({\"Name\": \"" << m_name <<
+           "\"})\n";
         return ss.str();
     case GROUP:
-        ss << "gr = c.root.cimv2.LMI_Group.first_instance({\"Name\": \"" << m_name << "\"})\n";
+        ss << "gr = c.root.cimv2.LMI_Group.first_instance({\"Name\": \"" << m_name <<
+           "\"})\n";
         return ss.str();
     default:
         return "";

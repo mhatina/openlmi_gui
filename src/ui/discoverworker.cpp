@@ -33,11 +33,11 @@
  * @return
  */
 SLPBoolean get_srvs_list (
-      SLPHandle hslp,
-      const char* srvurl,
-      unsigned short lifetime,
-      SLPError errcode,
-      void* cookie )
+    SLPHandle hslp,
+    const char *srvurl,
+    unsigned short lifetime,
+    SLPError errcode,
+    void *cookie )
 {
     Logger::getInstance()->debug("get_srvs_list (SLPHandle hslp, const char* srvurl, unsigned short lifetime, SLPError errcode, void* cookie )");
     if ((errcode == SLP_OK || errcode == SLP_LAST_CALL) && srvurl != NULL) {
@@ -78,12 +78,12 @@ void DiscoverWorker::discover()
     std::list<std::string> *pc = new std::list<std::string>();
 
     m_errcode = SLPFindSrvs(
-                m_hslp,
-                "wbem",
-                0,
-                0,
-                get_srvs_list,
-                pc
+                    m_hslp,
+                    "wbem",
+                    0,
+                    0,
+                    get_srvs_list,
+                    pc
                 );
 
     close();

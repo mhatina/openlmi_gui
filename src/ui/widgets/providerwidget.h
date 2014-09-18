@@ -28,7 +28,8 @@
 #include <QTabWidget>
 #include <QWidget>
 
-namespace Ui {
+namespace Ui
+{
 class ProviderWidget;
 }
 
@@ -38,11 +39,11 @@ class ProviderWidget;
 class ProviderWidget : public QWidget
 {
     Q_OBJECT
-    
+
 private:
     Ui::ProviderWidget *m_ui;
 
-public:    
+public:
     /**
      * @brief Constructor
      * @param parent -- parent of widget
@@ -56,7 +57,7 @@ public:
      * @brief Getter
      * @return Tab widget (provider display its data here)
      */
-    QTabWidget* getTabWidget();
+    QTabWidget *getTabWidget();
     void setTitle(std::string title);
 };
 

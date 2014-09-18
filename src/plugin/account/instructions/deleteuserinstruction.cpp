@@ -23,7 +23,8 @@
 #include "lmiwbem_value.h"
 #include "logger.h"
 
-DeleteUserInstruction::DeleteUserInstruction(CIMClient *client, std::string name) :
+DeleteUserInstruction::DeleteUserInstruction(CIMClient *client,
+        std::string name) :
     AccountInstruction(client, "delete_user", name)
 {
 }
@@ -48,23 +49,23 @@ void DeleteUserInstruction::run()
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("DontDeleteHomeDirectory"),
                             Pegasus::CIMValue(false)
-                            ));
+                        ));
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("DontDeleteGroup"),
                             Pegasus::CIMValue(true)
-                            ));
+                        ));
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("Force"),
                             Pegasus::CIMValue(true)
-                            ));
+                        ));
 
         Pegasus::CIMValue ret = m_client->invokeMethod(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    user.getPath(),
-                    Pegasus::CIMName("DeleteUser"),
-                    in_param,
-                    out_param
-                    );
+                                    Pegasus::CIMNamespaceName("root/cimv2"),
+                                    user.getPath(),
+                                    Pegasus::CIMName("DeleteUser"),
+                                    in_param,
+                                    out_param
+                                );
 
         // home dir probably just dont exist
         //  4097 == "Unable to delete Home Directory"
@@ -72,12 +73,12 @@ void DeleteUserInstruction::run()
             Pegasus::CIMValue dontDeleteHome(true);
             in_param[0].setValue(dontDeleteHome);
             ret = m_client->invokeMethod(
-                                Pegasus::CIMNamespaceName("root/cimv2"),
-                                user.getPath(),
-                                Pegasus::CIMName("DeleteUser"),
-                                in_param,
-                                out_param
-                                );
+                      Pegasus::CIMNamespaceName("root/cimv2"),
+                      user.getPath(),
+                      Pegasus::CIMName("DeleteUser"),
+                      in_param,
+                      out_param
+                  );
         }
     } catch (const Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));

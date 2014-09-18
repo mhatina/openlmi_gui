@@ -27,7 +27,8 @@
 #include <Pegasus/Common/CIMInstance.h>
 #include <QDialog>
 
-namespace Ui {
+namespace Ui
+{
 class InstallDialog;
 }
 

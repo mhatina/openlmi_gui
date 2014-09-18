@@ -31,34 +31,35 @@
 
 #ifndef PATTERN_TYPE_FQDN
 #   define PATTERN_TYPE_FQDN \
-        "(?=^.{1,254}$)(^(?:(?!\\d+\\.)[a-zA-Z0-9_\\-]{1,63}\\." \
-            "?)+(?:[a-zA-Z]{2,})$)"
+    "(?=^.{1,254}$)(^(?:(?!\\d+\\.)[a-zA-Z0-9_\\-]{1,63}\\." \
+    "?)+(?:[a-zA-Z]{2,})$)"
 #endif
 
 #ifndef PATTERN_TYPE_IPV4
 #   define PATTERN_TYPE_IPV4 \
-        "^(([\\d]{1,3})|(\\{([\\d]{1,3}|[\\d]{1,3}-[\\d]{1,3})(;(" \
-            "[\\d]{1,3}|[\\d]{1,3}-[\\d]{1,3}))*\\}))\\.(([\\d]{1,3})" \
-            "|(\\{([\\d]{1,3}|[\\d]{1,3}-[\\d]{1,3})(;([\\d]{1,3}|[\\d" \
-            "]{1,3}-[\\d]{1,3}))*\\}))\\.(([\\d]{1,3})|(\\{([\\d]{1,3" \
-            "}|[\\d]{1,3}-[\\d]{1,3})(;([\\d]{1,3}|[\\d]{1,3}-[\\d]{1" \
-            ",3}))*\\}))\\.(([\\d]{1,3})|(\\{([\\d]{1,3}|[\\d]{1,3}-[" \
-            "\\d]{1,3})(;([\\d]{1,3}|[\\d]{1,3}-[\\d]{1,3}))*\\}))$"
+    "^(([\\d]{1,3})|(\\{([\\d]{1,3}|[\\d]{1,3}-[\\d]{1,3})(;(" \
+    "[\\d]{1,3}|[\\d]{1,3}-[\\d]{1,3}))*\\}))\\.(([\\d]{1,3})" \
+    "|(\\{([\\d]{1,3}|[\\d]{1,3}-[\\d]{1,3})(;([\\d]{1,3}|[\\d" \
+    "]{1,3}-[\\d]{1,3}))*\\}))\\.(([\\d]{1,3})|(\\{([\\d]{1,3" \
+    "}|[\\d]{1,3}-[\\d]{1,3})(;([\\d]{1,3}|[\\d]{1,3}-[\\d]{1" \
+    ",3}))*\\}))\\.(([\\d]{1,3})|(\\{([\\d]{1,3}|[\\d]{1,3}-[" \
+    "\\d]{1,3})(;([\\d]{1,3}|[\\d]{1,3}-[\\d]{1,3}))*\\}))$"
 #endif
 
 #ifndef PATTERN_TYPE_IPV6
 #   define PATTERN_TYPE_IPV6 \
-        "^(([\\da-fA-F]{1,4})|(\\{([\\da-fA-F]{1,4}|[\\da-fA-F]{" \
-            "1,4}-[\\da-fA-F]{1,4})(;([\\da-fA-F]{1,4}|[\\da-fA-F]" \
-            "{1,4}-[\\da-fA-F]{1,4}))*\\})){0,1}(:(([\\da-fA-F]{1," \
-            "4})|(\\{([\\da-fA-F]{1,4}|[\\da-fA-F]{1,4}-[\\da-fA-F]"\
-            "{1,4})(;([\\da-fA-F]{1,4}|[\\da-fA-F]{1,4}-[\\da-fA-F" \
-            "]{1,4}))*\\})*)){0,6}:(([\\da-fA-F]{1,4})|(\\{([\\da-f" \
-            "A-F]{1,4}|[\\da-fA-F]{1,4}-[\\da-fA-F]{1,4})(;([\\da-f" \
-            "A-F]{1,4}|[\\da-fA-F]{1,4}-[\\da-fA-F]{1,4}))*\\}))$"
+    "^(([\\da-fA-F]{1,4})|(\\{([\\da-fA-F]{1,4}|[\\da-fA-F]{" \
+    "1,4}-[\\da-fA-F]{1,4})(;([\\da-fA-F]{1,4}|[\\da-fA-F]" \
+    "{1,4}-[\\da-fA-F]{1,4}))*\\})){0,1}(:(([\\da-fA-F]{1," \
+    "4})|(\\{([\\da-fA-F]{1,4}|[\\da-fA-F]{1,4}-[\\da-fA-F]"\
+    "{1,4})(;([\\da-fA-F]{1,4}|[\\da-fA-F]{1,4}-[\\da-fA-F" \
+    "]{1,4}))*\\})*)){0,6}:(([\\da-fA-F]{1,4})|(\\{([\\da-f" \
+    "A-F]{1,4}|[\\da-fA-F]{1,4}-[\\da-fA-F]{1,4})(;([\\da-f" \
+    "A-F]{1,4}|[\\da-fA-F]{1,4}-[\\da-fA-F]{1,4}))*\\}))$"
 #endif
 
-namespace Ui {
+namespace Ui
+{
 class PCTreeWidget;
 }
 
@@ -85,8 +86,8 @@ private:
 
     bool parentContainsItem(QTreeWidgetItem *parent, std::string text);
     std::string getHostName(std::string &ip, int &ai_family);
-    TreeWidgetItem* addPcToTree(std::string parent, std::string text);
-    TreeWidgetItem* findTopLevelNode(std::string item_name);
+    TreeWidgetItem *addPcToTree(std::string parent, std::string text);
+    TreeWidgetItem *findTopLevelNode(std::string item_name);
     void changeSystemsText();
     void getIp(std::string &name, std::string &ipv4, std::string &ipv6);
     void initContextMenu();
@@ -95,11 +96,11 @@ private:
 
 private slots:
     void addDiscoveredPcsToTree(std::list<std::string> *pc);
-    void addGroup();    
+    void addGroup();
     void deleteGroup();
     void onAddButtonClicked();
     void onDiscoverButtonClicked();
-    void onRemoveButtonClicked();    
+    void onRemoveButtonClicked();
     void showContextMenu(QPoint pos);
     void showSystemDetails();
     void startTime(QTreeWidgetItem *item, int column);
@@ -128,7 +129,7 @@ public:
      * @brief Getter
      * @return tree widget (list of hosts)
      */
-    QTreeWidget* getTree();
+    QTreeWidget *getTree();
     /**
      * @brief Find or create parent node of hosts
      * @param item_name -- parent node name
@@ -145,7 +146,7 @@ public:
      * @brief Setter
      * @param state -- true if items can be edited, else false
      */
-    void setTimeSec(int time_sec);    
+    void setTimeSec(int time_sec);
 };
 
 #endif // PCTREEWIDGET_H

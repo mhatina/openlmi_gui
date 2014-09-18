@@ -1,6 +1,7 @@
 #include "softwareinstruction.h"
 
-SoftwareInstruction::SoftwareInstruction(CIMClient *client, std::string instruction, Pegasus::CIMInstance instance) :
+SoftwareInstruction::SoftwareInstruction(CIMClient *client,
+        std::string instruction, Pegasus::CIMInstance instance) :
     IInstruction(instruction),
     m_client(client),
     m_instance(instance)
@@ -22,17 +23,18 @@ SoftwareInstruction::SoftwareInstruction(CIMClient *client, std::string instruct
     }
 }
 
-Pegasus::CIMValue SoftwareInstruction::invokeInstallMethod(Pegasus::Uint16 install_option)
+Pegasus::CIMValue SoftwareInstruction::invokeInstallMethod(
+    Pegasus::Uint16 install_option)
 {
     Pegasus::CIMInstance install_service =
-            m_client->enumerateInstances(
-                Pegasus::CIMNamespaceName("root/cimv2"),
-                Pegasus::CIMName("LMI_SoftwareInstallationService"),
-                true,       // deep inheritance
-                false,      // local only
-                false,      // include qualifiers
-                false       // include class origin
-                )[0];
+        m_client->enumerateInstances(
+            Pegasus::CIMNamespaceName("root/cimv2"),
+            Pegasus::CIMName("LMI_SoftwareInstallationService"),
+            true,       // deep inheritance
+            false,      // local only
+            false,      // include qualifiers
+            false       // include class origin
+        )[0];
     Pegasus::Array<Pegasus::CIMParamValue> in_param;
     Pegasus::Array<Pegasus::CIMParamValue> out_param;
 
@@ -42,7 +44,7 @@ Pegasus::CIMValue SoftwareInstruction::invokeInstallMethod(Pegasus::Uint16 insta
     in_param.append(Pegasus::CIMParamValue(
                         Pegasus::String("InstallOptions"),
                         Pegasus::CIMValue(install_options)
-                        ));
+                    ));
 
     Pegasus::Uint32 prop_ind = m_instance.findProperty("InstalledSoftware");
     Pegasus::CIMValue value_source = m_instance.getProperty(prop_ind).getValue();
@@ -73,11 +75,11 @@ Pegasus::CIMValue SoftwareInstruction::invokeInstallMethod(Pegasus::Uint16 insta
                         Pegasus::CIMValue(target)));
 
     return m_client->invokeMethod(
-                Pegasus::CIMNamespaceName("root/cimv2"),
-                install_service.getPath(),
-                Pegasus::CIMName("InstallFromSoftwareIdentity"),
-                in_param,
-                out_param);
+               Pegasus::CIMNamespaceName("root/cimv2"),
+               install_service.getPath(),
+               Pegasus::CIMName("InstallFromSoftwareIdentity"),
+               in_param,
+               out_param);
 }
 
 std::string SoftwareInstruction::getName()

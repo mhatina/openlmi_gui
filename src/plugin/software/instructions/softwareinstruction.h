@@ -12,7 +12,8 @@ protected:
     std::string m_name;
 
 public:
-    SoftwareInstruction(CIMClient *client, std::string instruction, Pegasus::CIMInstance instance);
+    SoftwareInstruction(CIMClient *client, std::string instruction,
+                        Pegasus::CIMInstance instance);
 
     Pegasus::CIMValue invokeInstallMethod(Pegasus::Uint16 install_option);
     std::string getName();

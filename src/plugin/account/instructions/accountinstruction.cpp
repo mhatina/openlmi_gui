@@ -21,14 +21,16 @@
 
 #include "accountinstruction.h"
 
-AccountInstruction::AccountInstruction(CIMClient* client,  std::string instruction, std::string name, Pegasus::CIMValue value):
+AccountInstruction::AccountInstruction(CIMClient *client,
+                                       std::string instruction, std::string name, Pegasus::CIMValue value):
     IInstruction(instruction, value),
     m_client(client),
     m_name(name)
 {
 }
 
-AccountInstruction::AccountInstruction(CIMClient* client,  std::string instruction, std::string name):
+AccountInstruction::AccountInstruction(CIMClient *client,
+                                       std::string instruction, std::string name):
     IInstruction(instruction),
     m_client(client),
     m_name(name)
@@ -45,11 +47,13 @@ Pegasus::CIMInstance AccountInstruction::getUser()
     users = m_client->execQuery(
                 Pegasus::CIMNamespaceName("root/cimv2"),
                 Pegasus::String("WQL"),
-                Pegasus::String(std::string("SELECT * FROM LMI_Account WHERE Name = \"" + m_name + "\"").c_str())
-                );
+                Pegasus::String(std::string("SELECT * FROM LMI_Account WHERE Name = \"" + m_name
+                                            + "\"").c_str())
+            );
 
     if (users.size() != 1) {
-        throw Pegasus::Exception(std::string("No user with name: " + m_name + "\n").c_str());
+        throw Pegasus::Exception(std::string("No user with name: " + m_name +
+                                             "\n").c_str());
     }
 
     return Pegasus::CIMInstance(users[0]);

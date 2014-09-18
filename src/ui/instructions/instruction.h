@@ -39,8 +39,7 @@ public:
     /**
      * Enum of related subject
      */
-    typedef enum
-    {
+    typedef enum {
         UNKNOWN,
         CONNECT,
         ACCOUNT,

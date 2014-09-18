@@ -24,7 +24,8 @@
 
 #include <QWidget>
 
-namespace Ui {
+namespace Ui
+{
 class MemberBox;
 }
 
@@ -36,7 +37,7 @@ class MemberBox;
 class MemberBox : public QWidget
 {
     Q_OBJECT
-    
+
 public:
     /**
      * @brief Constructor
@@ -75,7 +76,7 @@ public:
      * @param text
      */
     void deleteItem(std::string text);
-    
+
 private:
     Ui::MemberBox *m_ui;
     std::string m_owner;

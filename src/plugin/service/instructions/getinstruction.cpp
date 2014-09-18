@@ -34,7 +34,8 @@ IInstruction::Subject GetInstruction::getSubject()
 
 std::string GetInstruction::toString()
 {
-    return "srv = c.root.cimv2.LMI_Service.first_instance({\"Name\" : \"" + m_name + "\"})\n";
+    return "srv = c.root.cimv2.LMI_Service.first_instance({\"Name\" : \"" + m_name +
+           "\"})\n";
 }
 
 void GetInstruction::run()

@@ -22,7 +22,8 @@
 
 #include <QDialog>
 
-namespace Ui {
+namespace Ui
+{
 class AuthenticationDialog;
 }
 
@@ -35,7 +36,7 @@ class AuthenticationDialog : public QDialog
 {
     Q_OBJECT
 
-public:    
+public:
     /**
      * @brief Contructor
      * @param id -- id of host (ip or domain name)
@@ -59,7 +60,7 @@ public:
      */
     std::string getUsername();
 
-private:    
+private:
     Ui::AuthenticationDialog *m_ui;
 };
 

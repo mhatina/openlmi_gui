@@ -23,7 +23,8 @@
 #include "logger.h"
 #include "ui_labeledlineedit.h"
 
-LabeledLineEdit::LabeledLineEdit(std::string objectName, std::string label, std::string text, bool key) :
+LabeledLineEdit::LabeledLineEdit(std::string objectName, std::string label,
+                                 std::string text, bool key) :
     QWidget(0),
     m_text(text),
     m_ui(new Ui::LabeledLineEdit)
@@ -31,7 +32,7 @@ LabeledLineEdit::LabeledLineEdit(std::string objectName, std::string label, std:
     Logger::getInstance()->debug("LabeledLineEdit::LabeledLineEdit(std::string objectName, std::string label, std::string text, bool key)");
     m_ui->setupUi(this);
     setLabelText(label);
-    setText(text);    
+    setText(text);
     if (key) {
         m_ui->lineEdit->setReadOnly(true);
         m_ui->lineEdit->setStyleSheet("QLineEdit{background: pink;}");
@@ -49,7 +50,7 @@ LabeledLineEdit::LabeledLineEdit(std::string objectName, std::string label, std:
         m_ui->lineEdit,
         SIGNAL(editingFinished()),
         this,
-        SLOT(itemChanged()));    
+        SLOT(itemChanged()));
 }
 
 LabeledLineEdit::~LabeledLineEdit()
@@ -86,8 +87,9 @@ void LabeledLineEdit::setAlignment(int alignment)
 {
     Logger::getInstance()->debug("LabeledLineEdit::setAlignment(int alignment)");
     int tmp = m_ui->label->fontMetrics().boundingRect(m_ui->label->text()).width();
-    if (alignment - tmp > 0)
+    if (alignment - tmp > 0) {
         m_ui->label->setMinimumWidth(alignment);
+    }
 }
 
 void LabeledLineEdit::setLabelText(std::string text)
@@ -112,8 +114,9 @@ void LabeledLineEdit::setText(std::string text)
 void LabeledLineEdit::itemChanged()
 {
     Logger::getInstance()->debug("LabeledLineEdit::itemChanged()");
-    if (m_ui->lineEdit->text().toStdString() != m_text)
+    if (m_ui->lineEdit->text().toStdString() != m_text) {
         emit itemChanged(this);
+    }
 }
 
 void LabeledLineEdit::textChanged()

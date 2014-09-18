@@ -33,25 +33,27 @@ template <typename T>
 bool arrayContains(T const array[], int size, T item)
 {
     for (int i = 0; i < size; i++) {
-        if (array[i] == item)
+        if (array[i] == item) {
             return true;
+        }
     }
 
     return false;
 }
 
 template <>
-bool arrayContains(const char* const array[], int size, const char* item)
+bool arrayContains(const char *const array[], int size, const char *item)
 {
     for (int i = 0; i < size; i++) {
-        if (strcmp(array[i], item) == 0)
+        if (strcmp(array[i], item) == 0) {
             return true;
+        }
     }
 
     return false;
 }
 
-QTreeWidgetItem* HardwarePlugin::findTopLevelNode(std::string item_name)
+QTreeWidgetItem *HardwarePlugin::findTopLevelNode(std::string item_name)
 {
     QTreeWidgetItem *tmp;
     for (int i = 0; i < m_ui->tree->topLevelItemCount(); i++) {
@@ -64,7 +66,7 @@ QTreeWidgetItem* HardwarePlugin::findTopLevelNode(std::string item_name)
     return NULL;
 }
 
-QTreeWidgetItem* HardwarePlugin::topLevelNode(std::string item_name)
+QTreeWidgetItem *HardwarePlugin::topLevelNode(std::string item_name)
 {
     QTreeWidgetItem *node;
     if (!(node = findTopLevelNode(item_name))) {
@@ -72,9 +74,9 @@ QTreeWidgetItem* HardwarePlugin::topLevelNode(std::string item_name)
         node->setText(0, item_name.c_str());
         node->setFlags(Qt::ItemIsEnabled | Qt::ItemIsDropEnabled);
         m_ui->tree->sortByColumn(
-                    0,
-                    Qt::AscendingOrder
-                    );
+            0,
+            Qt::AscendingOrder
+        );
     }
 
     return node;
@@ -133,8 +135,9 @@ std::string HardwarePlugin::decodeValues(Pegasus::CIMProperty property)
         for (Pegasus::Uint32 i = 0; i < cnt; ++i) {
             const Pegasus::Uint16 &raw_value = raw_array[i];
             ss << m_values[CIMValue::to_std_string(raw_value)];
-            if (i < cnt - 1)
+            if (i < cnt - 1) {
                 ss << ", ";
+            }
         }
         return ss.str();
     }
@@ -147,9 +150,12 @@ void HardwarePlugin::fillBattery(Pegasus::CIMInstance battery)
     QLayout *layout = m_ui->device_box->layout();
     m_ui->device_box->setTitle("Battery");
 
-    layout->addWidget(new LabeledLabel("Capacity", CIMValue::get_property_value(battery, "DesignCapacity") + " mWatt * hour"));
-    layout->addWidget(new LabeledLabel("Voltage", CIMValue::get_property_value(battery, "DesignVoltage") + " mVolt"));
-    layout->addWidget(new LabeledLabel("Chemistry", CIMValue::get_property_value(battery, "Chemistry")));
+    layout->addWidget(new LabeledLabel("Capacity",
+                                       CIMValue::get_property_value(battery, "DesignCapacity") + " mWatt * hour"));
+    layout->addWidget(new LabeledLabel("Voltage",
+                                       CIMValue::get_property_value(battery, "DesignVoltage") + " mVolt"));
+    layout->addWidget(new LabeledLabel("Chemistry",
+                                       CIMValue::get_property_value(battery, "Chemistry")));
 
     setAlignment();
 }
@@ -159,13 +165,20 @@ void HardwarePlugin::fillChassis(Pegasus::CIMInstance chassis)
     QLayout *layout = m_ui->device_box->layout();
     m_ui->device_box->setTitle("Chassis");
 
-    layout->addWidget(new LabeledLabel("Name", CIMValue::get_property_value(chassis, "Name")));
-    layout->addWidget(new LabeledLabel("Manufacturer", CIMValue::get_property_value(chassis, "Manufacturer")));
-    layout->addWidget(new LabeledLabel("Model", CIMValue::get_property_value(chassis, "Model")));
-    layout->addWidget(new LabeledLabel("Package Type", CIMValue::get_property_value(chassis, "PackageType")));
-    layout->addWidget(new LabeledLabel("Product Name", CIMValue::get_property_value(chassis, "ProductName")));
-    layout->addWidget(new LabeledLabel("Serial Number", CIMValue::get_property_value(chassis, "SerialNumber")));
-    layout->addWidget(new LabeledLabel("UUID", CIMValue::get_property_value(chassis, "UUID")));
+    layout->addWidget(new LabeledLabel("Name", CIMValue::get_property_value(chassis,
+                                       "Name")));
+    layout->addWidget(new LabeledLabel("Manufacturer",
+                                       CIMValue::get_property_value(chassis, "Manufacturer")));
+    layout->addWidget(new LabeledLabel("Model",
+                                       CIMValue::get_property_value(chassis, "Model")));
+    layout->addWidget(new LabeledLabel("Package Type",
+                                       CIMValue::get_property_value(chassis, "PackageType")));
+    layout->addWidget(new LabeledLabel("Product Name",
+                                       CIMValue::get_property_value(chassis, "ProductName")));
+    layout->addWidget(new LabeledLabel("Serial Number",
+                                       CIMValue::get_property_value(chassis, "SerialNumber")));
+    layout->addWidget(new LabeledLabel("UUID", CIMValue::get_property_value(chassis,
+                                       "UUID")));
 
     setAlignment();
 }
@@ -177,19 +190,31 @@ void HardwarePlugin::fillMemory(std::vector<Pegasus::CIMInstance> memory)
     QLayout *layout = m_ui->device_box->layout();
     m_ui->device_box->setTitle("Memory");
 
-    layout->addWidget(new LabeledLabel("Access", CIMValue::get_property_value(mem, "Access")));
-    layout->addWidget(new LabeledLabel("Capacity", convertCapacity(CIMValue::get_property_value(phys_mem, "Capacity"))));
-    layout->addWidget(new LabeledLabel("Form factor", CIMValue::get_property_value(phys_mem, "FormFactor")));
-    layout->addWidget(new LabeledLabel("Memory type", CIMValue::get_property_value(phys_mem, "MemoryType")));
-    layout->addWidget(new LabeledLabel("Total width", convertCapacity(CIMValue::get_property_value(phys_mem, "TotalWidth"))));
-    layout->addWidget(new LabeledLabel("Page size", convertCapacity(CIMValue::get_property_value(mem, "StandardMemoryPageSize"), true)));
+    layout->addWidget(new LabeledLabel("Access", CIMValue::get_property_value(mem,
+                                       "Access")));
+    layout->addWidget(new LabeledLabel("Capacity",
+                                       convertCapacity(CIMValue::get_property_value(phys_mem, "Capacity"))));
+    layout->addWidget(new LabeledLabel("Form factor",
+                                       CIMValue::get_property_value(phys_mem, "FormFactor")));
+    layout->addWidget(new LabeledLabel("Memory type",
+                                       CIMValue::get_property_value(phys_mem, "MemoryType")));
+    layout->addWidget(new LabeledLabel("Total width",
+                                       convertCapacity(CIMValue::get_property_value(phys_mem, "TotalWidth"))));
+    layout->addWidget(new LabeledLabel("Page size",
+                                       convertCapacity(CIMValue::get_property_value(mem, "StandardMemoryPageSize"),
+                                               true)));
 
-    std::string tmp = CIMValue::get_property_value(phys_mem, "ConfiguredMemoryClockSpeed") + " MHz";
+    std::string tmp = CIMValue::get_property_value(phys_mem,
+                      "ConfiguredMemoryClockSpeed") + " MHz";
     layout->addWidget(new LabeledLabel("Clock speed", tmp));
-    layout->addWidget(new LabeledLabel("Serial number", CIMValue::get_property_value(phys_mem, "SerialNumber")));
-    layout->addWidget(new LabeledLabel("Part number", CIMValue::get_property_value(phys_mem, "PartNumber")));
-    layout->addWidget(new LabeledLabel("Manufacturer", CIMValue::get_property_value(phys_mem, "Manufacturer")));
-    layout->addWidget(new LabeledLabel("Bank", CIMValue::get_property_value(phys_mem, "BankLabel")));
+    layout->addWidget(new LabeledLabel("Serial number",
+                                       CIMValue::get_property_value(phys_mem, "SerialNumber")));
+    layout->addWidget(new LabeledLabel("Part number",
+                                       CIMValue::get_property_value(phys_mem, "PartNumber")));
+    layout->addWidget(new LabeledLabel("Manufacturer",
+                                       CIMValue::get_property_value(phys_mem, "Manufacturer")));
+    layout->addWidget(new LabeledLabel("Bank",
+                                       CIMValue::get_property_value(phys_mem, "BankLabel")));
 
     setAlignment();
 }
@@ -201,45 +226,74 @@ void HardwarePlugin::fillPCI(Pegasus::CIMInstance pci)
 
     std::string ttmp = CIMValue::get_property_value(pci, "BusNumber");
     layout->addWidget(new LabeledLabel("Bus Number", ttmp));
-    layout->addWidget(new LabeledLabel("Device Number", CIMValue::get_property_value(pci, "DeviceNumber")));
-    layout->addWidget(new LabeledLabel("Function Number", CIMValue::get_property_value(pci, "FunctionNumber")));
-    layout->addWidget(new LabeledLabel("PCI Device ID", CIMValue::get_property_value(pci, "DeviceID")));
-    layout->addWidget(new LabeledLabel("PCI Device Name", CIMValue::get_property_value(pci, "Name")));
-    layout->addWidget(new LabeledLabel("Vendor ID", CIMValue::get_property_value(pci, "VendorID")));
-    layout->addWidget(new LabeledLabel("Vendor Name", CIMValue::get_property_value(pci, "VendorName")));
-    layout->addWidget(new LabeledLabel("Subsystem ID", CIMValue::get_property_value(pci, "SubsystemID")));
-    layout->addWidget(new LabeledLabel("Subsystem Name", CIMValue::get_property_value(pci, "SubsystemName")));
-    layout->addWidget(new LabeledLabel("Subsystem Vendor ID", CIMValue::get_property_value(pci, "SubsystemVendorID")));
-    layout->addWidget(new LabeledLabel("Subsystem Vendor Name", CIMValue::get_property_value(pci, "SubsystemVendorName")));
-    layout->addWidget(new LabeledLabel("Revision ID", CIMValue::get_property_value(pci, "RevisionID")));
+    layout->addWidget(new LabeledLabel("Device Number",
+                                       CIMValue::get_property_value(pci, "DeviceNumber")));
+    layout->addWidget(new LabeledLabel("Function Number",
+                                       CIMValue::get_property_value(pci, "FunctionNumber")));
+    layout->addWidget(new LabeledLabel("PCI Device ID",
+                                       CIMValue::get_property_value(pci, "DeviceID")));
+    layout->addWidget(new LabeledLabel("PCI Device Name",
+                                       CIMValue::get_property_value(pci, "Name")));
+    layout->addWidget(new LabeledLabel("Vendor ID",
+                                       CIMValue::get_property_value(pci, "VendorID")));
+    layout->addWidget(new LabeledLabel("Vendor Name",
+                                       CIMValue::get_property_value(pci, "VendorName")));
+    layout->addWidget(new LabeledLabel("Subsystem ID",
+                                       CIMValue::get_property_value(pci, "SubsystemID")));
+    layout->addWidget(new LabeledLabel("Subsystem Name",
+                                       CIMValue::get_property_value(pci, "SubsystemName")));
+    layout->addWidget(new LabeledLabel("Subsystem Vendor ID",
+                                       CIMValue::get_property_value(pci, "SubsystemVendorID")));
+    layout->addWidget(new LabeledLabel("Subsystem Vendor Name",
+                                       CIMValue::get_property_value(pci, "SubsystemVendorName")));
+    layout->addWidget(new LabeledLabel("Revision ID",
+                                       CIMValue::get_property_value(pci, "RevisionID")));
 
     std::string tmp = CIMValue::get_property_value(pci, "BaseAddress");
-    layout->addWidget(new LabeledLabel("Base Address", tmp.empty() ? CIMValue::get_property_value(pci, "BaseAddress64") : tmp));
-    layout->addWidget(new LabeledLabel("Cache Line Size", CIMValue::get_property_value(pci, "CacheLineSize")));
-    layout->addWidget(new LabeledLabel("Capabilities", CIMValue::get_property_value(pci, "Capabilities")));
-    layout->addWidget(new LabeledLabel("Device Select Timing", CIMValue::get_property_value(pci, "DeviceSelectTiming")));
-    layout->addWidget(new LabeledLabel("Interrupt Pin", CIMValue::get_property_value(pci, "InterruptPin")));
-    layout->addWidget(new LabeledLabel("Latency Timer", CIMValue::get_property_value(pci, "LatencyTimer")));
-    layout->addWidget(new LabeledLabel("Expansion ROM Base Address", CIMValue::get_property_value(pci, "ExpansionROMBaseAddress")));
+    layout->addWidget(new LabeledLabel("Base Address",
+                                       tmp.empty() ? CIMValue::get_property_value(pci, "BaseAddress64") : tmp));
+    layout->addWidget(new LabeledLabel("Cache Line Size",
+                                       CIMValue::get_property_value(pci, "CacheLineSize")));
+    layout->addWidget(new LabeledLabel("Capabilities",
+                                       CIMValue::get_property_value(pci, "Capabilities")));
+    layout->addWidget(new LabeledLabel("Device Select Timing",
+                                       CIMValue::get_property_value(pci, "DeviceSelectTiming")));
+    layout->addWidget(new LabeledLabel("Interrupt Pin",
+                                       CIMValue::get_property_value(pci, "InterruptPin")));
+    layout->addWidget(new LabeledLabel("Latency Timer",
+                                       CIMValue::get_property_value(pci, "LatencyTimer")));
+    layout->addWidget(new LabeledLabel("Expansion ROM Base Address",
+                                       CIMValue::get_property_value(pci, "ExpansionROMBaseAddress")));
 
     if (CIMValue::get_property_value(pci, "CreationClassName") != "LMI_PCIBridge") {
         setAlignment();
         return;
     }
 
-    layout->addWidget(new LabeledLabel("Bridge Type", CIMValue::get_property_value(pci, "BridgeType")));
-    layout->addWidget(new LabeledLabel("Primary Bus Number", CIMValue::get_property_value(pci, "PrimaryBusNumber")));
+    layout->addWidget(new LabeledLabel("Bridge Type",
+                                       CIMValue::get_property_value(pci, "BridgeType")));
+    layout->addWidget(new LabeledLabel("Primary Bus Number",
+                                       CIMValue::get_property_value(pci, "PrimaryBusNumber")));
 
     // BUG SecondaryBusNumber
-    layout->addWidget(new LabeledLabel("Secondary Bus Number", CIMValue::get_property_value(pci, "SecondayBusNumber")));
-    layout->addWidget(new LabeledLabel("Subordinate Bus Number", CIMValue::get_property_value(pci, "SubordinateBusNumber")));
-    layout->addWidget(new LabeledLabel("Secondary Latency Timer", CIMValue::get_property_value(pci, "SecondaryLatencyTimer")));
-    layout->addWidget(new LabeledLabel("IO Base", CIMValue::get_property_value(pci, "IOBase")));
-    layout->addWidget(new LabeledLabel("IO Limit", CIMValue::get_property_value(pci, "IOLimit")));
-    layout->addWidget(new LabeledLabel("Memory Base", CIMValue::get_property_value(pci, "MemoryBase")));
-    layout->addWidget(new LabeledLabel("Memory Limit", CIMValue::get_property_value(pci, "MemoryLimit")));
-    layout->addWidget(new LabeledLabel("Prefetch Memory Base", CIMValue::get_property_value(pci, "PrefetchMemoryBase")));
-    layout->addWidget(new LabeledLabel("Prefetch Memory Limit", CIMValue::get_property_value(pci, "PrefetchMemoryLimit")));
+    layout->addWidget(new LabeledLabel("Secondary Bus Number",
+                                       CIMValue::get_property_value(pci, "SecondayBusNumber")));
+    layout->addWidget(new LabeledLabel("Subordinate Bus Number",
+                                       CIMValue::get_property_value(pci, "SubordinateBusNumber")));
+    layout->addWidget(new LabeledLabel("Secondary Latency Timer",
+                                       CIMValue::get_property_value(pci, "SecondaryLatencyTimer")));
+    layout->addWidget(new LabeledLabel("IO Base", CIMValue::get_property_value(pci,
+                                       "IOBase")));
+    layout->addWidget(new LabeledLabel("IO Limit", CIMValue::get_property_value(pci,
+                                       "IOLimit")));
+    layout->addWidget(new LabeledLabel("Memory Base",
+                                       CIMValue::get_property_value(pci, "MemoryBase")));
+    layout->addWidget(new LabeledLabel("Memory Limit",
+                                       CIMValue::get_property_value(pci, "MemoryLimit")));
+    layout->addWidget(new LabeledLabel("Prefetch Memory Base",
+                                       CIMValue::get_property_value(pci, "PrefetchMemoryBase")));
+    layout->addWidget(new LabeledLabel("Prefetch Memory Limit",
+                                       CIMValue::get_property_value(pci, "PrefetchMemoryLimit")));
 
     setAlignment();
 }
@@ -249,39 +303,50 @@ void HardwarePlugin::fillPort(Pegasus::CIMInstance port)
     QLayout *layout = m_ui->device_box->layout();
     m_ui->device_box->setTitle("Port");
 
-    layout->addWidget(new LabeledLabel("Name", CIMValue::get_property_value(port, "Name")));
-    layout->addWidget(new LabeledLabel("Description", CIMValue::get_property_value(port, "ConnectorDescription")));
-    layout->addWidget(new LabeledLabel("Gender", CIMValue::get_property_value(port, "ConnectorGender")));
-    layout->addWidget(new LabeledLabel("Layout", CIMValue::get_property_value(port, "ConnectorLayout")));
+    layout->addWidget(new LabeledLabel("Name", CIMValue::get_property_value(port,
+                                       "Name")));
+    layout->addWidget(new LabeledLabel("Description",
+                                       CIMValue::get_property_value(port, "ConnectorDescription")));
+    layout->addWidget(new LabeledLabel("Gender", CIMValue::get_property_value(port,
+                                       "ConnectorGender")));
+    layout->addWidget(new LabeledLabel("Layout", CIMValue::get_property_value(port,
+                                       "ConnectorLayout")));
 
     setAlignment();
 }
 
 void HardwarePlugin::fillProcessor(std::vector<Pegasus::CIMInstance> processor)
-{    
+{
     Pegasus::CIMInstance proc = processor[0];
     QLayout *layout = m_ui->device_box->layout();
     m_ui->device_box->setTitle("CPU");
 
-    layout->addWidget(new LabeledLabel("Device ID", CIMValue::get_property_value(proc, "DeviceID")));
-    layout->addWidget(new LabeledLabel("Name", CIMValue::get_property_value(proc, "ElementName")));
+    layout->addWidget(new LabeledLabel("Device ID",
+                                       CIMValue::get_property_value(proc, "DeviceID")));
+    layout->addWidget(new LabeledLabel("Name", CIMValue::get_property_value(proc,
+                                       "ElementName")));
     std::string arch = CIMValue::get_property_value(proc, "Architecture");
     layout->addWidget(new LabeledLabel("Architecture", arch));
     std::string tmp = CIMValue::get_property_value(proc, "MaxClockSpeed") + " MHz";
     layout->addWidget(new LabeledLabel("Maximum clock speed", tmp));
     Pegasus::CIMInstance proc_capabilities = processor[1];
-    layout->addWidget(new LabeledLabel("Cores", CIMValue::get_property_value(proc_capabilities, "NumberOfProcessorCores")));
-    layout->addWidget(new LabeledLabel("Hardware threads", CIMValue::get_property_value(proc_capabilities, "NumberOfHardwareThreads")));
+    layout->addWidget(new LabeledLabel("Cores",
+                                       CIMValue::get_property_value(proc_capabilities, "NumberOfProcessorCores")));
+    layout->addWidget(new LabeledLabel("Hardware threads",
+                                       CIMValue::get_property_value(proc_capabilities, "NumberOfHardwareThreads")));
 
-    layout->addWidget(new LabeledLabel("Address width", convertCapacity(CIMValue::get_property_value(proc, "AddressWidth"), true)));
-    layout->addWidget(new LabeledLabel("Data width", convertCapacity(CIMValue::get_property_value(proc, "DataWidth"), true)));
+    layout->addWidget(new LabeledLabel("Address width",
+                                       convertCapacity(CIMValue::get_property_value(proc, "AddressWidth"), true)));
+    layout->addWidget(new LabeledLabel("Data width",
+                                       convertCapacity(CIMValue::get_property_value(proc, "DataWidth"), true)));
 
     tmp = CIMValue::get_property_value(proc, "CurrentClockSpeed") + " MHz";
     layout->addWidget(new LabeledLabel("Current clock speed", tmp));
 
     if (arch.find("x86") != std::string::npos) {
         Pegasus::Uint32 prop_ind = proc.findProperty("Flags");
-        LabeledLabel *label = new LabeledLabel("Flags", decodeValues(proc.getProperty(prop_ind)));
+        LabeledLabel *label = new LabeledLabel("Flags",
+                                               decodeValues(proc.getProperty(prop_ind)));
         label->setVerticalAlignment(Qt::AlignTop);
         QScrollArea *area = new QScrollArea();
 
@@ -300,7 +365,8 @@ void HardwarePlugin::fillProcessor(std::vector<Pegasus::CIMInstance> processor)
     for (unsigned int i = 2; i < processor.size(); i++) {
         std::string name = CIMValue::get_property_value(processor[i], "Name");
 
-        Pegasus::Uint32 propIndex = processor[i].findProperty(Pegasus::CIMName("NumberOfBlocks"));
+        Pegasus::Uint32 propIndex = processor[i].findProperty(
+                                        Pegasus::CIMName("NumberOfBlocks"));
         Pegasus::CIMProperty prop = processor[i].getProperty(propIndex);
         Pegasus::CIMValue value = prop.getValue();
 
@@ -323,7 +389,8 @@ void HardwarePlugin::fillProcessor(std::vector<Pegasus::CIMInstance> processor)
         ss.clear();
         ss << (blocks * size);
 
-        cache_box->layout()->addWidget(new LabeledLabel(name, convertCapacity(ss.str())));
+        cache_box->layout()->addWidget(new LabeledLabel(name,
+                                       convertCapacity(ss.str())));
     }
 
     setAlignment();
@@ -334,18 +401,21 @@ void HardwarePlugin::setAlignment()
     int max = 0;
     QObjectList children = m_ui->device_box->children();
     for (int i = 0; i < children.size(); i++) {
-        if (children.at(i)->objectName() != "labeledLabel")
+        if (children.at(i)->objectName() != "labeledLabel") {
             continue;
+        }
 
-        if (((LabeledLabel*) children[i])->getLabelWidth() > max)
-            max = ((LabeledLabel*) children[i])->getLabelWidth();
+        if (((LabeledLabel *) children[i])->getLabelWidth() > max) {
+            max = ((LabeledLabel *) children[i])->getLabelWidth();
+        }
     }
 
     for (int i = 0; i < children.size(); i++) {
-        if (children.at(i)->objectName() != "labeledLabel")
+        if (children.at(i)->objectName() != "labeledLabel") {
             continue;
+        }
 
-        ((LabeledLabel*) children[i])->setAlignment(max);
+        ((LabeledLabel *) children[i])->setAlignment(max);
     }
 }
 
@@ -359,8 +429,9 @@ HardwarePlugin::HardwarePlugin() :
     setPluginEnabled(false);
 
     int cnt = sizeof(valueMap) / sizeof(valueMap[0]);
-    for (int i = 0; i < cnt; i++)
-        m_values[valueMap[i]] = values[i];   
+    for (int i = 0; i < cnt; i++) {
+        m_values[valueMap[i]] = values[i];
+    }
 
     connect(
         m_ui->tree,
@@ -400,7 +471,7 @@ std::string HardwarePlugin::getRefreshInfo()
 }
 
 void HardwarePlugin::getData(std::vector<void *> *data)
-{    
+{
     // TODO LMI_DiskDrive*
 
     Pegasus::Array<Pegasus::CIMInstance> array;
@@ -415,32 +486,34 @@ void HardwarePlugin::getData(std::vector<void *> *data)
                     false,      // local only
                     true,       // include qualifiers
                     false       // include class origin
-                    );
+                );
 
         unsigned int cnt = array.size();
         for (unsigned int i = 0; i < cnt; i++, size++) {
             data->push_back(new std::vector<Pegasus::CIMInstance>());
-            std::vector<Pegasus::CIMInstance> *vector = ((std::vector<Pegasus::CIMInstance> *) (*data)[size]);
+            std::vector<Pegasus::CIMInstance> *vector = ((std::vector<Pegasus::CIMInstance>
+                    *) (*data)[size]);
             vector->push_back(array[i]);
 
             Pegasus::Array<Pegasus::CIMObject> proc_capab =
-                    m_client->associators(
-                        Pegasus::CIMNamespaceName("root/cimv2"),
-                        array[i].getPath(),
-                        Pegasus::CIMName(),
-                        Pegasus::CIMName("LMI_ProcessorCapabilities")
-                        );
+                m_client->associators(
+                    Pegasus::CIMNamespaceName("root/cimv2"),
+                    array[i].getPath(),
+                    Pegasus::CIMName(),
+                    Pegasus::CIMName("LMI_ProcessorCapabilities")
+                );
             vector->push_back(Pegasus::CIMInstance(proc_capab[0]));
 
             Pegasus::Array<Pegasus::CIMObject> cache =
-                    m_client->associators(
-                        Pegasus::CIMNamespaceName("root/cimv2"),
-                        array[i].getPath(),
-                        Pegasus::CIMName(),
-                        Pegasus::CIMName("LMI_ProcessorCacheMemory")
-                        );
-            for (unsigned int j = 0; j < cache.size(); j++)
+                m_client->associators(
+                    Pegasus::CIMNamespaceName("root/cimv2"),
+                    array[i].getPath(),
+                    Pegasus::CIMName(),
+                    Pegasus::CIMName("LMI_ProcessorCacheMemory")
+                );
+            for (unsigned int j = 0; j < cache.size(); j++) {
                 vector->push_back(Pegasus::CIMInstance(cache[j]));
+            }
         }
 
         // memory
@@ -451,25 +524,26 @@ void HardwarePlugin::getData(std::vector<void *> *data)
                     false,      // local only
                     true,       // include qualifiers
                     false       // include class origin
-                    );
+                );
 
         cnt = array.size();
         for (unsigned int i = 0; i < cnt; i++, size++) {
             data->push_back(new std::vector<Pegasus::CIMInstance>());
-            std::vector<Pegasus::CIMInstance> *vector = ((std::vector<Pegasus::CIMInstance> *) (*data)[size]);
+            std::vector<Pegasus::CIMInstance> *vector = ((std::vector<Pegasus::CIMInstance>
+                    *) (*data)[size]);
             vector->push_back(array[i]);
 
             Pegasus::Array<Pegasus::CIMObject> memory =
-                    m_client->associators(
-                        Pegasus::CIMNamespaceName("root/cimv2"),
-                        array[i].getPath(),
-                        Pegasus::CIMName(),
-                        Pegasus::CIMName("LMI_Memory")
-                        );
+                m_client->associators(
+                    Pegasus::CIMNamespaceName("root/cimv2"),
+                    array[i].getPath(),
+                    Pegasus::CIMName(),
+                    Pegasus::CIMName("LMI_Memory")
+                );
             vector->push_back(Pegasus::CIMInstance(memory[0]));
         }
 
-        const char* devices[] = {
+        const char *devices[] = {
             "LMI_PCIDevice",
             "LMI_PCIBridge",
             "LMI_Chassis",
@@ -486,9 +560,10 @@ void HardwarePlugin::getData(std::vector<void *> *data)
                         false,      // local only
                         true,       // include qualifiers
                         false       // include class origin
-                        );
+                    );
 
-            std::vector<Pegasus::CIMInstance> *vector = new std::vector<Pegasus::CIMInstance>();
+            std::vector<Pegasus::CIMInstance> *vector = new
+            std::vector<Pegasus::CIMInstance>();
             data->push_back(vector);
 
             cnt = array.size();
@@ -522,10 +597,12 @@ void HardwarePlugin::fillTab(std::vector<void *> *data)
         bool pci_device = true;
         while (pos < data->size()) {
             vector = ((std::vector<Pegasus::CIMInstance> *) (*data)[pos++]);
-            if (vector->empty())
+            if (vector->empty()) {
                 continue;
+            }
             if ((*vector)[0].getClassName().equal(Pegasus::CIMName("LMI_Processor"))) {
-                std::vector<Pegasus::CIMInstance> tmp = *((std::vector<Pegasus::CIMInstance> *) (*data)[pos - 1]);
+                std::vector<Pegasus::CIMInstance> tmp = *((std::vector<Pegasus::CIMInstance> *)
+                                                        (*data)[pos - 1]);
 
                 QTreeWidgetItem *item = new QTreeWidgetItem();
                 std::string name = CIMValue::get_property_value(tmp[0], "ElementName");
@@ -534,19 +611,24 @@ void HardwarePlugin::fillTab(std::vector<void *> *data)
                 topLevelNode("Processor")->addChild(item);
 
                 m_processor.push_back(tmp);
-            } else if ((*vector)[0].getClassName().equal(Pegasus::CIMName("LMI_PhysicalMemory"))) {
-                std::vector<Pegasus::CIMInstance> tmp = *((std::vector<Pegasus::CIMInstance> *) (*data)[pos - 1]);
+            } else if ((*vector)[0].getClassName().equal(
+                           Pegasus::CIMName("LMI_PhysicalMemory"))) {
+                std::vector<Pegasus::CIMInstance> tmp = *((std::vector<Pegasus::CIMInstance> *)
+                                                        (*data)[pos - 1]);
 
                 QTreeWidgetItem *item = new QTreeWidgetItem();
-                std::string name = CIMValue::get_property_value(tmp[0], "ElementName") + " " + CIMValue::get_property_value(tmp[0], "PartNumber");
+                std::string name = CIMValue::get_property_value(tmp[0],
+                                   "ElementName") + " " + CIMValue::get_property_value(tmp[0], "PartNumber");
                 item->setText(0, name.c_str());
                 item->setToolTip(0, name.c_str());
                 topLevelNode("Memory")->addChild(item);
 
                 m_memory.push_back(tmp);
-            } else if ((pci_device = (*vector)[0].getClassName().equal(Pegasus::CIMName("LMI_PCIDevice")))
+            } else if ((pci_device = (*vector)[0].getClassName().equal(
+                                         Pegasus::CIMName("LMI_PCIDevice")))
                        || (*vector)[0].getClassName().equal(Pegasus::CIMName("LMI_PCIBridge"))) {
-                std::vector<Pegasus::CIMInstance> tmp = *((std::vector<Pegasus::CIMInstance> *) (*data)[pos - 1]);
+                std::vector<Pegasus::CIMInstance> tmp = *((std::vector<Pegasus::CIMInstance> *)
+                                                        (*data)[pos - 1]);
 
                 for (unsigned int i = 0; i < tmp.size(); i++) {
                     QTreeWidgetItem *item = new QTreeWidgetItem();
@@ -561,8 +643,7 @@ void HardwarePlugin::fillTab(std::vector<void *> *data)
                     switch (value) {
                     case 1:
                     case 2:
-                    case 3:
-                    {
+                    case 3: {
                         std::string prop_name = CIMValue::decode_values(prop);
                         prop_name += " Controller";
                         topLevelNode(prop_name)->addChild(item);
@@ -572,12 +653,14 @@ void HardwarePlugin::fillTab(std::vector<void *> *data)
                         topLevelNode(CIMValue::decode_values(prop))->addChild(item);
                     }
                 }
-                if (pci_device)
+                if (pci_device) {
                     m_pci_device = tmp;
-                else
+                } else {
                     m_pci_bridge = tmp;
+                }
             } else if ((*vector)[0].getClassName().equal(Pegasus::CIMName("LMI_Chassis"))) {
-                std::vector<Pegasus::CIMInstance> tmp = *((std::vector<Pegasus::CIMInstance> *) (*data)[pos - 1]);
+                std::vector<Pegasus::CIMInstance> tmp = *((std::vector<Pegasus::CIMInstance> *)
+                                                        (*data)[pos - 1]);
 
                 for (unsigned int i = 0; i < tmp.size(); i++) {
                     QTreeWidgetItem *item = new QTreeWidgetItem();
@@ -588,8 +671,10 @@ void HardwarePlugin::fillTab(std::vector<void *> *data)
                     topLevelNode("Chassis")->addChild(item);
                 }
                 m_chassis = tmp;
-            } else if ((*vector)[0].getClassName().equal(Pegasus::CIMName("LMI_PortPhysicalConnector"))) {
-                std::vector<Pegasus::CIMInstance> tmp = *((std::vector<Pegasus::CIMInstance> *) (*data)[pos - 1]);
+            } else if ((*vector)[0].getClassName().equal(
+                           Pegasus::CIMName("LMI_PortPhysicalConnector"))) {
+                std::vector<Pegasus::CIMInstance> tmp = *((std::vector<Pegasus::CIMInstance> *)
+                                                        (*data)[pos - 1]);
 
                 for (unsigned int i = 0; i < tmp.size(); i++) {
                     QTreeWidgetItem *item = new QTreeWidgetItem();
@@ -601,7 +686,8 @@ void HardwarePlugin::fillTab(std::vector<void *> *data)
                 }
                 m_port = tmp;
             } else if ((*vector)[0].getClassName().equal(Pegasus::CIMName("LMI_Battery"))) {
-                std::vector<Pegasus::CIMInstance> tmp = *((std::vector<Pegasus::CIMInstance> *) (*data)[pos - 1]);
+                std::vector<Pegasus::CIMInstance> tmp = *((std::vector<Pegasus::CIMInstance> *)
+                                                        (*data)[pos - 1]);
 
                 for (unsigned int i = 0; i < tmp.size(); i++) {
                     QTreeWidgetItem *item = new QTreeWidgetItem();
@@ -621,14 +707,16 @@ void HardwarePlugin::fillTab(std::vector<void *> *data)
 
     m_changes_enabled = true;
 
-    for (unsigned int i = 0; i < data->size(); i++)
+    for (unsigned int i = 0; i < data->size(); i++) {
         delete ((std::vector<Pegasus::CIMInstance> *) (*data)[i]);
+    }
 }
 
 void HardwarePlugin::showComponent()
 {
-    if (m_ui->tree->selectedItems().empty())
+    if (m_ui->tree->selectedItems().empty()) {
         return;
+    }
 
     QTreeWidgetItem *item = m_ui->tree->selectedItems()[0];
     std::string parent = item->parent()->text(0).toStdString();
@@ -641,7 +729,7 @@ void HardwarePlugin::showComponent()
     QObjectList list = m_ui->device_box->children();
 
     for (int i = list.size() - 1; i >= 0; i--) {
-        m_ui->device_box->layout()->removeWidget(qobject_cast<QWidget*>(list[i]));
+        m_ui->device_box->layout()->removeWidget(qobject_cast<QWidget *>(list[i]));
         delete list[i];
     }
     m_ui->device_box->setLayout(new QFormLayout());
@@ -649,8 +737,9 @@ void HardwarePlugin::showComponent()
     if (parent == "Processor") {
         for (unsigned int i = 0; i < m_processor.size(); i++) {
             std::vector<Pegasus::CIMInstance> proc = m_processor[i];
-            if (name != CIMValue::get_property_value(proc[0], "ElementName"))
+            if (name != CIMValue::get_property_value(proc[0], "ElementName")) {
                 continue;
+            }
 
             fillProcessor(proc);
             break;
@@ -660,8 +749,9 @@ void HardwarePlugin::showComponent()
         for (unsigned int i = 0; i < m_memory.size(); i++) {
             std::vector<Pegasus::CIMInstance> mem = m_memory[i];
 
-            if (name != CIMValue::get_property_value(mem[0], "PartNumber"))
+            if (name != CIMValue::get_property_value(mem[0], "PartNumber")) {
                 continue;
+            }
 
             fillMemory(mem);
             break;
@@ -670,19 +760,21 @@ void HardwarePlugin::showComponent()
         for (unsigned int i = 0; i < m_battery.size(); i++) {
             Pegasus::CIMInstance batt = m_battery[i];
 
-            if (name != CIMValue::get_property_value(batt, "Name"))
+            if (name != CIMValue::get_property_value(batt, "Name")) {
                 continue;
+            }
 
             fillBattery(batt);
             break;
         }
-    } else if (arrayContains<const char*>(class_code_values,
-                        sizeof(class_code_values) / sizeof(class_code_values[0]), parent.c_str())) {
+    } else if (arrayContains<const char *>(class_code_values,
+                                           sizeof(class_code_values) / sizeof(class_code_values[0]), parent.c_str())) {
         for (unsigned int i = 0; i < m_pci_device.size(); i++) {
             Pegasus::CIMInstance pci = m_pci_device[i];
 
-            if (name != CIMValue::get_property_value(pci, "Name"))
+            if (name != CIMValue::get_property_value(pci, "Name")) {
                 continue;
+            }
 
             fillPCI(pci);
             return;
@@ -690,8 +782,9 @@ void HardwarePlugin::showComponent()
         for (unsigned int i = 0; i < m_pci_bridge.size(); i++) {
             Pegasus::CIMInstance bridge = m_pci_bridge[i];
 
-            if (name != CIMValue::get_property_value(bridge, "Name"))
+            if (name != CIMValue::get_property_value(bridge, "Name")) {
                 continue;
+            }
 
             fillPCI(bridge);
             break;
@@ -700,8 +793,9 @@ void HardwarePlugin::showComponent()
         for (unsigned int i = 0; i < m_chassis.size(); i++) {
             Pegasus::CIMInstance chassis = m_chassis[i];
 
-            if (name != CIMValue::get_property_value(chassis, "Name"))
+            if (name != CIMValue::get_property_value(chassis, "Name")) {
                 continue;
+            }
 
             fillChassis(chassis);
             break;
@@ -710,8 +804,9 @@ void HardwarePlugin::showComponent()
         for (unsigned int i = 0; i < m_port.size(); i++) {
             Pegasus::CIMInstance port = m_port[i];
 
-            if (name != CIMValue::get_property_value(port, "Name"))
+            if (name != CIMValue::get_property_value(port, "Name")) {
                 continue;
+            }
 
             fillPort(port);
             break;

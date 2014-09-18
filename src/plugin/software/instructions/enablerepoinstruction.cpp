@@ -25,7 +25,8 @@
 
 #include <sstream>
 
-EnableRepoInstruction::EnableRepoInstruction(CIMClient *client, Pegasus::CIMInstance repo) :
+EnableRepoInstruction::EnableRepoInstruction(CIMClient *client,
+        Pegasus::CIMInstance repo) :
     SoftwareInstruction(client, "enable_repo", repo)
 {
 }
@@ -57,14 +58,14 @@ void EnableRepoInstruction::run()
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("RequestedState"),
                             Pegasus::CIMValue(Pegasus::Uint16(2)) // Enable
-                            ));
+                        ));
 
         m_client->invokeMethod(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    m_instance.getPath(),
-                    Pegasus::CIMName("RequestStateChange"),
-                    in_param,
-                    out_param);
+            Pegasus::CIMNamespaceName("root/cimv2"),
+            m_instance.getPath(),
+            Pegasus::CIMName("RequestStateChange"),
+            in_param,
+            out_param);
     } catch (const Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

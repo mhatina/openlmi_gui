@@ -27,7 +27,8 @@
 #include <QListWidgetItem>
 #include <QtPlugin>
 
-namespace Ui {
+namespace Ui
+{
 class SoftwarePlugin;
 }
 
@@ -35,7 +36,7 @@ class SoftwarePlugin : public Engine::IPlugin
 {
     Q_OBJECT
     Q_INTERFACES(Engine::IPlugin)
-    
+
 private:
     bool m_changes_enabled;
     std::vector<Pegasus::CIMInstance> m_installed;
@@ -46,13 +47,13 @@ private:
     Pegasus::CIMInstance findInstalledPackage(std::string package_name);
     Pegasus::CIMInstance findRepo(std::string repo_name);
     std::string getPackageName(Pegasus::CIMInstance package);
-    void fetchPackageInfo(Pegasus::CIMInstance instance);    
+    void fetchPackageInfo(Pegasus::CIMInstance instance);
 
 public:
     explicit SoftwarePlugin();
     ~SoftwarePlugin();
     virtual std::string getInstructionText();
-    virtual std::string getLabel();    
+    virtual std::string getLabel();
     virtual std::string getRefreshInfo();
     virtual void clear();
     virtual void fillTab(std::vector<void *> *data);

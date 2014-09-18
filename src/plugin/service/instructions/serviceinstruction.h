@@ -44,7 +44,8 @@ public:
      * @param instruction -- name of instruction
      * @param name -- name of service
      */
-    ServiceInstruction(CIMClient *client, std::string instruction, std::string name);
+    ServiceInstruction(CIMClient *client, std::string instruction,
+                       std::string name);
     /**
      * @brief Destructor
      */

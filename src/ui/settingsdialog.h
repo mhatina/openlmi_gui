@@ -18,10 +18,16 @@
 #ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
+#include "settings/isettings.h"
+
+#include <map>
+#include <QCheckBox>
 #include <QDialog>
+#include <QLineEdit>
 #include <vector>
 
-namespace Ui {
+namespace Ui
+{
 class SettingsDialog;
 }
 
@@ -31,14 +37,60 @@ class SettingsDialog : public QDialog
 
 private:
     Ui::SettingsDialog *m_ui;
-    std::vector<std::string> m_settings_items;
+    std::vector<ISettings *> m_settings;
+
+    bool checkState(QObject *box)
+    {
+        if (qobject_cast<QCheckBox *>(box)) {
+            return (((QCheckBox *) box)->checkState() == Qt::Checked);
+        }
+        return false;
+    }
+
+    QString text(QWidget *line)
+    {
+        if (qobject_cast<QLineEdit *>(line)) {
+            return ((QLineEdit *) line)->text();
+        }
+        return QString();
+    }
 
 public:
     explicit SettingsDialog(QWidget *parent = 0);
     ~SettingsDialog();
 
+    void addItem(ISettings *item);
+    void deleteItem(ISettings *item);
+    ISettings *findItem(std::string title);
+
     void load();
     void save();
+
+    template<typename T, typename W>
+    T value(std::string value_name)
+    {
+        T ret;
+
+        for (unsigned int i = 0; i < m_settings.size(); i++) {
+            W widget = m_settings[i]->findChild<W>(value_name.c_str());
+            if (widget == NULL) {
+                continue;
+            }
+
+            std::string type = widget->metaObject()->className();
+            std::stringstream ss;
+
+            if (type == "QCheckBox") {
+                ss << checkState(widget);
+            } else if (type == "QLineEdit") {
+                ss << text(widget).toStdString();
+            }
+            ss >> ret;
+        }
+
+        return ret;
+    }
+
 
 private slots:
     void change();

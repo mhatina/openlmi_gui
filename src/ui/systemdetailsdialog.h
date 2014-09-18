@@ -22,7 +22,8 @@
 
 #define DEFAULT_TEXT "N/A"
 
-namespace Ui {
+namespace Ui
+{
 class SystemDetailsDialog;
 }
 

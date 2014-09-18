@@ -19,7 +19,6 @@
 #define KERNEL_H
 
 #include "authenticationdialog.h"
-#include "eventlog.h"
 #include "lmiwbem_client.h"
 #include "mainwindow.h"
 #include "plugin.h"
@@ -33,7 +32,8 @@
 
 #define OPENLMI_KEYRING_DEFAULT "openlmi"
 
-namespace PowerStateValues {
+namespace PowerStateValues
+{
 typedef enum {
     NoPowerSetting = -1,
     PowerOn = 2,
@@ -55,30 +55,31 @@ typedef enum {
 } POWER_VALUES;
 } // end of namespace PowerStateValues
 
-namespace Engine {
+namespace Engine
+{
 /**
 * @brief The Kernel class.
 *
 * Basic class of OpenLMI gui.
 */
-class Kernel : public QObject {
+class Kernel : public QObject
+{
     Q_OBJECT
 
-    typedef std::map<std::string, CIMClient*> connection_map;
-    typedef std::map<std::string, IPlugin*> plugin_map;
+    typedef std::map<std::string, CIMClient *> connection_map;
+    typedef std::map<std::string, IPlugin *> plugin_map;
 
-private:    
+private:
     bool m_refreshEnabled;
     connection_map m_connections;
-    EventLog *m_event_log;
     MainWindow m_main_window;
     plugin_map m_loaded_plugins;
     QMutex *m_mutex;
     QProgressBar *m_bar;
-    SettingsDialog *settings;
+    SettingsDialog *m_settings;
     ShowTextDialog m_code_dialog;
     std::string m_save_script_path;
-    std::vector<QPluginLoader*> m_loaders;
+    std::vector<QPluginLoader *> m_loaders;
 
     int getIndexOfTab(std::string name);
     void createKeyring();
@@ -90,7 +91,8 @@ private:
      */
     void setButtonsEnabled(bool state, bool refresh_button = true);
     void setMac(CIMClient *client);
-    void setPowerState(CIMClient *client, PowerStateValues::POWER_VALUES power_state);
+    void setPowerState(CIMClient *client,
+                       PowerStateValues::POWER_VALUES power_state);
     void wakeOnLan();
 
 public:
@@ -106,7 +108,7 @@ public:
      * @brief Connects to system
      * @param state -- power state
      */
-    void getConnection(PowerStateValues::POWER_VALUES state);    
+    void getConnection(PowerStateValues::POWER_VALUES state);
     /**
      * @brief Load all plugins
      */
@@ -116,17 +118,16 @@ public:
      */
     void showMainWindow();
 
-private slots:    
+private slots:
     int getSilentConnection(std::string ip, bool silent = true);
     void deletePasswd();
     void deletePasswd(std::string id);
-    void emitSilentConnection(std::string ip);    
     void enableSpecialButtons(bool state);
     void handleAuthentication(PowerStateValues::POWER_VALUES state);
     void handleConnecting(CIMClient *client, PowerStateValues::POWER_VALUES state);
     void handleError(std::string message);
     void handleInstructionText(std::string text);
-    void handleProgressState(int state);    
+    void handleProgressState(int state);
     void refresh();
     void reloadPlugins();
     void resetKeyring();

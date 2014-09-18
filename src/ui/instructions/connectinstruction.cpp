@@ -20,7 +20,8 @@
 
 #include <sstream>
 
-ConnectInstruction::ConnectInstruction(const std::string &hostname, const std::string &username) :
+ConnectInstruction::ConnectInstruction(const std::string &hostname,
+                                       const std::string &username) :
     IInstruction("connect"),
     m_hostname(hostname),
     m_username(username)

@@ -25,7 +25,8 @@
 
 #include <sstream>
 
-NewGroupInstruction::NewGroupInstruction(CIMClient *client, NewGroupDialog *dialog) :
+NewGroupInstruction::NewGroupInstruction(CIMClient *client,
+        NewGroupDialog *dialog) :
     GroupInstruction(client, "add_new_group", dialog->getName()),
     m_dialog(dialog)
 {
@@ -49,19 +50,19 @@ void NewGroupInstruction::run()
 {
     try {
         Pegasus::CIMObjectPath account_inst_name = m_client->enumerateInstanceNames(
-            Pegasus::CIMNamespaceName("root/cimv2"),
-            Pegasus::CIMName("LMI_AccountManagementService")
-            )[0];
+                    Pegasus::CIMNamespaceName("root/cimv2"),
+                    Pegasus::CIMName("LMI_AccountManagementService")
+                )[0];
 
         Pegasus::Array<Pegasus::CIMInstance> computer_systems =
-                m_client->enumerateInstances(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    Pegasus::CIMName("PG_ComputerSystem"),
-                    true,       // deep inheritance
-                    false,      // local only
-                    false,      // include qualifiers
-                    false       // include class origin
-                    );
+            m_client->enumerateInstances(
+                Pegasus::CIMNamespaceName("root/cimv2"),
+                Pegasus::CIMName("PG_ComputerSystem"),
+                true,       // deep inheritance
+                false,      // local only
+                false,      // include qualifiers
+                false       // include class origin
+            );
 
         if (computer_systems.size() != 1) {
             Logger::getInstance()->error("Invalid size");
@@ -74,23 +75,23 @@ void NewGroupInstruction::run()
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("System"),
                             Pegasus::CIMValue(computer_systems[0].getPath())
-                            ));
+                        ));
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("Name"),
                             CIMValue::to_cim_value(Pegasus::CIMTYPE_STRING, m_dialog->getName())
-                            ));
+                        ));
         in_param.append(Pegasus::CIMParamValue(
-                            Pegasus::String("SystemAccount"),                            
+                            Pegasus::String("SystemAccount"),
                             Pegasus::CIMValue(m_dialog->isSystemGroup())
-                            ));
+                        ));
 
         m_client->invokeMethod(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    account_inst_name,
-                    Pegasus::CIMName("CreateGroup"),
-                    in_param,
-                    out_param
-                    );
+            Pegasus::CIMNamespaceName("root/cimv2"),
+            account_inst_name,
+            Pegasus::CIMName("CreateGroup"),
+            in_param,
+            out_param
+        );
     } catch (const Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

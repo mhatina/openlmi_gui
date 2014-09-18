@@ -23,7 +23,8 @@
 #include "lmiwbem_value.h"
 #include "logger.h"
 
-DeleteGroupInstruction::DeleteGroupInstruction(CIMClient *client, std::string name) :
+DeleteGroupInstruction::DeleteGroupInstruction(CIMClient *client,
+        std::string name) :
     GroupInstruction(client, "delete_group", name)
 {
 }
@@ -46,14 +47,16 @@ void DeleteGroupInstruction::run()
         Pegasus::Array<Pegasus::CIMParamValue> out_param;
 
         Pegasus::CIMValue ret = m_client->invokeMethod(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    group.getPath(),
-                    Pegasus::CIMName("DeleteGroup"),
-                    in_param,
-                    out_param
-                    );        
-        if (ret.equal(CIMValue::to_cim_value(Pegasus::CIMTYPE_UINT32, "4097")))
-            Logger::getInstance()->info("Unable to delete group: " + m_name + ". Group is primary group of a user.");
+                                    Pegasus::CIMNamespaceName("root/cimv2"),
+                                    group.getPath(),
+                                    Pegasus::CIMName("DeleteGroup"),
+                                    in_param,
+                                    out_param
+                                );
+        if (ret.equal(CIMValue::to_cim_value(Pegasus::CIMTYPE_UINT32, "4097"))) {
+            Logger::getInstance()->info("Unable to delete group: " + m_name +
+                                        ". Group is primary group of a user.");
+        }
     } catch (const Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

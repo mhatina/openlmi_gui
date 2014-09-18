@@ -23,7 +23,8 @@
 #include "logger.h"
 #include "reloadserviceinstruction.h"
 
-ReloadServiceInstruction::ReloadServiceInstruction(CIMClient *client, std::string name) :
+ReloadServiceInstruction::ReloadServiceInstruction(CIMClient *client,
+        std::string name) :
     ServiceInstruction(client, "reload_service", name)
 {
 }
@@ -43,8 +44,9 @@ void ReloadServiceInstruction::run()
     try {
         Pegasus::CIMValue ret = invokeMethod("ReloadService");
 
-        if (!ret.equal(Pegasus::CIMValue(Pegasus::Uint32(0))))
+        if (!ret.equal(Pegasus::CIMValue(Pegasus::Uint32(0)))) {
             Logger::getInstance()->info("Unable to reload service.");
+        }
     } catch (Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

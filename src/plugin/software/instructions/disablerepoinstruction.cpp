@@ -25,7 +25,8 @@
 
 #include <sstream>
 
-DisableRepoInstruction::DisableRepoInstruction(CIMClient *client, Pegasus::CIMInstance repo) :
+DisableRepoInstruction::DisableRepoInstruction(CIMClient *client,
+        Pegasus::CIMInstance repo) :
     SoftwareInstruction(client, "disable_repo", repo)
 {
 }
@@ -57,14 +58,14 @@ void DisableRepoInstruction::run()
         in_param.append(Pegasus::CIMParamValue(
                             Pegasus::String("RequestedState"),
                             Pegasus::CIMValue(Pegasus::Uint16(3)) // Disable
-                            ));
+                        ));
 
         m_client->invokeMethod(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    m_instance.getPath(),
-                    Pegasus::CIMName("RequestStateChange"),
-                    in_param,
-                    out_param);
+            Pegasus::CIMNamespaceName("root/cimv2"),
+            m_instance.getPath(),
+            Pegasus::CIMName("RequestStateChange"),
+            in_param,
+            out_param);
     } catch (const Pegasus::Exception &ex) {
         Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
     }

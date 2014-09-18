@@ -35,7 +35,7 @@ ProviderWidget::~ProviderWidget()
     delete m_ui;
 }
 
-QTabWidget* ProviderWidget::getTabWidget()
+QTabWidget *ProviderWidget::getTabWidget()
 {
     Logger::getInstance()->debug("ProviderWidget::getTabWidget()");
     return m_ui->tab_widget;

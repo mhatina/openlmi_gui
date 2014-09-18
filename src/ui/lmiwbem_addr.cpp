@@ -39,9 +39,10 @@ Address::Address(std::string url)
     if (pos != std::string::npos) {
         m_hostname = url.substr(0, pos);
         long int port = strtol(url.substr(pos + 1,
-            url.size() - pos - 1).c_str(), NULL, 10);
-        if (errno == ERANGE || port < 0 || port > 65535)
+                                          url.size() - pos - 1).c_str(), NULL, 10);
+        if (errno == ERANGE || port < 0 || port > 65535) {
             m_is_valid = false;
+        }
         m_port = static_cast<unsigned int>(port);
     } else {
         m_hostname = url;
