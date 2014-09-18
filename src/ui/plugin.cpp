@@ -171,12 +171,13 @@ bool Engine::IPlugin::showFilter(bool show)
         return false;
     }
 
-    if (show) {
-        filter_box->show();
-    } else {
-        filter_box->hide();
+    QObjectList list = filter_box->children();
+    if (list.empty() || list.size() == 1) {
+        Logger::getInstance()->info("No filter available!");
+        return false;
     }
 
+    filter_box->setVisible(show);
     return true;
 }
 

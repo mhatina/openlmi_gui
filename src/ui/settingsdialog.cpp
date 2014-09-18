@@ -41,8 +41,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
         SIGNAL(textChanged(QString)),
         this,
         SLOT(updateList(QString)));
-    QPushButton *button = m_ui->button_box->button(QDialogButtonBox::Apply);
-    connect(button, SIGNAL(clicked()), this, SLOT(applyChanges()));
 
     if (!m_ui->settings_box->layout()) {
         m_ui->settings_box->setLayout(new QGridLayout());

@@ -1,8 +1,8 @@
 %define lib_path lmicc
 
 Name:           lmicc
-Version:        0.0.1
-Release:        3%{?dist}
+Version:        0.1.0
+Release:        1%{?dist}
 Summary:        GUI for OpenLMI
 License:        GPLv2.1+, LGPLv2.1+
 URL:            https://github.com/mhatina/openlmi_gui 
@@ -19,6 +19,7 @@ Requires:       tog-pegasus >= 2.12.0
 Requires:       boost >= 1.54.0
 Requires:       boost-thread >= 1.54.0
 Requires:       openslp >= 1.2.1
+Requires:       libgnome-keyring >= 3.10.1
 Requires:       lmicc-bin
 
 %package bin
@@ -36,27 +37,32 @@ Group:          Development/Libraries
 Requires:       lmicc-account
 Requires:       lmicc-hardware
 Requires:       lmicc-network
+Requires:       lmicc-overview
 Requires:       lmicc-service
 Requires:       lmicc-software
 
 %package account
-Summary:        Account provider for %{summary}
+Summary:        Account tab for %{summary}
 Group:          Development/Libraries
 
 %package hardware
-Summary:        Hardware provider for %{summary}
+Summary:        Hardware tab for %{summary}
 Group:          Development/Libraries
 
 %package network
-Summary:        Network provider for %{summary}
+Summary:        Network tab for %{summary}
+Group:          Development/Libraries
+
+%package overview
+Summary:        Overview tab for %{summary}
 Group:          Development/Libraries
 
 %package service
-Summary:        Service provider for %{summary}
+Summary:        Service tab for %{summary}
 Group:          Development/Libraries
 
 %package software
-Summary:        Software provider for %{summary}
+Summary:        Software tab for %{summary}
 Group:          Development/Libraries
 
 %description
@@ -78,6 +84,9 @@ Group:          Development/Libraries
 %{summary}      
 
 %description network
+%{summary} 
+
+%description overview
 %{summary} 
 
 %description service
@@ -119,6 +128,9 @@ export QA_SKIP_BUILD_ROOT="true"
 %files network
 %{_libdir}/%{lib_path}/liblmiccnetwork*
 
+%files overview
+%{_libdir}/%{lib_path}/liblmiccoverview*
+
 %files service
 %{_libdir}/%{lib_path}/liblmiccservice*
 
@@ -126,6 +138,9 @@ export QA_SKIP_BUILD_ROOT="true"
 %{_libdir}/%{lib_path}/liblmiccsoftware*
 
 %changelog
+* Thu Sep 18 2014 Martin Hatina <mhatina@redhat.com> - 0.1.0-1
+- lot of new features and bug fixes
+
 * Tue Aug 26 2014 Martin Hatina <mhatina@redhat.com> - 0.0.1-3
 - plugin path related bug fix
 
