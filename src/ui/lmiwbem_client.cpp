@@ -20,6 +20,7 @@
 #include "lmiwbem_client.h"
 #include "lmiwbem_addr.h"
 #include "logger.h"
+#include "kernel.h"
 
 CIMClient::CIMClient()
     : Pegasus::CIMClient()
@@ -108,6 +109,7 @@ void CIMClient::disconnect()
 Pegasus::Boolean CIMClient::dontVerifyCertificate(Pegasus::SSLCertificateInfo
         &ci)
 {
+    UNUSED(ci)
     Logger::getInstance()->debug("CIMClient::dontVerifyCertificate(Pegasus::SSLCertificateInfo &ci)");
     return true;
 }

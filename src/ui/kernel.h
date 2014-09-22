@@ -30,6 +30,8 @@
 #include <QPluginLoader>
 #include <string>
 
+#define UNUSED(x) (void)x;
+
 #define OPENLMI_KEYRING_DEFAULT "openlmi"
 
 namespace PowerStateValues
@@ -117,6 +119,12 @@ public:
      * @brief Display main window
      */
     void showMainWindow();
+
+    template<typename T>
+    T widget(std::string object_name)
+    {
+        return m_main_window.findChild<T>(object_name.c_str());
+    }
 
 private slots:
     int getSilentConnection(std::string ip, bool silent = true);

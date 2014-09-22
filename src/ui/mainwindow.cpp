@@ -85,6 +85,8 @@ MainWindow::MainWindow(QWidget *parent) :
         button->setShortcut(QKeySequence(buttons[i].shortcut));
         button->setEnabled(!buttons[i].disabled);
         button->setCheckable(buttons[i].checkable);
+        if (buttons[i].checkable)
+            button->setChecked(false);
         button->setFlat(true);
         m_toolbar->addWidget(button);
     }

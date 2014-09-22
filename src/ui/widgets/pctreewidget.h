@@ -73,8 +73,8 @@ class PCTreeWidget : public QWidget
     Q_OBJECT
 
 private:
-    bool m_change_text;
     bool m_data_of_item_changed;
+    bool m_emit_signal;
     DiscoverWorker *m_worker;
     int m_time_sec;
     QMenu *m_context_menu;
@@ -98,9 +98,12 @@ private slots:
     void addDiscoveredPcsToTree(std::list<std::string> *pc);
     void addGroup();
     void deleteGroup();
+    void itemSelectionChanged();
+    void menuHidden();
     void onAddButtonClicked();
     void onDiscoverButtonClicked();
     void onRemoveButtonClicked();
+    void rightClicked();
     void showContextMenu(QPoint pos);
     void showSystemDetails();
     void startTime(QTreeWidgetItem *item, int column);
@@ -113,6 +116,7 @@ signals:
      * @param id -- ip or domain name of host
      */
     void removed(std::string id);
+    void selectionChanged();
 
 public:
     /**

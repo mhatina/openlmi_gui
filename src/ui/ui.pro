@@ -79,7 +79,8 @@ SOURCES         +=      main.cpp \
                         widgets/labeledlabel.cpp \
                         settings/generalsettings.cpp \
                         settings/isettings.cpp \
-    settings/generalpluginsettings.cpp
+    settings/generalpluginsettings.cpp \
+    widgets/treewidget.cpp
 
 HEADERS         +=      mainwindow.h \
                         kernel.h \
@@ -103,7 +104,8 @@ HEADERS         +=      mainwindow.h \
                         widgets/labeledlabel.h \
                         settings/generalsettings.h \
                         settings/isettings.h \
-    settings/generalpluginsettings.h
+    settings/generalpluginsettings.h \
+    widgets/treewidget.h
 
 FORMS           +=      mainwindow.ui \
                         widgets/providerwidget.ui \

@@ -161,7 +161,7 @@ bool Logger::log(std::string message, log_mode mode, bool show_message)
         setLogPath(DEFAULT_LOG_PATH);
         m_mutex.unlock();
         std::string err =
-            "Log file cannot be opened! Possibly wrong path. Path changed to " + m_log_path;
+            "Log file '" + m_log_path + "' cannot be opened!";
         if (message != err) {
             error(err);
         }

@@ -206,8 +206,8 @@ void Engine::Kernel::initConnections()
         this,
         SLOT(setActivePlugin(int)));
     connect(
-        m_main_window.getPcTreeWidget()->getTree(),
-        SIGNAL(itemSelectionChanged()),
+        m_main_window.getPcTreeWidget(),
+        SIGNAL(selectionChanged()),
         this,
         SLOT(selectionChanged()));
     qRegisterMetaType<PowerStateValues::POWER_VALUES>("PowerStateValues::POWER_VALUES");

@@ -131,7 +131,7 @@ AccountPlugin::AccountPlugin() :
         SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
         this,
         SLOT(showDetails()));
-    showFilter(false);
+    m_ui->filter_box->hide();
     setPluginEnabled(false);
 }
 

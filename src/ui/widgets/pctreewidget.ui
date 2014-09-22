@@ -75,7 +75,7 @@
        <number>1</number>
       </property>
       <item row="0" column="0" colspan="2">
-       <widget class="QTreeWidget" name="tree">
+       <widget class="TreeWidget" name="tree">
         <property name="minimumSize">
          <size>
           <width>280</width>
@@ -169,6 +169,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>widgets/treewidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

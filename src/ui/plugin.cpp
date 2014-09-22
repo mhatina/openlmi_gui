@@ -138,6 +138,7 @@ Engine::IPlugin::IPlugin() :
         SIGNAL(doneApplying()),
         this,
         SLOT(handleDoneApplying()));
+//    showFilter(false);
 }
 
 Engine::IPlugin::~IPlugin()
@@ -174,6 +175,7 @@ bool Engine::IPlugin::showFilter(bool show)
     QObjectList list = filter_box->children();
     if (list.empty() || list.size() == 1) {
         Logger::getInstance()->info("No filter available!");
+        filter_box->setVisible(false);
         return false;
     }
 

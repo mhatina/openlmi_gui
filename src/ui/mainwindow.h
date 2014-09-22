@@ -41,7 +41,6 @@ typedef struct {
 } button;
 
 const button buttons[] = {
-//    {"edit_button", ":/changes-prevent.png", "Edit", "", false, true},
     {"add_button", ":/add.png", "Add", "", false, false},
     {"remove_button", ":/remove.png", "Remove", "", false, false},
     {"discover_button", ":/discover.png", "Discover", "", false, false},

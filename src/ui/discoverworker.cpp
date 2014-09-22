@@ -17,6 +17,7 @@
 
 #include "discoverworker.h"
 #include "logger.h"
+#include "kernel.h"
 
 #include <cstring>
 #include <iostream>
@@ -40,6 +41,9 @@ SLPBoolean get_srvs_list (
     void *cookie )
 {
     Logger::getInstance()->debug("get_srvs_list (SLPHandle hslp, const char* srvurl, unsigned short lifetime, SLPError errcode, void* cookie )");
+
+    UNUSED(hslp)
+    UNUSED(lifetime)
     if ((errcode == SLP_OK || errcode == SLP_LAST_CALL) && srvurl != NULL) {
         SLPSrvURL *url;
         SLPParseSrvURL(srvurl, &url);

@@ -26,7 +26,7 @@
 void usage(const char *arg)
 {
     const char *name = strrchr(arg, '/');
-    std::cerr << "Usage: " << name << " [-g]\n\n"
+    std::cerr << "Usage: " << name << " [-gh]\n\n"
               << "Options:\n"
               << "-g\t-- show debug messages\n"
               << "-h\t-- show this help";

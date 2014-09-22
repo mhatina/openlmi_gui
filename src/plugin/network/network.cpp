@@ -40,7 +40,7 @@ NetworkPlugin::NetworkPlugin() :
     m_ui(new Ui::NetworkPlugin)
 {
     m_ui->setupUi(this);
-    showFilter(false);
+    m_ui->filter_box->hide();
     setPluginEnabled(false);
 
     m_ui->networks_table->horizontalHeader()->setResizeMode(QHeaderView::Stretch);

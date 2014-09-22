@@ -44,8 +44,8 @@
 
 PCTreeWidget::PCTreeWidget(QWidget *parent) :
     QWidget(parent),
-    m_change_text(true),
     m_data_of_item_changed(false),
+    m_emit_signal(true),
     m_worker(NULL),
     m_ui(new Ui::PCTreeWidget)
 {
@@ -76,6 +76,21 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
         SIGNAL(customContextMenuRequested(QPoint)),
         this,
         SLOT(showContextMenu(QPoint)));
+    connect(
+        m_ui->tree,
+        SIGNAL(itemSelectionChanged()),
+        this,
+        SLOT(itemSelectionChanged()));
+    connect(
+        m_ui->tree,
+        SIGNAL(rightClick()),
+        this,
+        SLOT(rightClicked()));
+    connect(
+        m_context_menu,
+        SIGNAL(aboutToHide()),
+        this,
+        SLOT(menuHidden()));
 
     m_ui->tree->setSelectionMode(
         QAbstractItemView::ContiguousSelection);
@@ -87,7 +102,6 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
 PCTreeWidget::~PCTreeWidget()
 {
     Logger::getInstance()->debug("PCTreeWidget::~PCTreeWidget()");
-    m_change_text = false;
     std::string path = "/home/mhatina/.openlmi/openlmi_computers.xml";
     saveAllPcs(path);
     delete m_ui;
@@ -330,10 +344,17 @@ void PCTreeWidget::saveAllPcs(std::string filename)
 
 // slots
 
+void PCTreeWidget::menuHidden()
+{
+    m_emit_signal = true;
+}
+
 void PCTreeWidget::onAddButtonClicked()
 {
     Logger::getInstance()->debug("PCTreeWidget::onAddButtonClicked()");
     topLevelNode("Added")->setExpanded(true);
+
+    m_emit_signal = false;
 
     std::list<QTreeWidgetItem *> tmp = m_ui->tree->selectedItems().toStdList();
     for (std::list<QTreeWidgetItem *>::iterator it = tmp.begin(); it != tmp.end();
@@ -414,6 +435,18 @@ void PCTreeWidget::deleteGroup()
     m_ui->tree->takeTopLevelItem(index);
 }
 
+void PCTreeWidget::itemSelectionChanged()
+{
+    if (m_emit_signal) {
+        emit selectionChanged();
+    }
+}
+
+void PCTreeWidget::rightClicked()
+{
+    m_emit_signal = false;
+}
+
 void PCTreeWidget::showContextMenu(QPoint pos)
 {
     QPoint globalPos = m_ui->tree->mapToGlobal(pos);
@@ -487,12 +520,14 @@ void PCTreeWidget::validate(QTreeWidgetItem *item , int column)
     TreeWidgetItem *parent = (TreeWidgetItem *) item->parent();
     TreeWidgetItem *tree_item = (TreeWidgetItem *) item;
     if (parent == NULL) {
+        m_emit_signal = true;
         return;
     }
     m_ui->tree->sortByColumn(0, Qt::AscendingOrder);
 
     if (item->text(column).isEmpty()) {
         parent->takeChild(parent->indexOfChild(item));
+        m_emit_signal = true;
         return;
     }
 
@@ -557,6 +592,7 @@ void PCTreeWidget::validate(QTreeWidgetItem *item , int column)
         item->setSelected(false);
         item->setBackground(0, QBrush(QColor("red")));
     }
+    m_emit_signal = true;
 }
 
 std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)
@@ -604,7 +640,7 @@ void PCTreeWidget::getIp(std::string &name, std::string &ipv4,
 {
     struct addrinfo hints;
     struct addrinfo *result;
-    void *ptr;
+    void *ptr = NULL;
     char *dst = (char *) malloc(MAX_LENGTH * sizeof(char));
 
     memset(&hints, 0, sizeof(struct addrinfo));

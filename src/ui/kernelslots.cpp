@@ -66,7 +66,7 @@ int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
 
         client = new CIMClient();
         try {
-            bool verify;
+            bool verify = false;
             std::string cert;
 
             try {
@@ -503,9 +503,8 @@ void Engine::Kernel::showFilter()
         return;
     }
 
-    if (!plugin->showFilter(button->isChecked())) {
-        button->setChecked(false);
-    }
+    bool checked = plugin->showFilter(button->isChecked());
+    button->setChecked(checked);
 }
 
 void Engine::Kernel::showSettings()

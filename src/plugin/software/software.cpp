@@ -116,7 +116,7 @@ SoftwarePlugin::SoftwarePlugin() :
     m_ui(new Ui::SoftwarePlugin)
 {
     m_ui->setupUi(this);
-    showFilter(false);
+    m_ui->filter_box->hide();
     setPluginEnabled(false);
 
     connect(

@@ -425,7 +425,7 @@ HardwarePlugin::HardwarePlugin() :
     m_ui(new Ui::HardwarePlugin)
 {
     m_ui->setupUi(this);
-    showFilter(false);
+    m_ui->filter_box->hide();
     setPluginEnabled(false);
 
     int cnt = sizeof(valueMap) / sizeof(valueMap[0]);
