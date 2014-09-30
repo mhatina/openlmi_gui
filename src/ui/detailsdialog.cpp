@@ -64,6 +64,7 @@ DetailsDialog::DetailsDialog(std::string title, QWidget *parent) :
     setWindowTitle(title.c_str());
     m_ui->key_label->setStyleSheet("QLabel { background-color : pink;}");
     m_ui->changed_label->setStyleSheet("QLabel { background-color : yellow;}");
+    setWindowFlags(Qt::Popup);
 }
 
 DetailsDialog::~DetailsDialog()

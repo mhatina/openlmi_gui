@@ -171,11 +171,13 @@ void PCTreeWidget::setComputerIcon(QIcon icon)
 
 int PCTreeWidget::getTimeSec() const
 {
+    Logger::getInstance()->debug("PCTreeWidget::getTimeSec() const");
     return m_time_sec;
 }
 
 void PCTreeWidget::setTimeSec(int time_sec)
 {
+    Logger::getInstance()->debug("PCTreeWidget::setTimeSec(int time_sec)");
     m_time_sec = time_sec * 1000;
 }
 
@@ -346,6 +348,7 @@ void PCTreeWidget::saveAllPcs(std::string filename)
 
 void PCTreeWidget::menuHidden()
 {
+    Logger::getInstance()->debug("PCTreeWidget::menuHidden()");
     m_emit_signal = true;
 }
 
@@ -416,6 +419,7 @@ void PCTreeWidget::addDiscoveredPcsToTree(std::list<std::string> *pc)
 
 void PCTreeWidget::addGroup()
 {
+    Logger::getInstance()->debug("PCTreeWidget::addGroup()");
     Qt::ItemFlags flags =
         Qt::ItemIsDropEnabled
         | Qt::ItemIsEnabled
@@ -427,6 +431,7 @@ void PCTreeWidget::addGroup()
 
 void PCTreeWidget::deleteGroup()
 {
+    Logger::getInstance()->debug("PCTreeWidget::deleteGroup()");
     QTreeWidgetItem *item = m_ui->tree->itemAt(m_item_pos);
     if (item == NULL || item->parent()) {
         return;
@@ -437,6 +442,7 @@ void PCTreeWidget::deleteGroup()
 
 void PCTreeWidget::itemSelectionChanged()
 {
+    Logger::getInstance()->debug("PCTreeWidget::itemSelectionChanged()");
     if (m_emit_signal) {
         emit selectionChanged();
     }
@@ -444,11 +450,13 @@ void PCTreeWidget::itemSelectionChanged()
 
 void PCTreeWidget::rightClicked()
 {
+    Logger::getInstance()->debug("PCTreeWidget::rightClicked()");
     m_emit_signal = false;
 }
 
 void PCTreeWidget::showContextMenu(QPoint pos)
 {
+    Logger::getInstance()->debug("PCTreeWidget::showContextMenu(QPoint pos)");
     QPoint globalPos = m_ui->tree->mapToGlobal(pos);
     QTreeWidgetItem *item = m_ui->tree->itemAt(pos);
     m_item_pos = pos;
@@ -456,15 +464,14 @@ void PCTreeWidget::showContextMenu(QPoint pos)
     if (item == NULL) {
         findChild<QAction *>("delete_system_action")->setEnabled(false);
         findChild<QAction *>("delete_group_action")->setEnabled(false);
-        return;
-    }
-
-    if (item->parent()) {
-        findChild<QAction *>("delete_system_action")->setEnabled(true);
-        findChild<QAction *>("delete_group_action")->setEnabled(false);
     } else {
-        findChild<QAction *>("delete_system_action")->setEnabled(false);
-        findChild<QAction *>("delete_group_action")->setEnabled(true);
+        if (item->parent()) {
+            findChild<QAction *>("delete_system_action")->setEnabled(true);
+            findChild<QAction *>("delete_group_action")->setEnabled(false);
+        } else {
+            findChild<QAction *>("delete_system_action")->setEnabled(false);
+            findChild<QAction *>("delete_group_action")->setEnabled(true);
+        }
     }
 
     m_context_menu->popup(globalPos);
@@ -472,6 +479,7 @@ void PCTreeWidget::showContextMenu(QPoint pos)
 
 void PCTreeWidget::showSystemDetails()
 {
+    Logger::getInstance()->debug("PCTreeWidget::showSystemDetails()");
     QTreeWidgetItem *item = m_ui->tree->itemAt(m_ui->tree->mapFromGlobal(
                                 QCursor::pos()));
     if (item != m_item_to_show || m_context_menu->isVisible() ||
@@ -501,6 +509,7 @@ void PCTreeWidget::showSystemDetails()
 
 void PCTreeWidget::startTime(QTreeWidgetItem *item, int column)
 {
+    Logger::getInstance()->debug("PCTreeWidget::startTime(QTreeWidgetItem *item, int column)");
     Q_UNUSED(column)
     TreeWidgetItem *system = dynamic_cast<TreeWidgetItem *>(item);
     if (system == NULL) {
@@ -597,6 +606,7 @@ void PCTreeWidget::validate(QTreeWidgetItem *item , int column)
 
 std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)
 {
+    Logger::getInstance()->debug("PCTreeWidget::getHostName(std::string &ip, int &ai_family)");
     struct addrinfo hints;
     struct addrinfo *result;
     struct sockaddr_in sa4;
@@ -638,6 +648,7 @@ std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)
 void PCTreeWidget::getIp(std::string &name, std::string &ipv4,
                          std::string &ipv6)
 {
+    Logger::getInstance()->debug("PCTreeWidget::getIp(std::string &name, std::string &ipv4, std::string &ipv6)");
     struct addrinfo hints;
     struct addrinfo *result;
     void *ptr = NULL;
@@ -681,6 +692,7 @@ void PCTreeWidget::getIp(std::string &name, std::string &ipv4,
 
 void PCTreeWidget::initContextMenu()
 {
+    Logger::getInstance()->debug("PCTreeWidget::initContextMenu()");
     m_context_menu = new QMenu(this);
     m_ui->tree->setContextMenuPolicy(Qt::CustomContextMenu);
     QAction *action = m_context_menu->addAction("Delete system");

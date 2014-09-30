@@ -29,6 +29,7 @@ NewGroupDialog::NewGroupDialog(QWidget *parent) :
     m_ui->setupUi(this);
     connect(m_ui->ok_button, SIGNAL(clicked()), this, SLOT(accept()));
     connect(m_ui->cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+    setWindowFlags(Qt::Popup);
 }
 
 NewGroupDialog::~NewGroupDialog()

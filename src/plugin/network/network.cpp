@@ -79,7 +79,7 @@ void NetworkPlugin::getData(std::vector<void *> *data)
         // LMI_EthernetPort LMI_EthernetPortStatistics
 
         Pegasus::Array<Pegasus::CIMInstance> network =
-            m_client->enumerateInstances(
+            enumerateInstances(
                 Pegasus::CIMNamespaceName("root/cimv2"),
                 Pegasus::CIMName("LMI_IPNetworkConnection"),
                 true,       // deep inheritance

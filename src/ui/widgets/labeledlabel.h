@@ -37,7 +37,8 @@ private:
     Ui::LabeledLabel *m_ui;
 
 public:
-    explicit LabeledLabel(std::string label, std::string text);
+    LabeledLabel(std::string label, std::string text);
+    LabeledLabel(std::string label, QString text);
     ~LabeledLabel();
 
     int getLabelWidth();

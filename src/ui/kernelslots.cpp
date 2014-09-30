@@ -125,11 +125,11 @@ void Engine::Kernel::enableSpecialButtons(bool state)
     QList<QTreeWidgetItem *> list =
         m_main_window.getPcTreeWidget()->getTree()->selectedItems();
     bool refresh = !list.empty() & m_refreshEnabled & state;
-    QPushButton *button = m_main_window.findChild<QPushButton *>("refresh_button");
+    QPushButton *button = widget<QPushButton *>("refresh_button");
     button->setEnabled(refresh);
-    button = m_main_window.getToolbar()->findChild<QPushButton *>("delete_passwd_button");
+    button = widget<QPushButton *>("delete_passwd_button");
     button->setEnabled(refresh);
-    m_main_window.getToolbar()->findChild<QToolButton *>("power_button")->setEnabled(
+    widget<QToolButton *>("power_button")->setEnabled(
         refresh);
 }
 
@@ -139,7 +139,7 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
     TreeWidgetItem *item = (TreeWidgetItem *)
                            m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
     std::string ip = item->getId();
-    AuthenticationDialog dialog(item->text(0).toStdString());
+    AuthenticationDialog dialog(item->text(0).toStdString(), &m_main_window);
     if (dialog.exec()) {
         std::string username = dialog.getUsername();
         std::string passwd = dialog.getPasswd();
@@ -165,6 +165,7 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
 
         boost::thread(boost::bind(&Engine::Kernel::getConnection, this, state));
     } else {
+        widget<QPushButton *>("stop_refresh_button")->setEnabled(false);
         handleProgressState(1);
         m_main_window.getStatusBar()->clearMessage();
     }
@@ -176,6 +177,7 @@ void Engine::Kernel::handleConnecting(CIMClient *client,
     Logger::getInstance()->debug("Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER_VALUES state)");
     if (client == NULL) {
         handleProgressState(1);
+        widget<QPushButton*>("stop_refresh_button")->setEnabled(false);
         return;
     }
 
@@ -184,14 +186,11 @@ void Engine::Kernel::handleConnecting(CIMClient *client,
         IPlugin *plugin = (IPlugin *) tab->currentWidget();
 
         if (plugin != NULL) {
-            // quick enough, maybe later move to another thread
+            // NOTE quick enough, maybe later move to another thread
             setMac(client);
 
-//            std::string id = client->hostname();
-//            plugin->setSystemId(id);
             plugin->refresh(client);
-            QPushButton *button =
-                m_main_window.getToolbar()->findChild<QPushButton *>("stop_refresh_button");
+            QPushButton *button = widget<QPushButton *>("stop_refresh_button");
             button->setEnabled(true);
         }
     } else {
@@ -227,7 +226,6 @@ void Engine::Kernel::handleProgressState(int state)
         plugin->setPluginEnabled(true);
         plugin->setRefreshed(true);
         setButtonsEnabled(true);
-//        m_main_window.getStatusBar()->clearMessage();
         m_bar->hide();
     } else if (state == 0) {
         plugin->setPluginEnabled(false);
@@ -266,6 +264,7 @@ void Engine::Kernel::refresh()
 
 void Engine::Kernel::reloadPlugins()
 {
+    Logger::getInstance()->debug("Engine::Kernel::reloadPlugins()");
     for (plugin_map::iterator it = m_loaded_plugins.begin();
          it != m_loaded_plugins.end(); it++) {
         (*it).second->disconnect();
@@ -400,8 +399,7 @@ void Engine::Kernel::setActivePlugin(int index)
             plugin->setActive(true);
             m_code_dialog.setText(plugin->getInstructionText(), false);
             setButtonsEnabled(true, false);
-            QPushButton *button =
-                m_main_window.getToolbar()->findChild<QPushButton *>("filter_button");
+            QPushButton *button = widget<QPushButton *>("filter_button");
             if (button != NULL) {
                 button->setChecked(plugin->isFilterShown());
             }
@@ -492,8 +490,7 @@ void Engine::Kernel::showCodeDialog()
 void Engine::Kernel::showFilter()
 {
     Logger::getInstance()->debug("Engine::Kernel::showFilter()");
-    QPushButton *button =
-        m_main_window.getToolbar()->findChild<QPushButton *>("filter_button");
+    QPushButton *button = widget<QPushButton *>("filter_button");
 
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     IPlugin *plugin = (IPlugin *) tab->currentWidget();
@@ -509,11 +506,13 @@ void Engine::Kernel::showFilter()
 
 void Engine::Kernel::showSettings()
 {
+    Logger::getInstance()->debug("Engine::Kernel::showSettings()");
     m_settings->exec();
 }
 
 void Engine::Kernel::startLMIShell()
 {
+    Logger::getInstance()->debug("Engine::Kernel::startLMIShell()");
     std::string command =
         m_settings->value<std::string, QLineEdit *>("terminal_emulator");
     QList<QTreeWidgetItem *> list =
@@ -532,6 +531,7 @@ void Engine::Kernel::startLMIShell()
 
 void Engine::Kernel::startSsh()
 {
+    Logger::getInstance()->debug("Engine::Kernel::startSsh()");
     QList<QTreeWidgetItem *> list =
         m_main_window.getPcTreeWidget()->getTree()->selectedItems();
     if (list.empty()) {
@@ -549,6 +549,7 @@ void Engine::Kernel::startSsh()
 
 void Engine::Kernel::stopRefresh()
 {
+    Logger::getInstance()->debug("Engine::Kernel::stopRefresh()");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     IPlugin *plugin = (IPlugin *) tab->currentWidget();
 
@@ -558,7 +559,6 @@ void Engine::Kernel::stopRefresh()
 
     plugin->stopRefresh();
     Logger::getInstance()->info(plugin->getLabel() + " has been stopped");
-    QPushButton *button =
-        m_main_window.getToolbar()->findChild<QPushButton *>("stop_refresh_button");
+    QPushButton *button = widget<QPushButton *>("stop_refresh_button");
     button->setEnabled(false);
 }

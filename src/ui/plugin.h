@@ -108,6 +108,15 @@ public:
      * @brief Virtual destructor
      */
     virtual ~IPlugin();
+
+    Pegasus::Array<Pegasus::CIMInstance> enumerateInstances(
+        const Pegasus::CIMNamespaceName &nameSpace,
+        const Pegasus::CIMName &className,
+        Pegasus::Boolean deepInheritance = true,
+        Pegasus::Boolean localOnly = true,
+        Pegasus::Boolean includeQualifiers = false,
+        Pegasus::Boolean includeClassOrigin = false,
+        const Pegasus::CIMPropertyList &propertyList = Pegasus::CIMPropertyList());
     /**
      * @brief isFilterShown
      * @return  return true if filter is displayed, otherwise false
@@ -151,7 +160,6 @@ public:
      * @param state
      */
     void setPluginEnabled(bool state);
-    void setSystemId(std::string system_id);
     /**
      * @brief Apply all changes
      *

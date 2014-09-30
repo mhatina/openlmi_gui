@@ -194,7 +194,7 @@ void AccountPlugin::getData(std::vector<void *> *data)
     std::string filter_user = m_ui->filter_user_line->text().toStdString();
     std::string filter_group = m_ui->filter_group_line->text().toStdString();
     try {
-        users = m_client->enumerateInstances(
+        users = enumerateInstances(
                     Pegasus::CIMNamespaceName("root/cimv2"),
                     Pegasus::CIMName("LMI_Account"),
                     true,       // deep inheritance
@@ -225,7 +225,7 @@ void AccountPlugin::getData(std::vector<void *> *data)
             m_users.push_back(str_value);
         }
 
-        groups = m_client->enumerateInstances(
+        groups = enumerateInstances(
                      Pegasus::CIMNamespaceName("root/cimv2"),
                      Pegasus::CIMName("LMI_Group"),
                      true,       // deep inheritance
@@ -254,7 +254,7 @@ void AccountPlugin::getData(std::vector<void *> *data)
         data->push_back(new std::multimap<Pegasus::String, Pegasus::CIMInstance>());
 
         Pegasus::Array<Pegasus::CIMInstance> members;
-        members = m_client->enumerateInstances(
+        members = enumerateInstances(
                       Pegasus::CIMNamespaceName("root/cimv2"),
                       Pegasus::CIMName("LMI_MemberOfGroup"),
                       true,       // deep inheritance

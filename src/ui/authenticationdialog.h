@@ -41,7 +41,7 @@ public:
      * @brief Contructor
      * @param id -- id of host (ip or domain name)
      */
-    AuthenticationDialog(std::string id);
+    AuthenticationDialog(std::string id, QWidget *parent = 0);
 
     /**
      * @brief Destructor

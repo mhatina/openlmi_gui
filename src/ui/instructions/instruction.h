@@ -24,7 +24,7 @@
 /**
  * @brief The Instruction interface
  *
- * Represent one instruction (change made in provider)
+ * Represent one instruction (change made in tab)
  */
 class IInstruction : public QObject
 {
@@ -44,6 +44,7 @@ public:
         CONNECT,
         ACCOUNT,
         GROUP,
+        OVERVIEW,
         SERVICE,
         SOFTWARE
     } Subject;

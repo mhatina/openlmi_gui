@@ -23,5 +23,6 @@
     <file alias="save.png">../../icons/save.png</file>
     <file alias="show-code.png">../../icons/show-code.png</file>
     <file alias="shutdown.png">../../icons/shutdown.png</file>
+    <file alias="stop-refresh.png">../../icons/stop-refresh.png</file>
 </qresource>
 </RCC>

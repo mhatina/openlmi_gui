@@ -18,13 +18,16 @@
 #include "authenticationdialog.h"
 #include "logger.h"
 
-AuthenticationDialog::AuthenticationDialog(std::string id):
+AuthenticationDialog::AuthenticationDialog(std::string id, QWidget *parent) :
+    QDialog(parent),
     m_ui(new Ui::AuthenticationDialog)
 {
     Logger::getInstance()->debug("AuthenticationDialog::AuthenticationDialog(std::string id)");
     m_ui->setupUi(this);
     m_ui->id_label->setText(id.c_str());
     m_ui->passwd_line->setEchoMode(QLineEdit::Password);
+    setWindowFlags(Qt::Popup);
+
     connect(m_ui->ok_button, SIGNAL(clicked()), this, SLOT(accept()));
     connect(m_ui->cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
 }

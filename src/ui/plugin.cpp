@@ -51,6 +51,9 @@ int Engine::IPlugin::throwAwayChanges()
 void Engine::IPlugin::addInstruction(IInstruction *instruction)
 {
     Logger::getInstance()->debug("Engine::IPlugin::addInstruction(IInstruction *instruction)");
+    if (instruction == NULL)
+        return;
+
     if (m_instructions.empty()) {
         std::string hostname = m_client->hostname();
         std::string username = m_client->username();
@@ -138,13 +141,43 @@ Engine::IPlugin::IPlugin() :
         SIGNAL(doneApplying()),
         this,
         SLOT(handleDoneApplying()));
-//    showFilter(false);
 }
 
 Engine::IPlugin::~IPlugin()
 {
     Logger::getInstance()->debug("Engine::IPlugin::~IPlugin()");
     delete m_mutex;
+}
+
+Pegasus::Array<Pegasus::CIMInstance> Engine::IPlugin::enumerateInstances(
+    const Pegasus::CIMNamespaceName &nameSpace,
+    const Pegasus::CIMName &className,
+    Pegasus::Boolean deepInheritance,
+    Pegasus::Boolean localOnly,
+    Pegasus::Boolean includeQualifiers,
+    Pegasus::Boolean includeClassOrigin,
+    const Pegasus::CIMPropertyList &propertyList)
+{
+    boost::this_thread::interruption_point();
+    Pegasus::Array<Pegasus::CIMInstance> array;
+    m_mutex->lock();
+    try {
+        array = m_client->enumerateInstances(
+                    nameSpace,
+                    className,
+                    deepInheritance,
+                    localOnly,
+                    includeQualifiers,
+                    includeClassOrigin,
+                    propertyList);
+    } catch (Pegasus::Exception &ex) {
+        m_mutex->unlock();
+        throw ex;
+    }
+    m_mutex->unlock();
+
+    boost::this_thread::interruption_point();
+    return array;
 }
 
 bool Engine::IPlugin::isFilterShown()
@@ -180,11 +213,12 @@ bool Engine::IPlugin::showFilter(bool show)
     }
 
     filter_box->setVisible(show);
-    return true;
+    return show;
 }
 
 std::string Engine::IPlugin::getSystemId()
 {
+    Logger::getInstance()->debug("Engine::IPlugin::getSystemId()");
     return m_system_id;
 }
 
@@ -380,13 +414,10 @@ void Engine::IPlugin::setPluginEnabled(bool state)
     }
 }
 
-void Engine::IPlugin::setSystemId(std::string system_id)
-{
-    m_system_id = system_id;
-}
-
 void Engine::IPlugin::stopRefresh()
 {
+    Logger::getInstance()->debug("Engine::IPlugin::stopRefresh()");
     m_stop_refresh = true;
+    m_refresh_thread.interrupt();
     handleDataFetching(NULL, "stop_refresh");
 }

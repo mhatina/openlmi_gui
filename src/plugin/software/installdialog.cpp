@@ -50,6 +50,7 @@ InstallDialog::InstallDialog(CIMClient *client, QWidget *parent) :
     m_ui->setupUi(this);
     m_ui->progress_bar->hide();
     m_ui->progress_bar->setMaximum(0);
+    setWindowFlags(Qt::Popup);
 
     connect(
         m_ui->search_button,

@@ -47,7 +47,7 @@ const button buttons[] = {
     {"delete_passwd_button", ":/change-password.png", "Delete \npassword", "", true, false},
     {"", "", "", "", true, false},
     {"refresh_button", ":/refresh.png", "Refresh", "Ctrl+R", true, false},
-    {"stop_refresh_button", "", "Stop refresh", "Ctrl+S", true, false},
+    {"stop_refresh_button", ":/stop-refresh.png", "Stop refresh", "Ctrl+S", true, false},
     {"cancel_button", ":/cancel.png", "Cancel", "", true, false},
     {"save_button", ":/save.png", "Save", "", true, false},
     {"save_as_button", ":/save-as.png", "Save as...", "", true, false},

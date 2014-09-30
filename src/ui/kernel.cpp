@@ -145,51 +145,49 @@ void Engine::Kernel::initConnections()
 {
     Logger::getInstance()->debug("Engine::Kernel::initConnections()");
 
-    QPushButton *button =
-        m_main_window.getToolbar()->findChild<QPushButton *>("refresh_button");
+    QPushButton *button = widget<QPushButton *>("refresh_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(refresh()));
-    button = m_main_window.getToolbar()->findChild<QPushButton *>("stop_refresh_button");
+    button = widget<QPushButton *>("stop_refresh_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(stopRefresh()));
-    QToolButton *power_button =
-        m_main_window.getToolbar()->findChild<QToolButton *>("power_button");
+    QToolButton *power_button = widget<QToolButton *>("power_button");
     connect(
         power_button,
         SIGNAL(triggered(QAction *)),
         this,
         SLOT(setPowerState(QAction *)));
-    button = m_main_window.getToolbar()->findChild<QPushButton *>("delete_passwd_button");
+    button = widget<QPushButton *>("delete_passwd_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(deletePasswd()));
-    button = m_main_window.getToolbar()->findChild<QPushButton *>("show_code_button");
+    button = widget<QPushButton *>("show_code_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(showCodeDialog()));
-    button = m_main_window.getToolbar()->findChild<QPushButton *>("filter_button");
+    button = widget<QPushButton *>("filter_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(showFilter()));
-    button = m_main_window.getToolbar()->findChild<QPushButton *>("save_button");
+    button = widget<QPushButton *>("save_button");
     connect(
         button,
         SIGNAL(clicked()),
         this,
         SLOT(saveScripts()));
-    button = m_main_window.getToolbar()->findChild<QPushButton *>("save_as_button");
+    button = widget<QPushButton *>("save_as_button");
     connect(
         button,
         SIGNAL(clicked()),
@@ -230,26 +228,26 @@ void Engine::Kernel::initConnections()
         m_main_window.getResetPasswdStorageAction(),
         SIGNAL(triggered()),
         this,
-        SLOT(resetKeyring()));    
-    QAction *action = m_main_window.findChild<QAction *>("action_start_LMIShell");
+        SLOT(resetKeyring()));
+    QAction *action = widget<QAction *>("action_start_LMIShell");
     connect(
         action,
         SIGNAL(triggered()),
         this,
         SLOT(startLMIShell()));
-    action = m_main_window.findChild<QAction *>("action_start_ssh");
+    action = widget<QAction *>("action_start_ssh");
     connect(
         action,
         SIGNAL(triggered()),
         this,
         SLOT(startSsh()));
-    action = m_main_window.findChild<QAction *>("action_reload_plugins");
+    action = widget<QAction *>("action_reload_plugins");
     connect(
         action,
         SIGNAL(triggered()),
         this,
         SLOT(reloadPlugins()));
-    action = m_main_window.findChild<QAction *>("action_options");
+    action = widget<QAction *>("action_options");
     connect(
         action,
         SIGNAL(triggered()),
@@ -267,21 +265,16 @@ void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
     }
     bool refreshed = plugin->isRefreshed();
 
-    ((QPushButton *)
-     m_main_window.getToolbar()->findChild<QPushButton *>("apply_button"))->setEnabled(
-         state & refreshed);
-    ((QPushButton *)
-     m_main_window.getToolbar()->findChild<QPushButton *>("cancel_button"))->setEnabled(
-         state & refreshed);
-    ((QPushButton *)
-     m_main_window.getToolbar()->findChild<QPushButton *>("save_button"))->setEnabled(
-         state & refreshed);
-    ((QPushButton *)
-     m_main_window.getToolbar()->findChild<QPushButton *>("save_as_button"))->setEnabled(
-         state & refreshed);
-    ((QPushButton *)
-     m_main_window.getToolbar()->findChild<QPushButton *>("stop_refresh_button"))->setEnabled(
-         !state);
+    ((QPushButton *) widget<QPushButton *>("apply_button"))->setEnabled(
+        state & refreshed);
+    ((QPushButton *) widget<QPushButton *>("cancel_button"))->setEnabled(
+        state & refreshed);
+    ((QPushButton *) widget<QPushButton *>("save_button"))->setEnabled(
+        state & refreshed);
+    ((QPushButton *) widget<QPushButton *>("save_as_button"))->setEnabled(
+        state & refreshed);
+    ((QPushButton *) widget<QPushButton *>("stop_refresh_button"))->setEnabled(
+        !state);
     if (refresh_button) {
         enableSpecialButtons(state);
     }
@@ -289,6 +282,7 @@ void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
 
 void Engine::Kernel::setMac(CIMClient *client)
 {
+    Logger::getInstance()->debug("Engine::Kernel::setMac(CIMClient *client)");
     QTreeWidget *tree = m_main_window.getPcTreeWidget()->getTree();
     QList<QTreeWidgetItem *> list = tree->findItems(client->hostname().c_str(),
                                     Qt::MatchExactly | Qt::MatchRecursive);
@@ -380,6 +374,7 @@ void Engine::Kernel::setPowerState(CIMClient *client,
 
 void Engine::Kernel::wakeOnLan()
 {
+    Logger::getInstance()->debug("Engine::Kernel::wakeOnLan()");
     // packet creating
     unsigned char to_send[102];
     unsigned char mac[6];

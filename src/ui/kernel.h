@@ -83,7 +83,7 @@ private:
     std::string m_save_script_path;
     std::vector<QPluginLoader *> m_loaders;
 
-    int getIndexOfTab(std::string name);
+    int  getIndexOfTab(std::string name);
     void createKeyring();
     void initConnections();
     /**
@@ -127,7 +127,7 @@ public:
     }
 
 private slots:
-    int getSilentConnection(std::string ip, bool silent = true);
+    int  getSilentConnection(std::string ip, bool silent = true);
     void deletePasswd();
     void deletePasswd(std::string id);
     void enableSpecialButtons(bool state);

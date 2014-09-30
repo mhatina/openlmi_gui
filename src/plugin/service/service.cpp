@@ -96,7 +96,7 @@ void ServicePlugin::getData(std::vector<void *> *data)
     try {
         m_client->setTimeout(Pegasus::Uint32(600000));
 
-        services = m_client->enumerateInstances(
+        services = enumerateInstances(
                        Pegasus::CIMNamespaceName("root/cimv2"),
                        Pegasus::CIMName("LMI_Service"),
                        true,       // deep inheritance

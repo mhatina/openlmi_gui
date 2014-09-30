@@ -217,7 +217,7 @@ void SoftwarePlugin::getData(std::vector<void *> *data)
 
     try {
         // installed packages
-        installed = m_client->enumerateInstances(
+        installed = enumerateInstances(
                         Pegasus::CIMNamespaceName("root/cimv2"),
                         Pegasus::CIMName("LMI_InstalledSoftwareIdentity"),
                         true,       // deep inheritance
@@ -247,7 +247,7 @@ void SoftwarePlugin::getData(std::vector<void *> *data)
         }
 
         // repos
-        repos = m_client->enumerateInstances(
+        repos = enumerateInstances(
                     Pegasus::CIMNamespaceName("root/cimv2"),
                     Pegasus::CIMName("LMI_SoftwareIdentityResource"),
                     true,       // deep inheritance
@@ -263,7 +263,7 @@ void SoftwarePlugin::getData(std::vector<void *> *data)
         }
 
         if (!m_verify.empty()) {
-            verify = m_client->enumerateInstances(
+            verify = enumerateInstances(
                          Pegasus::CIMNamespaceName("root/cimv2"),
                          Pegasus::CIMName("LMI_SoftwareVerificationJob"),
                          true,       // deep inheritance

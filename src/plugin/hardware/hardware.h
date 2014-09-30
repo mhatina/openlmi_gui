@@ -132,10 +132,11 @@ private:
     bool m_changes_enabled;
     std::map<std::string, std::string> m_values;
     std::vector<Pegasus::CIMInstance> m_battery;
-    std::vector<Pegasus::CIMInstance> m_chassis;
+    std::vector<Pegasus::CIMInstance> m_chassis;    
     std::vector<Pegasus::CIMInstance> m_pci_bridge;
     std::vector<Pegasus::CIMInstance> m_pci_device;
-    std::vector<Pegasus::CIMInstance> m_port;
+    std::vector<Pegasus::CIMInstance> m_port;    
+    std::vector<std::vector<Pegasus::CIMInstance> > m_disk_drive;
     std::vector<std::vector<Pegasus::CIMInstance> > m_memory;
     std::vector<std::vector<Pegasus::CIMInstance> > m_processor;
     Ui::HardwarePlugin *m_ui;
@@ -146,6 +147,7 @@ private:
     std::string decodeValues(Pegasus::CIMProperty property);
     void fillBattery(Pegasus::CIMInstance battery);
     void fillChassis(Pegasus::CIMInstance chassis);
+    void fillDisk(std::vector<Pegasus::CIMInstance> disk);
     void fillMemory(std::vector<Pegasus::CIMInstance> memory);
     void fillPCI(Pegasus::CIMInstance pci);
     void fillPort(Pegasus::CIMInstance port);
