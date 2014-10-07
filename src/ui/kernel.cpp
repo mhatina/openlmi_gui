@@ -253,6 +253,12 @@ void Engine::Kernel::initConnections()
         SIGNAL(triggered()),
         this,
         SLOT(showSettings()));
+    action = widget<QAction *>("action_about");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(showAboutDialog()));
 }
 
 void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)

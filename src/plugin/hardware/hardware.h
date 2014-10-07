@@ -143,8 +143,8 @@ private:
 
     QTreeWidgetItem *findTopLevelNode(std::string item_name);
     QTreeWidgetItem *topLevelNode(std::string item_name);
-    std::string convertCapacity(std::string capacity, bool bit = false);
     std::string decodeValues(Pegasus::CIMProperty property);
+    void clearComponentInfo();
     void fillBattery(Pegasus::CIMInstance battery);
     void fillChassis(Pegasus::CIMInstance chassis);
     void fillDisk(std::vector<Pegasus::CIMInstance> disk);

@@ -177,7 +177,7 @@ void Engine::Kernel::handleConnecting(CIMClient *client,
     Logger::getInstance()->debug("Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER_VALUES state)");
     if (client == NULL) {
         handleProgressState(1);
-        widget<QPushButton*>("stop_refresh_button")->setEnabled(false);
+        widget<QPushButton *>("stop_refresh_button")->setEnabled(false);
         return;
     }
 
@@ -362,6 +362,7 @@ void Engine::Kernel::selectionChanged()
             return;
         }
 
+        plugin->stopRefresh();
         plugin->clear();
         plugin->setRefreshed(false);
     }
@@ -374,8 +375,7 @@ void Engine::Kernel::selectionChanged()
     std::string label = plugin->getLabel();
     std::transform(label.begin(), label.end(), label.begin(), ::tolower);
 
-    bool enabled = m_settings->value<bool, QCheckBox *>(label);
-    if (!enabled) {
+    if (!m_settings->value<bool, QCheckBox *>(label)) {
         return;
     }
 
@@ -418,12 +418,15 @@ void Engine::Kernel::setActivePlugin(int index)
     std::transform(label.begin(), label.end(), label.begin(), ::tolower);
 
     bool enabled = m_settings->value<bool, QCheckBox *>(label);
-    if (!enabled) {
+    bool refreshed = plugin->isRefreshed();
+    if (!enabled && !refreshed) {
         return;
-    }
+    }       
 
-    if (!plugin->isRefreshed()) {
+    if (!refreshed) {
         refresh();
+    } else {
+        Logger::getInstance()->info(plugin->getRefreshInfo());
     }
 }
 
@@ -474,6 +477,14 @@ void Engine::Kernel::setPowerState(QAction *action)
     Logger::getInstance()->info(message + item->text(0).toStdString());
 }
 
+void Engine::Kernel::showAboutDialog()
+{
+    std::string text = "LMI Command Center\n"
+                       "Version: " + std::string(LMI_VERSION) + "\n\n"
+                       "Authors: Martin Hatina\n"
+                       "Email: mhatina@redhat.com";
+    QMessageBox::about(&m_main_window, "About", text.c_str());
+}
 
 void Engine::Kernel::showCodeDialog()
 {

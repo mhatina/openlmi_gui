@@ -55,14 +55,17 @@ INSTALLS        +=      target
 HEADERS         +=      network.h \
                         ../../ui/plugin.h \
                         ../../ui/instructions/connectinstruction.h \
-                        ../../ui/instructions/instruction.h
+                        ../../ui/instructions/instruction.h \
+    networkpagewidget.h
 
 SOURCES         +=      network.cpp \
                         ../../ui/plugin.cpp \
                         ../../ui/instructions/connectinstruction.cpp \
                         ../../ui/instructions/instruction.cpp \
-                        ../../ui/lmiwbem_value.cpp
+                        ../../ui/lmiwbem_value.cpp \
+    networkpagewidget.cpp
 
-FORMS           +=      network.ui
+FORMS           +=      network.ui \
+    networkpagewidget.ui
 
 RESOURCES       +=      icons.qrc

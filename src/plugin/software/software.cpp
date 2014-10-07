@@ -203,7 +203,7 @@ std::string SoftwarePlugin::getLabel()
 std::string SoftwarePlugin::getRefreshInfo()
 {
     std::stringstream ss;
-    ss << m_installed.size() << " installed package(s), "
+    ss << getLabel() << ": " << m_installed.size() << " installed package(s), "
        << m_repos.size() << " repository(ies) shown";
     return ss.str();
 }

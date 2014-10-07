@@ -26,6 +26,7 @@ Requires:       lmicc-bin
 Summary:        binary for %{name}
 Group:          System/Management
 Requires:       lmicc-logger
+Requires:       lmicc-overview
 
 %package doc
 Summary:        Documentation for %{name}
@@ -37,7 +38,6 @@ Group:          Development/Libraries
 Requires:       lmicc-account
 Requires:       lmicc-hardware
 Requires:       lmicc-network
-Requires:       lmicc-overview
 Requires:       lmicc-service
 Requires:       lmicc-software
 

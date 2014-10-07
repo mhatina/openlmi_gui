@@ -19,39 +19,34 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef NETWORK_H
-#define NETWORK_H
+#ifndef NETWORKPAGEWIDGET_H
+#define NETWORKPAGEWIDGET_H
 
-#include "networkpagewidget.h"
-#include "plugin.h"
+#include <Pegasus/Common/CIMInstance.h>
+#include <QWidget>
 
-#include <QtPlugin>
-
-namespace Ui
-{
-class NetworkPlugin;
+namespace Ui {
+class NetworkPageWidget;
 }
 
-class NetworkPlugin : public Engine::IPlugin
+class NetworkPageWidget : public QWidget
 {
     Q_OBJECT
-    Q_INTERFACES(Engine::IPlugin)
 
 private:
-    bool m_changes_enabled;
-    Ui::NetworkPlugin *m_ui;
-
-    NetworkPageWidget *findWidget(std::string text);
+    Ui::NetworkPageWidget *m_ui;
 
 public:
-    explicit NetworkPlugin();
-    ~NetworkPlugin();
-    virtual std::string getInstructionText();
-    virtual std::string getLabel();
-    virtual std::string getRefreshInfo();
-    virtual void clear();
-    virtual void fillTab(std::vector<void *> *data);
-    virtual void getData(std::vector<void *> *data);
+    explicit NetworkPageWidget(QWidget *parent = 0);
+    ~NetworkPageWidget();
+
+    std::string getTitle();
+    void setEthernetPort(Pegasus::CIMInstance instance);
+    void setEthernetStatistics(Pegasus::CIMInstance instance);
+    void setIPNetworkConnection(Pegasus::CIMInstance instance);
+    void setIPProtocolEndpoint(Pegasus::CIMInstance instance);
+    void setLanEndPoint(Pegasus::CIMInstance instance);
+    void setNetworkRemoteService(Pegasus::CIMInstance instance);
 };
 
-#endif // NETWORK_H
+#endif // NETWORKPAGEWIDGET_H

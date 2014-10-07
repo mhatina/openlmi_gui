@@ -52,6 +52,7 @@ class PCTreeWidget : public QWidget
 private:
     bool m_data_of_item_changed;
     bool m_emit_signal;
+    bool m_new_item;
     DiscoverWorker *m_worker;
     int m_time_sec;
     QMenu *m_context_menu;

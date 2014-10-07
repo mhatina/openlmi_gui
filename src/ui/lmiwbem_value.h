@@ -40,6 +40,7 @@ public:
     static std::string to_std_string(const Pegasus::CIMValue &value);
     static std::string get_property_value(Pegasus::CIMInstance instance,
                                           std::string propertyName, Pegasus::CIMProperty *property = NULL);
+    static std::string convert_values(std::string value, std::string unit);
     static Pegasus::CIMValue to_cim_value(Pegasus::CIMType type, std::string value,
                                           bool isArray = false);
 

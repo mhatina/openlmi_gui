@@ -46,6 +46,7 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
     QWidget(parent),
     m_data_of_item_changed(false),
     m_emit_signal(true),
+    m_new_item(false),
     m_worker(NULL),
     m_ui(new Ui::PCTreeWidget)
 {
@@ -367,8 +368,11 @@ void PCTreeWidget::onAddButtonClicked()
 
     TreeWidgetItem *child = addPcToTree("Added", "");
     if (child != NULL) {
+        m_new_item = true;
         child->setSelected(true);
         m_ui->tree->editItem(child);
+
+        std::cerr << child->text(0).toStdString() << "\n";
     }
 }
 
@@ -586,6 +590,7 @@ void PCTreeWidget::validate(QTreeWidgetItem *item , int column)
         }
     }
 
+    m_emit_signal = true;
     if (result) {
         item->setBackground(0, QBrush(QColor("white")));
 
@@ -597,11 +602,17 @@ void PCTreeWidget::validate(QTreeWidgetItem *item , int column)
 
         item->setFlags(flags);
         m_data_of_item_changed = true;
+
+        if (m_new_item) {
+            // little hack for autorefresh
+            item->setSelected(false);
+            item->setSelected(true);
+        }
     } else {
         item->setSelected(false);
         item->setBackground(0, QBrush(QColor("red")));
     }
-    m_emit_signal = true;
+    m_new_item = false;
 }
 
 std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)

@@ -84,7 +84,7 @@ std::string ServicePlugin::getLabel()
 std::string ServicePlugin::getRefreshInfo()
 {
     std::stringstream ss;
-    ss << m_service_instances.size() << " service(s) shown";
+    ss << getLabel() << ": " << m_service_instances.size() << " service(s) shown";
     return ss.str();
 }
 

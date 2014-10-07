@@ -33,6 +33,7 @@
 #define UNUSED(x) (void)x;
 
 #define OPENLMI_KEYRING_DEFAULT "openlmi"
+#define LMI_VERSION "0.1.0"
 
 namespace PowerStateValues
 {
@@ -146,6 +147,7 @@ private slots:
     void setPluginNoChanges(IPlugin *plugin);
     void setPluginUnsavedChanges(IPlugin *plugin);
     void setPowerState(QAction *action);
+    void showAboutDialog();
     void showCodeDialog();
     void showFilter();
     void showSettings();

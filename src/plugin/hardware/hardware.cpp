@@ -82,48 +82,6 @@ QTreeWidgetItem *HardwarePlugin::topLevelNode(std::string item_name)
     return node;
 }
 
-std::string HardwarePlugin::convertCapacity(std::string capacity, bool bit)
-{
-    std::stringstream ss;
-    Pegasus::Uint64 c;
-    ss << capacity;
-    ss >> c;
-    Pegasus::Uint64 tmp = c;
-    int i = 0;
-
-    while ((tmp = c / 1024) > 0) {
-        c = tmp;
-        i++;
-    }
-
-    ss.str("");
-    ss.clear();
-
-    ss << c;
-    switch (i) {
-    case 0:
-        ss << " " << (bit ? "b" : "B");
-        break;
-    case 1:
-        ss << " k" << (bit ? "b" : "B");
-        break;
-    case 2:
-        ss << " M" << (bit ? "b" : "B");
-        break;
-    case 3:
-        ss << " G" << (bit ? "b" : "B");
-        break;
-    case 4:
-        ss << " T" << (bit ? "b" : "B");
-        break;
-    default:
-        ss << " ?" << (bit ? "b" : "B");
-        break;
-    }
-
-    return ss.str();
-}
-
 std::string HardwarePlugin::decodeValues(Pegasus::CIMProperty property)
 {
     Pegasus::CIMValue value = property.getValue();
@@ -143,6 +101,17 @@ std::string HardwarePlugin::decodeValues(Pegasus::CIMProperty property)
     }
 
     return "";
+}
+
+void HardwarePlugin::clearComponentInfo()
+{
+    QObjectList list = m_ui->device_box->children();
+
+    for (int i = list.size() - 1; i >= 0; i--) {
+        m_ui->device_box->layout()->removeWidget(qobject_cast<QWidget *>(list[i]));
+        delete list[i];
+    }
+    m_ui->device_box->setLayout(new QFormLayout());
 }
 
 void HardwarePlugin::fillBattery(Pegasus::CIMInstance battery)
@@ -177,7 +146,7 @@ void HardwarePlugin::fillChassis(Pegasus::CIMInstance chassis)
 void HardwarePlugin::fillDisk(std::vector<Pegasus::CIMInstance> disk)
 {
     QLayout *layout = m_ui->device_box->layout();
-    m_ui->device_box->setTitle("Chassis");
+    m_ui->device_box->setTitle("Disk drive");
 
     layout->addWidget(new LabeledLabel("Name", CIMValue::get_property_value(disk[0], "Name")));
     layout->addWidget(new LabeledLabel("Type", CIMValue::get_property_value(disk[0], "DiskType")));
@@ -185,10 +154,10 @@ void HardwarePlugin::fillDisk(std::vector<Pegasus::CIMInstance> disk)
     layout->addWidget(new LabeledLabel("Serial number", CIMValue::get_property_value(disk[1], "SerialNumber")));
     layout->addWidget(new LabeledLabel("ID", CIMValue::get_property_value(disk[0], "DeviceID")));
     std::string capacity = CIMValue::get_property_value(disk[0], "Capacity");
-    layout->addWidget(new LabeledLabel("Capacity", convertCapacity(capacity)));
+    layout->addWidget(new LabeledLabel("Capacity", CIMValue::convert_values(capacity, "B")));
     layout->addWidget(new LabeledLabel("Interconnect", CIMValue::get_property_value(disk[0], "InterconnectType")));
     std::string speed = CIMValue::get_property_value(disk[0], "InterconnectSpeed");
-    layout->addWidget(new LabeledLabel("Interconnect speed", convertCapacity(speed, true) + "/s"));
+    layout->addWidget(new LabeledLabel("Interconnect speed", CIMValue::convert_values(speed, "b/s")));
     ushort degree = 0x00b0;
     std::string degree_str = QString::fromUtf16(&degree).toStdString().substr(0, 1) + " C";
     layout->addWidget(new LabeledLabel("Temperature", CIMValue::get_property_value(disk[0], "Temperature") + degree_str));
@@ -205,16 +174,13 @@ void HardwarePlugin::fillMemory(std::vector<Pegasus::CIMInstance> memory)
     m_ui->device_box->setTitle("Memory");
 
     layout->addWidget(new LabeledLabel("Access", CIMValue::get_property_value(mem, "Access")));
-    layout->addWidget(new LabeledLabel("Capacity", convertCapacity(CIMValue::get_property_value(phys_mem, "Capacity"))));
+    layout->addWidget(new LabeledLabel("Capacity", CIMValue::convert_values(CIMValue::get_property_value(phys_mem, "Capacity"), "B")));
     layout->addWidget(new LabeledLabel("Form factor", CIMValue::get_property_value(phys_mem, "FormFactor")));
     layout->addWidget(new LabeledLabel("Memory type", CIMValue::get_property_value(phys_mem, "MemoryType")));
-    layout->addWidget(new LabeledLabel("Total width", convertCapacity(CIMValue::get_property_value(phys_mem,
-                                       "TotalWidth"))));
-    layout->addWidget(new LabeledLabel("Page size", convertCapacity(CIMValue::get_property_value(mem,
-                                       "StandardMemoryPageSize"), true)));
+    layout->addWidget(new LabeledLabel("Total width", CIMValue::convert_values(CIMValue::get_property_value(phys_mem, "TotalWidth"), "b")));
+    layout->addWidget(new LabeledLabel("Page size", CIMValue::convert_values(CIMValue::get_property_value(mem, "StandardMemoryPageSize"), "b")));
 
-    std::string tmp = CIMValue::get_property_value(phys_mem,
-                      "ConfiguredMemoryClockSpeed") + " MHz";
+    std::string tmp = CIMValue::get_property_value(phys_mem, "ConfiguredMemoryClockSpeed") + " MHz";
     layout->addWidget(new LabeledLabel("Clock speed", tmp));
     layout->addWidget(new LabeledLabel("Serial number", CIMValue::get_property_value(phys_mem, "SerialNumber")));
     layout->addWidget(new LabeledLabel("Part number", CIMValue::get_property_value(phys_mem, "PartNumber")));
@@ -308,10 +274,8 @@ void HardwarePlugin::fillProcessor(std::vector<Pegasus::CIMInstance> processor)
     layout->addWidget(new LabeledLabel("Hardware threads", CIMValue::get_property_value(proc_capabilities,
                                        "NumberOfHardwareThreads")));
 
-    layout->addWidget(new LabeledLabel("Address width", convertCapacity(CIMValue::get_property_value(proc, "AddressWidth"),
-                                       true)));
-    layout->addWidget(new LabeledLabel("Data width", convertCapacity(CIMValue::get_property_value(proc, "DataWidth"),
-                                       true)));
+    layout->addWidget(new LabeledLabel("Address width", CIMValue::convert_values(CIMValue::get_property_value(proc, "AddressWidth"), "b")));
+    layout->addWidget(new LabeledLabel("Data width", CIMValue::convert_values(CIMValue::get_property_value(proc, "DataWidth"), "b")));
 
     tmp = CIMValue::get_property_value(proc, "CurrentClockSpeed") + " MHz";
     layout->addWidget(new LabeledLabel("Current clock speed", tmp));
@@ -361,8 +325,7 @@ void HardwarePlugin::fillProcessor(std::vector<Pegasus::CIMInstance> processor)
         ss.clear();
         ss << (blocks * size);
 
-        cache_box->layout()->addWidget(new LabeledLabel(name,
-                                       convertCapacity(ss.str())));
+        cache_box->layout()->addWidget(new LabeledLabel(name, CIMValue::convert_values(ss.str(), "B")));
     }
 
     setAlignment();
@@ -438,7 +401,7 @@ std::string HardwarePlugin::getRefreshInfo()
               m_port.size() + m_memory.size() +
               m_processor.size();
     std::stringstream ss;
-    ss << cnt << " component(s) shown";
+    ss << getLabel() << ": " << cnt << " component(s) shown";
     return ss.str();
 }
 
@@ -580,12 +543,12 @@ void HardwarePlugin::clear()
 {
     m_changes_enabled = false;
     m_ui->tree->clear();
+    clearComponentInfo();
     m_changes_enabled = true;
 }
 
 void HardwarePlugin::fillTab(std::vector<void *> *data)
 {
-    clear();
     m_changes_enabled = false;
 
     try {
@@ -736,13 +699,7 @@ void HardwarePlugin::showComponent()
         parent = parent.substr(0, parent.rfind(" "));
     }
 
-    QObjectList list = m_ui->device_box->children();
-
-    for (int i = list.size() - 1; i >= 0; i--) {
-        m_ui->device_box->layout()->removeWidget(qobject_cast<QWidget *>(list[i]));
-        delete list[i];
-    }
-    m_ui->device_box->setLayout(new QFormLayout());
+    clearComponentInfo();
 
     if (parent == "Processor") {
         for (unsigned int i = 0; i < m_processor.size(); i++) {

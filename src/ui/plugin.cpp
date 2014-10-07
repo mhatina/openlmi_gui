@@ -277,6 +277,7 @@ void Engine::IPlugin::refresh(CIMClient *client)
     emit refreshProgress(0);
     m_instructions.clear();
     m_data = new std::vector<void *>();
+    m_stop_refresh = false;
     clear();
 
     m_refresh_thread = boost::thread(boost::bind(&Engine::IPlugin::getData, this,
@@ -379,7 +380,7 @@ void Engine::IPlugin::handleDataFetching(std::vector<void *> *data,
         }
         fillTab(data);
         delete data;
-        Logger::getInstance()->info(getLabel() + ": " + getRefreshInfo());
+        Logger::getInstance()->info(getRefreshInfo());
     }
 }
 

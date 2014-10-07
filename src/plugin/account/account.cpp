@@ -177,7 +177,7 @@ std::string AccountPlugin::getLabel()
 std::string AccountPlugin::getRefreshInfo()
 {
     std::stringstream ss;
-    ss << m_user_instances.size() << " user(s), "
+    ss << getLabel() << ": " << m_user_instances.size() << " user(s), "
        << m_group_instances.size() << " group(s) shown";
     return ss.str();
 }

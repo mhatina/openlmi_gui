@@ -77,9 +77,15 @@
      <height>25</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_file">
+   <widget class="QMenu" name="file_menu">
+    <property name="tearOffEnabled">
+     <bool>false</bool>
+    </property>
     <property name="title">
      <string>&amp;File</string>
+    </property>
+    <property name="separatorsCollapsible">
+     <bool>true</bool>
     </property>
     <addaction name="action_reload_plugins"/>
     <addaction name="separator"/>
@@ -90,14 +96,21 @@
     <addaction name="action_show_log"/>
     <addaction name="action_exit"/>
    </widget>
-   <widget class="QMenu" name="menuTools">
+   <widget class="QMenu" name="tools_menu">
     <property name="title">
      <string>&amp;Tools</string>
     </property>
     <addaction name="action_options"/>
    </widget>
-   <addaction name="menu_file"/>
-   <addaction name="menuTools"/>
+   <widget class="QMenu" name="help_menu">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="action_about"/>
+   </widget>
+   <addaction name="file_menu"/>
+   <addaction name="tools_menu"/>
+   <addaction name="help_menu"/>
   </widget>
   <widget class="QStatusBar" name="status_bar"/>
   <action name="action_exit">
@@ -131,12 +144,12 @@
   </action>
   <action name="action_start_ssh">
    <property name="text">
-    <string>Start ssh</string>
+    <string>Start &amp;ssh</string>
    </property>
   </action>
   <action name="action_reload_plugins">
    <property name="text">
-    <string>Reload plugins</string>
+    <string>&amp;Reload plugins</string>
    </property>
   </action>
   <action name="action_options">
@@ -145,6 +158,11 @@
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="action_about">
+   <property name="text">
+    <string>&amp;About</string>
    </property>
   </action>
  </widget>

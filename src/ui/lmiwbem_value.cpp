@@ -293,7 +293,59 @@ std::string CIMValue::get_property_value(Pegasus::CIMInstance instance,
     return decoded_value;
 }
 
-#include <sstream>
+std::string CIMValue::convert_values(std::string capacity, std::string unit)
+{
+    std::stringstream ss;
+    float c;
+    ss << capacity;
+    ss >> c;
+    float tmp = c;
+    int i = 0;
+
+    while ((tmp = c / 1024) >= 1) {
+        c = tmp;
+        i++;
+    }
+
+    ss.str("");
+    ss.clear();
+
+//    remain = remain - (i * 1024);
+
+//    for (int j = 0; j < i - 1; j++) {
+//        tmp = remain / 1024;
+//        remain = tmp;
+//    }
+
+    ss << c;
+//    if (i) {
+//        ss << "." << remain;
+//    }
+    switch (i) {
+    case 0:
+        ss << " ";
+        break;
+    case 1:
+        ss << " k";
+        break;
+    case 2:
+        ss << " M";
+        break;
+    case 3:
+        ss << " G";
+        break;
+    case 4:
+        ss << " T";
+        break;
+    default:
+        ss << " ?";
+        break;
+    }
+
+    ss << unit;
+
+    return ss.str();
+}
 
 Pegasus::CIMValue CIMValue::to_cim_value(Pegasus::CIMType type,
         std::string value, bool isArray)
