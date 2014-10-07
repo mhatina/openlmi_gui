@@ -30,7 +30,7 @@ std::string CreateLogInstruction::toString()
 void CreateLogInstruction::run()
 {
     try {
-        Pegasus::CIMInstance instance("LMI_JournalLogRecord");
+        Pegasus::CIMInstance instance(Pegasus::CIMName("LMI_JournalLogRecord"));
 
         Pegasus::CIMProperty log_creation_class(
             Pegasus::CIMName("LogCreationClassName"),
@@ -69,6 +69,7 @@ void CreateLogInstruction::run()
             ));
         instance.addProperty(severity);
 
+        // BUG not working, wrong type
         m_client->createInstance(
             Pegasus::CIMNamespaceName("root/cimv2"),
             instance);
