@@ -88,25 +88,27 @@ AccountPlugin::AccountPlugin() :
     m_user_table = findChild<QTableWidget *>("user_table");
     m_group_table = findChild<QTableWidget *>("group_table");
 
-    int prop_cnt = sizeof(userProperties) / sizeof(userProperties[0]);
+    int prop_cnt = sizeof(userHeaderItems) / sizeof(userHeaderItems[0]);
     m_user_table->setColumnCount(prop_cnt);
-    for (int i = 0; i < prop_cnt; i++)
+    for (int i = 0; i < prop_cnt; i++) {
+        QTableWidgetItem *item = new QTableWidgetItem(userHeaderItems[i].name);
+        item->setToolTip(userHeaderItems[i].tooltip);
         m_user_table->setHorizontalHeaderItem(
             i,
-            new QTableWidgetItem(userProperties[i].display_name)
+            item
         );
+    }
 
-    prop_cnt = sizeof(groupProperties) / sizeof(groupProperties[0]);
-    m_group_table->setColumnCount(prop_cnt + 1);
-    for (int i = 0; i < prop_cnt; i++)
+    prop_cnt = sizeof(groupHeaderItems) / sizeof(groupHeaderItems[0]);
+    m_group_table->setColumnCount(prop_cnt);
+    for (int i = 0; i < prop_cnt; i++) {
+        QTableWidgetItem *item = new QTableWidgetItem(groupHeaderItems[i].name);
+        item->setToolTip(groupHeaderItems[i].tooltip);
         m_group_table->setHorizontalHeaderItem(
             i,
-            new QTableWidgetItem(groupProperties[i].display_name)
+            item
         );
-    m_group_table->setHorizontalHeaderItem(
-        prop_cnt,
-        new QTableWidgetItem("Members")
-    );
+    }
 
     m_user_table->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     m_group_table->horizontalHeader()->setResizeMode(QHeaderView::Stretch);

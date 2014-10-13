@@ -28,8 +28,20 @@ NetworkPageWidget::NetworkPageWidget(QWidget *parent) :
     m_ui(new Ui::NetworkPageWidget)
 {
     m_ui->setupUi(this);
+
     m_ui->ip_address_details_table->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     m_ui->ip_address_details_table->setMaximumHeight(25);
+
+    int cnt = sizeof(items) / sizeof(items[0]);
+    m_ui->ip_address_details_table->setColumnCount(cnt);
+    for (int i = 0; i < cnt; i++) {
+        QTableWidgetItem *item = new QTableWidgetItem(items[i].name);
+        item->setToolTip(items[i].tooltip);
+        m_ui->ip_address_details_table->setHorizontalHeaderItem(
+            i,
+            item
+        );
+    }
 }
 
 NetworkPageWidget::~NetworkPageWidget()
@@ -74,39 +86,53 @@ void NetworkPageWidget::setIPNetworkConnection(Pegasus::CIMInstance instance)
 
 void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
 {
-    int row_cnt = m_ui->ip_address_details_table->rowCount();
-    m_ui->ip_address_details_table->insertRow(row_cnt);
+    QTableWidgetItem *item;
+    int i = 0;
+    while (1) {
+        item = m_ui->ip_address_details_table->item(i, 0);
+        if (item == NULL) {
+            break;
+        }
+        i++;
+    }
+
+    if (i >= m_ui->ip_address_details_table->rowCount()) {
+        int row_cnt = m_ui->ip_address_details_table->rowCount();
+        m_ui->ip_address_details_table->insertRow(row_cnt);
+    }
 
     bool v4 = false;
     std::string version;
-    QTableWidgetItem *item = new QTableWidgetItem((version = CIMValue::get_property_value(instance, "ProtocolIFType")).c_str());
+    item = new QTableWidgetItem((version = CIMValue::get_property_value(instance,
+            "ProtocolIFType")).c_str());
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
-                row_cnt,
-                3,
-                item);
+        i,
+        3,
+        item);
     v4 = version == "IPv4";
 
     item = new QTableWidgetItem(CIMValue::get_property_value(instance, v4 ? "IPv4Address" : "IPv6Address").c_str());
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
-                row_cnt,
-                0,
-                item);
+        i,
+        0,
+        item);
 
-    item = new QTableWidgetItem(CIMValue::get_property_value(instance, v4 ? "SubnetMask" : "IPv6SubnetPrefixLength").c_str());
+    item = new QTableWidgetItem(CIMValue::get_property_value(instance,
+                                v4 ? "SubnetMask" : "IPv6SubnetPrefixLength").c_str());
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
-                row_cnt,
-                v4 ? 1 : 2,
-                item);
+        i,
+        v4 ? 1 : 2,
+        item);
 
     item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AddressOrigin").c_str());
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
-                row_cnt,
-                4,
-                item);
+        i,
+        4,
+        item);
 
     int max_height = m_ui->ip_address_details_table->maximumHeight() + 30;
     m_ui->ip_address_details_table->setMaximumHeight(max_height);
@@ -121,5 +147,32 @@ void NetworkPageWidget::setLanEndPoint(Pegasus::CIMInstance instance)
 
 void NetworkPageWidget::setNetworkRemoteService(Pegasus::CIMInstance instance)
 {
+    QTableWidgetItem *item;
+    int i = 0;
+    while (1) {
+        item = m_ui->ip_address_details_table->item(i, 5);
+        if (item == NULL) {
+            break;
+        }
+        i++;
+    }
 
+    if (i >= m_ui->ip_address_details_table->rowCount()) {
+        int row_cnt = m_ui->ip_address_details_table->rowCount();
+        m_ui->ip_address_details_table->insertRow(row_cnt);
+    }
+
+    item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AccessContext").c_str());
+    item->setToolTip(item->text());
+    m_ui->ip_address_details_table->setItem(
+        i,
+        5,
+        item);
+
+    item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AccessInfo").c_str());
+    item->setToolTip(item->text());
+    m_ui->ip_address_details_table->setItem(
+        i,
+        6,
+        item);
 }

@@ -205,9 +205,10 @@ void NetworkPlugin::fillTab(std::vector<void *> *data)
                 w->setLanEndPoint(instance);
             } else if (CIMValue::get_property_value(instance, "CreationClassName") == "LMI_IPProtocolEndpoint") {
                 NetworkPageWidget *w = findWidget(CIMValue::get_property_value(instance, "Name"));
-                w->setIPProtocolEndpoint(instance);;
+                w->setIPProtocolEndpoint(instance);
             } else if (CIMValue::get_property_value(instance, "CreationClassName") == "LMI_NetworkRemoteServiceAccessPoint") {
-                ;
+                NetworkPageWidget *w = findWidget(CIMValue::get_property_value(instance, "Name"));
+                w->setNetworkRemoteService(instance);
             }
         }
 

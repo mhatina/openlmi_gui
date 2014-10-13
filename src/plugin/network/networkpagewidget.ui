@@ -202,31 +202,6 @@
            <attribute name="verticalHeaderVisible">
             <bool>false</bool>
            </attribute>
-           <column>
-            <property name="text">
-             <string>IP Address</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Subnet Mask</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>IPv6 Subnet Prefix Length</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Protocol IF Type</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Address Origin</string>
-            </property>
-           </column>
           </widget>
          </item>
          <item row="1" column="0">

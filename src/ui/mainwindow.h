@@ -90,6 +90,8 @@ public:
      */
     ~MainWindow();
 
+    MainWindow *getMainWindow() { return &m_main_window; }
+
     /**
      * @brief Getter
      * @return PCTreeWidget
@@ -120,6 +122,9 @@ public:
 private slots:
     void closeAll();
     void showLog();
+
+signals:
+    void closing();
 };
 
 #endif // MAINWINDOW_H

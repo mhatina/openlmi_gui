@@ -107,6 +107,7 @@ public:
      * @brief Destructor
      */
     ~Kernel();
+    void deletePlugins();
     /**
      * @brief Connects to system
      * @param state -- power state

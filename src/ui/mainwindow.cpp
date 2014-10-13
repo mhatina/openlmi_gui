@@ -178,6 +178,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::closeAll()
 {
     Logger::getInstance()->debug("MainWindow::closeAll()");
+    emit closing();
     qApp->closeAllWindows();
 }
 

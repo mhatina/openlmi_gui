@@ -29,18 +29,34 @@
 #include <QWidget>
 
 const Engine::property groupProperties[] = {
-    {"ID", "InstanceID", false},
-    {"Name", "Name", false},
-    {"Common Name", "CommonName", false},
-    {"Element Name", "ElementName", false}
+    {"InstanceID", false},
+    {"Name", false},
+    {"CommonName", false},
+    {"ElementName", false}
 };
 
 const Engine::property userProperties[] = {
-    {"Name", "Name", false},
-    {"Full Name", "ElementName", false},
-    {"UID", "UserID", false},
-    {"Home directory", "HomeDirectory", false},
-    {"Login shell", "LoginShell", true}
+    {"Name", false},
+    {"ElementName", false},
+    {"UserID", false},
+    {"HomeDirectory", false},
+    {"LoginShell", true}
+};
+
+const Engine::header_item groupHeaderItems[] = {
+    {"ID", "A group identifier, often abbreviated to GID, is a numeric value used to represent a specific group."},
+    {"Name", "The Name property defines the label by which the object is known."},
+    {"Common Name", "A Common Name is a (possibly ambiguous) name by which the group is commonly known in some limited scope (such as an organization)."},
+    {"Element Name", "A user-friendly name for the object."},
+    {"Members", "Members of group."}
+};
+
+const Engine::header_item userHeaderItems[] = {
+    {"Name", "The Name property defines the label by which the object is known."},
+    {"Full Name", "A user-friendly name for the object."},
+    {"UID", "A user ID (UID) is a unique positive integer assigned by a Unix-like operating system to each user."},
+    {"Home directory", "User's home directory."},
+    {"Login shell", "User's login shell."}
 };
 
 const Qt::ItemFlags item_flags =

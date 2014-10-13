@@ -264,33 +264,8 @@ void Engine::Kernel::refresh()
 
 void Engine::Kernel::reloadPlugins()
 {
-    Logger::getInstance()->debug("Engine::Kernel::reloadPlugins()");
-    for (plugin_map::iterator it = m_loaded_plugins.begin();
-         it != m_loaded_plugins.end(); it++) {
-        (*it).second->disconnect();
-    }
-    disconnect(
-        m_main_window.getProviderWidget()->getTabWidget(),
-        0,
-        this,
-        0);
-    foreach (QPluginLoader * loader, m_loaders) {
-        loader->unload();
-        delete loader;
-    }
-    connect(
-        m_main_window.getProviderWidget()->getTabWidget(),
-        SIGNAL(currentChanged(int)),
-        this,
-        SLOT(setActivePlugin(int)));
-
-    m_loaded_plugins.clear();
-    m_loaders.clear();
-
-    for (; m_main_window.getProviderWidget()->getTabWidget()->count();) {
-        m_main_window.getProviderWidget()->getTabWidget()->removeTab(0);
-    }
-
+    Logger::getInstance()->debug("Engine::Kernel::reloadPlugins()");    
+    deletePlugins();
     loadPlugin();
 }
 

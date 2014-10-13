@@ -37,10 +37,14 @@ namespace Engine
  * @brief struct representation of property of LMI_{Account/Group/Service}
  */
 typedef struct {
-    const char *display_name; /**< @brief Display name of property */
     const char *property; /**< @brief Actual name of property */
     bool enabled; /**< @brief Whether the property is editable or not */
 } property;
+
+typedef struct {
+    QString name;
+    QString tooltip;
+} header_item;
 
 class Kernel;
 

@@ -20,6 +20,7 @@
 
 #include "settings/isettings.h"
 
+#include <sstream>
 #include <map>
 #include <QCheckBox>
 #include <QDialog>

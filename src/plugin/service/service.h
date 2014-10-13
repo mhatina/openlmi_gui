@@ -29,10 +29,18 @@
 #include <QWidget>
 
 const Engine::property serviceProperties[] = {
-    {"Name", "Name", false},
-    {"Caption", "Caption", false},
-    {"Operational status", "OperationalStatus", false},
-    {"Status", "Status", false}
+    {"Name", false},
+    {"Caption", false},
+    {"OperationalStatus", false},
+    {"Status", false}
+};
+
+const Engine::header_item serviceHeaderItem[] = {
+    {"Name", "The Name property uniquely identifies the Service and provides an indication of the functionality that is managed."},
+    {"Caption", "The Caption property is a short textual description (one- line string) of the object."},
+    {"Operational status", "Indicates the current statuses of the element."},
+    {"Status", "A string indicating the current status of the object."},
+    {"Action", "Possible actions that could be performed on service."}
 };
 
 const char *const action_list[] = {

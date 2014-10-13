@@ -22,10 +22,23 @@
 #ifndef NETWORKPAGEWIDGET_H
 #define NETWORKPAGEWIDGET_H
 
+#include "plugin.h"
+
 #include <Pegasus/Common/CIMInstance.h>
 #include <QWidget>
 
-namespace Ui {
+const Engine::header_item items[] = {
+    {"IP Address", "IP address is a numerical label assigned to each device participating in a computer network that uses the Internet Protocol for communication."},
+    {"Subnet Mask", "The mask for the IPv4 address of this ProtocolEndpoint, if one is defined."},
+    {"IPv6 Subnet Prefix Length", "IPv6 Subnet Prefix Length is used to identify the prefix length of the IPv6Address property that is used to specify a subnet"},
+    {"Protocol IF Type", "This property explicitly defines support for different versions of the IP protocol."},
+    {"Address Origin", "AddressOrigin identifies the method by which the IP Address, Subnet Mask, and Gateway were assigned to the IPProtocolEndpoint."},
+    {"Access Context", "The AccessContext property identifies the role this RemoteServiceAccessPoint is playing in the hosting system."},
+    {"Access Info", "Access or addressing information or a combination of this information for a remote connection. This information can be a host name, network address, or similar information."}
+};
+
+namespace Ui
+{
 class NetworkPageWidget;
 }
 

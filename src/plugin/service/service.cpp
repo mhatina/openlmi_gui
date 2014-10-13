@@ -41,17 +41,17 @@ ServicePlugin::ServicePlugin() :
 {
     m_ui->setupUi(this);
     m_services_table = m_ui->services_table;
-    int prop_cnt = sizeof(serviceProperties) / sizeof(serviceProperties[0]);
-    m_services_table->setColumnCount(prop_cnt + 1);
-    for (int i = 0; i < prop_cnt; i++)
+    int prop_cnt = sizeof(serviceHeaderItem) / sizeof(serviceHeaderItem[0]);
+    m_services_table->setColumnCount(prop_cnt);
+    for (int i = 0; i < prop_cnt; i++) {
+        QTableWidgetItem *item = new QTableWidgetItem(serviceHeaderItem[i].name);
+        item->setToolTip(serviceHeaderItem[i].tooltip);
         m_services_table->setHorizontalHeaderItem(
             i,
-            new QTableWidgetItem(serviceProperties[i].display_name)
+            item
         );
-    m_services_table->setHorizontalHeaderItem(
-        prop_cnt,
-        new QTableWidgetItem("Action")
-    );
+    }
+
     m_services_table->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     connect(
         m_ui->services_table,
