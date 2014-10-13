@@ -153,8 +153,8 @@ Pegasus::CIMValue get_value_from_std_string(std::string &value, bool isArray)
         value = value.substr(1, value.size() - 2);
     }
 
-    int pos = 0;
-    int pos_start = 0;
+    size_t pos = 0;
+    size_t pos_start = 0;
     Pegasus::Array<T> array;
     while (1) {
         pos = value.find(",");
@@ -309,18 +309,7 @@ std::string CIMValue::convert_values(std::string capacity, std::string unit)
 
     ss.str("");
     ss.clear();
-
-//    remain = remain - (i * 1024);
-
-//    for (int j = 0; j < i - 1; j++) {
-//        tmp = remain / 1024;
-//        remain = tmp;
-//    }
-
     ss << c;
-//    if (i) {
-//        ss << "." << remain;
-//    }
     switch (i) {
     case 0:
         ss << " ";

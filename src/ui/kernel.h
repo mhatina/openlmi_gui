@@ -107,6 +107,8 @@ public:
      * @brief Destructor
      */
     ~Kernel();
+    MainWindow *getMainWindow() { return &m_main_window; }
+
     void deletePlugins();
     /**
      * @brief Connects to system

@@ -88,9 +88,7 @@ public:
     /**
      * @brief Destructor
      */
-    ~MainWindow();
-
-    MainWindow *getMainWindow() { return &m_main_window; }
+    ~MainWindow();    
 
     /**
      * @brief Getter
