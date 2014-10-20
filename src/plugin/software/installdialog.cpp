@@ -101,7 +101,7 @@ void InstallDialog::fetchPackages()
                          false       // include class origin
                      );
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->error(std::string(ex.getMessage().getCString()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
     }
 
     emit haveData();

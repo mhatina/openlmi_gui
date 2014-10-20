@@ -1,4 +1,5 @@
 #include "createloginstruction.h"
+#include "lmiwbem_value.h"
 #include "logger.h"
 
 #include <sstream>
@@ -74,6 +75,6 @@ void CreateLogInstruction::run()
             Pegasus::CIMNamespaceName("root/cimv2"),
             instance);
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->error(std::string(ex.getMessage().getCString()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
     }
 }

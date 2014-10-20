@@ -16,6 +16,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "cimdatetimeconv.h"
+#include "lmiwbem_value.h"
 #include "logger.h"
 
 #include <sstream>

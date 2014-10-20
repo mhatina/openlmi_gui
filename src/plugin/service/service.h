@@ -82,8 +82,11 @@ class ServicePlugin : public Engine::IPlugin
 
 private:
     std::vector<Pegasus::CIMInstance> m_service_instances;
+    QMenu *m_context_menu;
     QTableWidget *m_services_table;
     Ui::ServicePlugin *m_ui;
+
+    void initContextMenu();
 
 public:
     /**
@@ -102,7 +105,9 @@ public:
     virtual void getData(std::vector<void *> *data);
 
 private slots:
+    void actionHandle(QAction *action);
     void actionHandle(std::string name, e_action action);
+    void showContextMenu(QPoint pos);
     void showDetails();
 };
 

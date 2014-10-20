@@ -369,7 +369,7 @@ void PCTreeWidget::onAddButtonClicked()
     TreeWidgetItem *child = addPcToTree("Added", "");
     if (child != NULL) {
         m_new_item = true;
-        child->setSelected(true);
+        child->setSelected(true);       
         m_ui->tree->editItem(child);
 
         std::cerr << child->text(0).toStdString() << "\n";
@@ -716,6 +716,7 @@ void PCTreeWidget::initContextMenu()
     action->setEnabled(false);
     m_context_menu->addSeparator();
     action = m_context_menu->addAction("Create new group");
+    action->setObjectName("create_group_action");
     connect(
         action,
         SIGNAL(triggered()),

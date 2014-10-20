@@ -67,7 +67,7 @@ void EnableRepoInstruction::run()
             in_param,
             out_param);
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
     }
 }
 

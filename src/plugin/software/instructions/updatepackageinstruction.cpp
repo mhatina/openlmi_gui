@@ -59,7 +59,7 @@ void UpdatePackageInstruction::run()
     try {
         invokeInstallMethod(5); // Update
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
     }
 }
 

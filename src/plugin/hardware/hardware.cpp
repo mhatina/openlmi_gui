@@ -532,7 +532,7 @@ void HardwarePlugin::getData(std::vector<void *> *data)
             }
         }
     } catch (Pegasus::Exception &ex) {
-        emit doneFetchingData(NULL, std::string(ex.getMessage().getCString()));
+        emit doneFetchingData(NULL, CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 
@@ -674,7 +674,7 @@ void HardwarePlugin::fillTab(std::vector<void *> *data)
             }
         }
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->error(std::string(ex.getMessage().getCString()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 

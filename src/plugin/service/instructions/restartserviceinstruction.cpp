@@ -48,6 +48,6 @@ void RestartServiceInstruction::run()
             Logger::getInstance()->info("Unable to restart service.");
         }
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
     }
 }

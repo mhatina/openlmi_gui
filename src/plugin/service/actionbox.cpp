@@ -46,6 +46,15 @@ ActionBox::~ActionBox()
     delete m_ui;
 }
 
+void ActionBox::changeAction(std::string action)
+{
+    int index = m_ui->action_box->findText(action.c_str());
+    if (index == -1)
+        return;
+
+    m_ui->action_box->setCurrentIndex(index);
+}
+
 void ActionBox::currentChanged(int i)
 {
     if (m_ui->action_box->currentText().toStdString() == action_list[0]) {

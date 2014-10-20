@@ -32,8 +32,41 @@
 #include "service.h"
 #include "ui_service.h"
 
+#include <QMenu>
 #include <sstream>
 #include <vector>
+
+void ServicePlugin::initContextMenu()
+{
+    Logger::getInstance()->debug("ServicePlugin::initContextMenu()");
+    m_context_menu = new QMenu(this);
+    setContextMenuPolicy(Qt::CustomContextMenu);
+
+    QAction *action;
+
+    int cnt = sizeof(action_list) / sizeof(action_list[0]);
+    for (int i = 0; i < cnt; i++) {
+        action = m_context_menu->addAction(action_list[i]);
+        std::string object_name = action_list[i];
+        object_name += "_action";
+        action->setObjectName(object_name.c_str());
+    }
+    connect(
+        m_context_menu,
+        SIGNAL(triggered(QAction*)),
+        this,
+        SLOT(actionHandle(QAction*)));
+
+    m_context_menu->addSeparator();
+
+    action = m_context_menu->addAction("Show details");
+    action->setObjectName("show_details_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(showDetails()));
+}
 
 ServicePlugin::ServicePlugin() :
     IPlugin(),
@@ -52,12 +85,19 @@ ServicePlugin::ServicePlugin() :
         );
     }
 
+    initContextMenu();
+
     m_services_table->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     connect(
         m_ui->services_table,
         SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
         this,
         SLOT(showDetails()));
+    connect(
+        this,
+        SIGNAL(customContextMenuRequested(QPoint)),
+        this,
+        SLOT(showContextMenu(QPoint)));
     m_ui->filter_box->hide();
     setPluginEnabled(false);
 }
@@ -105,7 +145,7 @@ void ServicePlugin::getData(std::vector<void *> *data)
                        false       // include class origin
                    );
     } catch (Pegasus::Exception &ex) {
-        emit doneFetchingData(NULL, std::string(ex.getMessage().getCString()));
+        emit doneFetchingData(NULL, CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 
@@ -160,8 +200,7 @@ void ServicePlugin::fillTab(std::vector<void *> *data)
                 }
 
                 Pegasus::CIMProperty property = instance->getProperty(propIndex);
-                std::string str_value = CIMValue::get_property_value(*instance,
-                                        (std::string) property.getName().getString().getCString());
+                std::string str_value = CIMValue::get_property_value(*instance, CIMValue::to_std_string(property.getName().getString()));
 
                 if (property.getName().equal(Pegasus::CIMName("Name"))) {
                     serv_name = str_value;
@@ -196,7 +235,7 @@ void ServicePlugin::fillTab(std::vector<void *> *data)
 
         m_services_table->sortByColumn(0, Qt::AscendingOrder);
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->error(std::string(ex.getMessage().getCString()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
     }
 
     for (unsigned int i = 0; i < data->size(); i++) {
@@ -204,6 +243,18 @@ void ServicePlugin::fillTab(std::vector<void *> *data)
     }
 
     m_changes_enabled = true;
+}
+
+void ServicePlugin::actionHandle(QAction *action)
+{
+    QList<QTableWidgetItem *> list = m_ui->services_table->selectedItems();
+    if (list.empty())
+        return;
+
+    int row = list[0]->row();
+
+    ActionBox *box = (ActionBox *) m_ui->services_table->cellWidget(row, 4);
+    box->changeAction(action->text().toStdString());
 }
 
 void ServicePlugin::actionHandle(std::string name, e_action action)
@@ -234,11 +285,21 @@ void ServicePlugin::actionHandle(std::string name, e_action action)
     }
 }
 
+void ServicePlugin::showContextMenu(QPoint pos)
+{
+    Logger::getInstance()->debug("ServicePlugin::showContextMenu(QPoint pos)");
+    QPoint globalPos = mapToGlobal(pos);
+    m_context_menu->popup(globalPos);
+}
+
 void ServicePlugin::showDetails()
 {
     Pegasus::CIMInstance service;
-    std::string name_expected =
-        m_ui->services_table->selectedItems()[0]->text().toStdString();
+    QList<QTableWidgetItem *> list = m_ui->services_table->selectedItems();
+    if (list.empty())
+        return;
+
+    std::string name_expected = list[0]->text().toStdString();
     int cnt = m_service_instances.size();
     for (int i = 0; i < cnt; i++) {
         if (name_expected == CIMValue::get_property_value(m_service_instances[i],
@@ -250,8 +311,7 @@ void ServicePlugin::showDetails()
     std::map<std::string, std::string> values;
     cnt = service.getPropertyCount();
     for (int i = 0; i < cnt; i++) {
-        std::string object_name = std::string(service.getProperty(
-                i).getName().getString().getCString());
+        std::string object_name = CIMValue::to_std_string(service.getProperty(i).getName().getString());
         std::string str_value = CIMValue::get_property_value(service, object_name);
         values[object_name] = str_value;
     }

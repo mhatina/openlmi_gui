@@ -126,11 +126,12 @@ bool Logger::error(std::string message, bool show_message)
 
 bool Logger::critical(std::string message, bool show_message)
 {
+    message += " Report this issue to developer.";
     if (show_message) {
         log(message,
             CRITICAL,
             false
-           );
+           );        
 
         emit showDialog("Critical", message);
 

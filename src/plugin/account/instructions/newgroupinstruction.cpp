@@ -65,7 +65,7 @@ void NewGroupInstruction::run()
             );
 
         if (computer_systems.size() != 1) {
-            Logger::getInstance()->error("Invalid size");
+            Logger::getInstance()->critical("Invalid number of PG_ComputerSystem");
             return;
         }
 
@@ -93,6 +93,6 @@ void NewGroupInstruction::run()
             out_param
         );
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
     }
 }

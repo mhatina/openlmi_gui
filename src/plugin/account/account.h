@@ -40,7 +40,7 @@ const Engine::property userProperties[] = {
     {"ElementName", false},
     {"UserID", false},
     {"HomeDirectory", false},
-    {"LoginShell", true}
+    {"LoginShell", false}
 };
 
 const Engine::header_item groupHeaderItems[] = {
@@ -77,6 +77,7 @@ class AccountPlugin : public Engine::IPlugin
     Q_INTERFACES(Engine::IPlugin)
 
 private:
+    QMenu *m_context_menu;
     QTableWidget *m_group_table;
     QTableWidget *m_user_table;
     std::string m_last_group_name;
@@ -89,6 +90,7 @@ private:
     bool isKeyProperty(const char *property);
     int findGroupIndex(std::string name);
     std::string convertNameToID(std::string name);
+    void initContextMenu();
     void setSelectedLineColor(QList<QTableWidgetItem *> selectedItems,
                               QColor color);
 
@@ -107,6 +109,8 @@ private slots:
     void addUserToGroup(std::string group);
     void remove();
     void removeUserFromGroup(std::string group);
+    void showButtons();
+    void showContextMenu(QPoint pos);
     void showDetails();
 };
 

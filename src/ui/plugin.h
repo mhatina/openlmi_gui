@@ -19,6 +19,7 @@
 #define PLUGIN_H
 
 #include "instructions/instruction.h"
+#include "kernel.h"
 #include "lmiwbem_client.h"
 #include "logger.h"
 #include "widgets/providerwidget.h"
@@ -195,11 +196,13 @@ public:
      * @param active -- whether provider is active
      */
     void setActive(bool active);
+    void setMutex(QMutex *mutex);
     /**
      * @brief Setter
      * @param refreshed -- refresh state
      */
     void setRefreshed(bool refreshed);
+
     void stopRefresh();
 
 protected slots:
@@ -250,7 +253,7 @@ signals:
      * @brief Signal to inform about progress of refreshing
      * @param progress -- progress state
      */
-    void refreshProgress(int progress);
+    void refreshProgress(int progress, IPlugin *plugin);
     /**
      * @brief emitted when there are some changes to be applied/saved
      * @param plugin -- representation of provider

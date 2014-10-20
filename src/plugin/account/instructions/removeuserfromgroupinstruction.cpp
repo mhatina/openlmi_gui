@@ -66,9 +66,8 @@ void RemoveUserFromGroupInstruction::run()
             Pegasus::CIMProperty member_prop = members[i].getProperty(ind);
             ind  = members[i].findProperty("Collection");
             Pegasus::CIMProperty collection_prop = members[i].getProperty(ind);
-            std::string member_property(member_prop.getValue().toString().getCString());
-            std::string collection_property(
-                collection_prop.getValue().toString().getCString());
+            std::string member_property(CIMValue::to_std_string(member_prop.getValue()));
+            std::string collection_property = CIMValue::to_std_string(collection_prop.getValue());
             if (member_property.find("LMI:UID:" + CIMValue::to_std_string(
                                          m_value)) != std::string::npos
                 && collection_property.find(m_name) != std::string::npos) {
@@ -82,6 +81,6 @@ void RemoveUserFromGroupInstruction::run()
             member
         );
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
     }
 }

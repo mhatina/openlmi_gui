@@ -1,3 +1,4 @@
+#include "lmiwbem_value.h"
 #include "softwareinstruction.h"
 
 SoftwareInstruction::SoftwareInstruction(CIMClient *client,
@@ -10,7 +11,7 @@ SoftwareInstruction::SoftwareInstruction(CIMClient *client,
     if (prop_ind != Pegasus::PEG_NOT_FOUND) {
         Pegasus::CIMProperty property = instance.getProperty(prop_ind);
 
-        std::string name =  (std::string) property.getValue().toString().getCString();
+        std::string name =  CIMValue::to_std_string(property.getValue());
 
         int ch = name.rfind(":", name.rfind(":") - 1);
         name = name.substr(ch + 1, name.length() - ch - 2);
@@ -19,7 +20,7 @@ SoftwareInstruction::SoftwareInstruction(CIMClient *client,
         prop_ind = instance.findProperty("Caption");
         Pegasus::CIMProperty property = instance.getProperty(prop_ind);
 
-        m_name = (std::string) property.getValue().toString().getCString();
+        m_name = CIMValue::to_std_string(property.getValue());
     }
 }
 

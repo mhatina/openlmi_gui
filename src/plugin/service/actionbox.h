@@ -50,6 +50,7 @@ public:
      * @brief Destructor
      */
     ~ActionBox();
+    void changeAction(std::string action);
 
 private:
     std::string m_name;

@@ -80,7 +80,8 @@ SOURCES         +=      main.cpp \
                         settings/generalsettings.cpp \
                         settings/isettings.cpp \
                         settings/generalpluginsettings.cpp \
-                        widgets/treewidget.cpp
+                        widgets/treewidget.cpp \
+    widgets/progressbar.cpp
 
 HEADERS         +=      mainwindow.h \
                         kernel.h \
@@ -105,7 +106,8 @@ HEADERS         +=      mainwindow.h \
                         settings/generalsettings.h \
                         settings/isettings.h \
                         settings/generalpluginsettings.h \
-                        widgets/treewidget.h
+                        widgets/treewidget.h \
+    widgets/progressbar.h
 
 FORMS           +=      mainwindow.ui \
                         widgets/providerwidget.ui \

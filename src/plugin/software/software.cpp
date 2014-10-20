@@ -78,7 +78,7 @@ std::string SoftwarePlugin::getPackageName(Pegasus::CIMInstance package)
         return "";
     }
 
-    name = property.getValue().toString().getCString();
+    name = CIMValue::to_std_string(property.getValue());
 
     int ch = name.rfind(":", name.rfind(":") - 1);
     name = name.substr(ch + 1, name.length() - ch - 2);
@@ -103,7 +103,7 @@ void SoftwarePlugin::fetchPackageInfo(Pegasus::CIMInstance instance)
                       path
                   );
     } catch (Pegasus::Exception &ex) {
-        refreshProgress(1);
+        emit refreshProgress(Engine::ERROR, this);
         return;
     }
 
@@ -236,7 +236,7 @@ void SoftwarePlugin::getData(std::vector<void *> *data)
 
             std::string name;
             if (!property.getValue().isNull()) {
-                name = property.getValue().toString().getCString();
+                name = CIMValue::to_std_string(property.getValue());
             }
 
             if (filter.empty()) {
@@ -279,7 +279,7 @@ void SoftwarePlugin::getData(std::vector<void *> *data)
             }
         }
     } catch (Pegasus::Exception &ex) {
-        emit doneFetchingData(NULL, std::string(ex.getMessage().getCString()));
+        emit doneFetchingData(NULL, CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 
@@ -299,12 +299,11 @@ void SoftwarePlugin::clear()
 
 void SoftwarePlugin::fillTab(std::vector<void *> *data)
 {
-    clear();
     m_changes_enabled = false;
 
     try {
-        std::vector<Pegasus::CIMInstance> *vector = ((std::vector<Pegasus::CIMInstance>
-                *) (*data)[0]);
+        std::vector<Pegasus::CIMInstance> *vector =
+            ((std::vector<Pegasus::CIMInstance> *) (*data)[0]);
 
         for (unsigned int i = 0; i < vector->size(); i++) {
             Pegasus::Uint32 prop_ind = (*vector)[i].findProperty("InstalledSoftware");
@@ -312,7 +311,7 @@ void SoftwarePlugin::fillTab(std::vector<void *> *data)
 
             std::string name;
             if (!property.getValue().isNull()) {
-                name = property.getValue().toString().getCString();
+                name = CIMValue::to_std_string(property.getValue());
             }
 
             int ch = name.rfind(":", name.rfind(":") - 1);
@@ -324,15 +323,15 @@ void SoftwarePlugin::fillTab(std::vector<void *> *data)
 
         vector = ((std::vector<Pegasus::CIMInstance> *) (*data)[1]);
         for (unsigned int i = 0; i < vector->size(); i++) {
-            QListWidgetItem *item = new QListWidgetItem(CIMValue::get_property_value((
-                        *vector)[i], "Caption").c_str());
+            QListWidgetItem *item = new QListWidgetItem(
+                CIMValue::get_property_value((*vector)[i], "Caption").c_str());
             item->setIcon(QIcon(CIMValue::get_property_value((*vector)[i],
                                 "EnabledState") == "2" ? ":/enabled.png" : ":/disabled.png"));
             m_ui->repos->addItem(item);
         }
         m_repos = *vector;
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->error(std::string(ex.getMessage().getCString()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 
@@ -403,7 +402,7 @@ void SoftwarePlugin::enableRepo()
 
 void SoftwarePlugin::getPackageDetail(QListWidgetItem *item)
 {
-    emit refreshProgress(0);
+    emit refreshProgress(Engine::NOT_REFRESHED, this);
 
     if (item != NULL) {
         std::string id = item->text().toStdString();
@@ -422,7 +421,7 @@ void SoftwarePlugin::getPackageDetail(QListWidgetItem *item)
 
 void SoftwarePlugin::showPackageDetail(Pegasus::CIMInstance item)
 {
-    emit refreshProgress(100);
+    emit refreshProgress(Engine::REFRESHED, this);
 
     DetailsDialog dialog("Package details", this);
     dialog.hideCancelButton();
@@ -443,8 +442,7 @@ void SoftwarePlugin::installPackage()
                     false));
             m_ui->installed->addItem(new QListWidgetItem(
                                          QIcon(":/enabled.png"),
-                                         CIMValue::get_property_value(packages[i], "ElementName").c_str()
-                                     )
+                                         CIMValue::get_property_value(packages[i], "ElementName").c_str())
                                     );
         }
     }

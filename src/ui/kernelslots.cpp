@@ -1,13 +1,18 @@
 #include "kernel.h"
+#include "lmiwbem_value.h"
 #include "settingsdialog.h"
 
 #include <gnome-keyring-1/gnome-keyring.h>
 #include <QCheckBox>
+#include <QDesktopServices>
 #include <QLineEdit>
 #include <QProcess>
 #include <QStatusBar>
 #include <QString>
 #include <QToolButton>
+#include <QUrl>
+
+#define BUG_REPORT_URL "https://github.com/mhatina/openlmi_gui/issues"
 
 extern const GnomeKeyringPasswordSchema *GNOME_KEYRING_NETWORK_PASSWORD;
 
@@ -76,7 +81,7 @@ int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
                 client->setVerifyCertificate(verify);
                 client->connect(ip, 5989, true, username, passwd, cert);
             } catch (Pegasus::Exception &ex) {
-                Logger::getInstance()->info(std::string(ex.getMessage().getCString()) +
+                Logger::getInstance()->info(CIMValue::to_std_string(ex.getMessage()) +
                                             " Trying another port.");
                 client->setVerifyCertificate(verify);
                 client->connect(ip, 5988, false, username, passwd, cert);
@@ -85,7 +90,7 @@ int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
             return 0;
         } catch (Pegasus::Exception &ex) {
             if (!silent) {
-                emit error(std::string(ex.getMessage().getCString()));
+                Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
             }
             return -1;
         }
@@ -166,7 +171,7 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
         boost::thread(boost::bind(&Engine::Kernel::getConnection, this, state));
     } else {
         widget<QPushButton *>("stop_refresh_button")->setEnabled(false);
-        handleProgressState(1);
+        handleProgressState(Engine::ERROR);
         m_main_window.getStatusBar()->clearMessage();
     }
 }
@@ -176,7 +181,11 @@ void Engine::Kernel::handleConnecting(CIMClient *client,
 {
     Logger::getInstance()->debug("Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER_VALUES state)");
     if (client == NULL) {
-        handleProgressState(1);
+        if (PowerStateValues::NoPowerSetting) {
+            handleProgressState(Engine::ERROR);
+        } else {
+            handleProgressState(Engine::ERROR, NULL, getPowerStateMessage(state));
+        }
         widget<QPushButton *>("stop_refresh_button")->setEnabled(false);
         return;
     }
@@ -195,7 +204,9 @@ void Engine::Kernel::handleConnecting(CIMClient *client,
         }
     } else {
         setPowerState(client, state);
-        handleProgressState(100);
+        std::string message = getPowerStateMessage(state);
+        Logger::getInstance()->info(message);
+        handleProgressState(Engine::REFRESHED, NULL, message);
     }
 }
 
@@ -212,30 +223,44 @@ void Engine::Kernel::handleInstructionText(std::string text)
     m_code_dialog.setText(text, false);
 }
 
-void Engine::Kernel::handleProgressState(int state)
+void Engine::Kernel::handleProgressState(int state, IPlugin *plugin)
+{
+    QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
+    if (plugin == NULL && (plugin = (IPlugin *) tab->currentWidget()) == NULL) {
+        return;
+    }
+    handleProgressState(state, plugin, "Refreshing: " + plugin->getLabel());
+}
+
+void Engine::Kernel::handleProgressState(int state, IPlugin *plugin, std::string process)
 {
     Logger::getInstance()->debug("Engine::Kernel::handleProgressState(int state)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
-    IPlugin *plugin = (IPlugin *) tab->currentWidget();
-    if (plugin == NULL) {
+    if (plugin == NULL && (plugin = (IPlugin *) tab->currentWidget()) == NULL) {
         return;
     }
 
-    if (state == 100) {
-        tab->setEnabled(true);
+    switch (state) {
+    case REFRESHED:
+        m_bar->hide(process);
+    case ALMOST_REFRESHED:
         plugin->setPluginEnabled(true);
         plugin->setRefreshed(true);
         setButtonsEnabled(true);
-        m_bar->hide();
-    } else if (state == 0) {
+        break;
+    case NOT_REFRESHED:
         plugin->setPluginEnabled(false);
         m_bar->setMaximum(0);
-        m_bar->show();
-    } else {
-        tab->setEnabled(true);
+        m_bar->show(process);
+        break;
+    case ERROR:
         plugin->setPluginEnabled(false);
         enableSpecialButtons(true);
-        m_bar->hide();
+        m_bar->hide(process);
+        break;
+    default:
+        Logger::getInstance()->critical("Unknown refresh state!");
+        break;
     }
 }
 
@@ -254,9 +279,8 @@ void Engine::Kernel::refresh()
         return;
     }
 
-    tab->setEnabled(false);
-    setButtonsEnabled(false);
-    handleProgressState(0);
+    setButtonsEnabled(false, false);
+    handleProgressState(Engine::NOT_REFRESHED);
 
     boost::thread(boost::bind(&Engine::Kernel::getConnection, this,
                               PowerStateValues::NoPowerSetting));
@@ -264,9 +288,16 @@ void Engine::Kernel::refresh()
 
 void Engine::Kernel::reloadPlugins()
 {
-    Logger::getInstance()->debug("Engine::Kernel::reloadPlugins()");    
+    Logger::getInstance()->debug("Engine::Kernel::reloadPlugins()");
     deletePlugins();
     loadPlugin();
+}
+
+void Engine::Kernel::reportBug()
+{
+    QString url = BUG_REPORT_URL;
+    if (!QDesktopServices::openUrl(QUrl(url)))
+        Logger::getInstance()->error("Cannot open : " + url.toStdString());
 }
 
 void Engine::Kernel::resetKeyring()
@@ -396,7 +427,7 @@ void Engine::Kernel::setActivePlugin(int index)
     bool refreshed = plugin->isRefreshed();
     if (!enabled && !refreshed) {
         return;
-    }       
+    }
 
     if (!refreshed) {
         refresh();
@@ -423,33 +454,30 @@ void Engine::Kernel::setPluginUnsavedChanges(IPlugin *plugin)
 void Engine::Kernel::setPowerState(QAction *action)
 {
     Logger::getInstance()->debug("Engine::Kernel::setPowerState(QAction *action)");
-    QTreeWidgetItem *item =
-        m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
     std::string message = "";
-    handleProgressState(0);
     if (action->objectName().toStdString() == "reboot_action") {
-        message = "Rebooting system: ";
+        message = getPowerStateMessage(PowerStateValues::PowerCycleOffSoft);
         m_main_window.getPcTreeWidget()->setComputerIcon(QIcon(":/reboot.png"));
         boost::thread(boost::bind(&Engine::Kernel::getConnection, this,
                                   PowerStateValues::PowerCycleOffSoft));
     } else if (action->objectName().toStdString() == "shutdown_action") {
-        message = "Shutting down system: ";
+        message = getPowerStateMessage(PowerStateValues::PowerOffSoftGraceful);
         boost::thread(boost::bind(&Engine::Kernel::getConnection, this,
                                   PowerStateValues::PowerOffSoftGraceful));
     } else if (action->objectName().toStdString() == "force_reset_action") {
-        message = "Force rebooting system: ";
+        message = getPowerStateMessage(PowerStateValues::PowerCycleOffHard);
         boost::thread(boost::bind(&Engine::Kernel::getConnection, this,
                                   PowerStateValues::PowerCycleOffHard));
     } else if (action->objectName().toStdString() == "shutdown_action") {
-        message = "Force off system: ";
+        message = getPowerStateMessage(PowerStateValues::PowerOffHard);
         boost::thread(boost::bind(&Engine::Kernel::getConnection, this,
                                   PowerStateValues::PowerOffHard));
     } else if (action->objectName().toStdString() == "wake_on_lan") {
-        message = "Waking system: ";
+        message = getPowerStateMessage(PowerStateValues::WakeOnLan);
         wakeOnLan();
     }
 
-    Logger::getInstance()->info(message + item->text(0).toStdString());
+    handleProgressState(Engine::NOT_REFRESHED, NULL, message);
 }
 
 void Engine::Kernel::showAboutDialog()

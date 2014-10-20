@@ -48,6 +48,6 @@ void ReloadServiceInstruction::run()
             Logger::getInstance()->info("Unable to reload service.");
         }
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
     }
 }

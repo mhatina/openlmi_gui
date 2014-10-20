@@ -23,6 +23,7 @@
 #include "mainwindow.h"
 #include "plugin.h"
 #include "settingsdialog.h"
+#include "widgets/progressbar.h"
 
 #include <map>
 #include <QApplication>
@@ -31,6 +32,7 @@
 #include <string>
 
 #define UNUSED(x) (void)x;
+#define STR(X)  __STRING(X)
 
 #define OPENLMI_KEYRING_DEFAULT "openlmi"
 #define LMI_VERSION "0.1.0"
@@ -60,6 +62,15 @@ typedef enum {
 
 namespace Engine
 {
+typedef enum {
+    ERROR = -1,
+    NOT_REFRESHED = 0,
+    ALMOST_REFRESHED = 90,
+    REFRESHED = 100
+} refreshState;
+
+class IPlugin;
+
 /**
 * @brief The Kernel class.
 *
@@ -74,17 +85,18 @@ class Kernel : public QObject
 
 private:
     bool m_refreshEnabled;
-    connection_map m_connections;
+    connection_map m_connections;    
     MainWindow m_main_window;
     plugin_map m_loaded_plugins;
     QMutex *m_mutex;
-    QProgressBar *m_bar;
+    ProgressBar *m_bar;
     SettingsDialog *m_settings;
     ShowTextDialog m_code_dialog;
     std::string m_save_script_path;
     std::vector<QPluginLoader *> m_loaders;
 
     int  getIndexOfTab(std::string name);
+    std::string getPowerStateMessage(PowerStateValues::POWER_VALUES state);
     void createKeyring();
     void initConnections();
     /**
@@ -94,8 +106,7 @@ private:
      */
     void setButtonsEnabled(bool state, bool refresh_button = true);
     void setMac(CIMClient *client);
-    void setPowerState(CIMClient *client,
-                       PowerStateValues::POWER_VALUES power_state);
+    void setPowerState(CIMClient *client, PowerStateValues::POWER_VALUES power_state);
     void wakeOnLan();
 
 public:
@@ -107,7 +118,10 @@ public:
      * @brief Destructor
      */
     ~Kernel();
-    MainWindow *getMainWindow() { return &m_main_window; }
+    MainWindow *getMainWindow()
+    {
+        return &m_main_window;
+    }
 
     void deletePlugins();
     /**
@@ -139,9 +153,11 @@ private slots:
     void handleConnecting(CIMClient *client, PowerStateValues::POWER_VALUES state);
     void handleError(std::string message);
     void handleInstructionText(std::string text);
-    void handleProgressState(int state);
+    void handleProgressState(int state, IPlugin *plugin = NULL);
+    void handleProgressState(int state, IPlugin *plugin, std::string process);
     void refresh();
     void reloadPlugins();
+    void reportBug();
     void resetKeyring();
     void saveAsScripts();
     void saveScripts();

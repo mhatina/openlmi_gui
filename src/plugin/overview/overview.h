@@ -52,6 +52,7 @@ class OverviewPlugin : public Engine::IPlugin
 private:
     bool m_changes_enabled;
     bool m_journald_available;
+    bool m_battery_available;
     boost::thread *m_log_thread;
     std::vector<Pegasus::CIMInstance> m_logs;
     QMutex *m_log_mutex;

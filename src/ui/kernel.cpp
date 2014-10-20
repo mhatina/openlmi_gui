@@ -40,8 +40,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define STR(X)  __STRING(X)
-
 extern const GnomeKeyringPasswordSchema *GNOME_KEYRING_NETWORK_PASSWORD;
 
 bool isColon(int c)
@@ -52,7 +50,7 @@ bool isColon(int c)
 Engine::Kernel::Kernel() :
     m_refreshEnabled(true),
     m_mutex(new QMutex()),
-    m_bar(new QProgressBar()),
+    m_bar(new ProgressBar()),
     m_settings(new SettingsDialog(&m_main_window))
 {
     Logger::getInstance()->debug("Engine::Kernel::Kernel()");
@@ -74,9 +72,6 @@ Engine::Kernel::Kernel() :
     initConnections();
 
     m_main_window.getStatusBar()->addPermanentWidget(m_bar);
-    m_bar->setMaximumWidth(150);
-    m_bar->hide();
-
     m_main_window.getPcTreeWidget()->setTimeSec(2);
 
     m_code_dialog.setTitle("LMIShell Code");
@@ -113,6 +108,36 @@ int Engine::Kernel::getIndexOfTab(std::string name)
     }
 
     return -1;
+}
+
+std::string Engine::Kernel::getPowerStateMessage(PowerStateValues::POWER_VALUES state)
+{
+    QTreeWidgetItem *item =
+        m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
+    std::string message = "";
+    switch (state)
+    {
+    case PowerStateValues::PowerCycleOffSoft:
+        message = "Rebooting system: ";
+        break;
+    case PowerStateValues::PowerOffSoftGraceful:
+        message = "Shutting down system: ";
+        break;
+    case PowerStateValues::PowerCycleOffHard:
+        message = "Force rebooting system: ";
+        break;
+    case PowerStateValues::PowerOffHard:
+        message = "Force off system: ";
+        break;
+    case PowerStateValues::WakeOnLan:
+        message = "Waking system: ";
+        break;
+    default:
+        return "Not possible!";
+    }
+
+    message += item->text(0).toStdString();
+    return message;
 }
 
 void Engine::Kernel::createKeyring()
@@ -259,6 +284,12 @@ void Engine::Kernel::initConnections()
         SIGNAL(triggered()),
         this,
         SLOT(showAboutDialog()));
+    action = widget<QAction *>("action_report_bug");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(reportBug()));
 }
 
 void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
@@ -335,7 +366,7 @@ void Engine::Kernel::setMac(CIMClient *client)
             }
         }
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->error(std::string(ex.getMessage().getCString()), false);
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()), false);
     }
 }
 
@@ -351,7 +382,7 @@ void Engine::Kernel::setPowerState(CIMClient *client,
                               Pegasus::CIMName("LMI_PowerManagementService")
                           )[0];
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->error(std::string(ex.getMessage().getCString()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
     }
 
     Pegasus::Array<Pegasus::CIMParamValue> in_param;
@@ -374,7 +405,7 @@ void Engine::Kernel::setPowerState(CIMClient *client,
         m_connections.erase(m_connections.find(client->hostname()));
         client->disconnect();
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->error(std::string(ex.getMessage().getCString()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
     }
 }
 
@@ -446,7 +477,7 @@ void Engine::Kernel::wakeOnLan()
     sendto(udp_socket, &to_send, sizeof(unsigned char) * 102, 0,
            (struct sockaddr *)&udp_server, sizeof(udp_server));
 
-    handleProgressState(100);
+    handleProgressState(Engine::REFRESHED);
 }
 
 void Engine::Kernel::deletePlugins()
@@ -496,7 +527,7 @@ void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
         break;
     case -1:
         // error already displayed
-        handleProgressState(1);
+        handleProgressState(Engine::ERROR);
         break;
     }
 }
@@ -518,13 +549,14 @@ void Engine::Kernel::loadPlugin()
                 Logger::getInstance()->debug("Loaded: " + loaded_plugin->getLabel(), true);
                 m_loaded_plugins[file_name.toStdString()] = loaded_plugin;
 
+                loaded_plugin->setMutex(m_mutex);
                 loaded_plugin->connectButtons(m_main_window.getToolbar());
                 connect(loaded_plugin, SIGNAL(unsavedChanges(IPlugin *)), this,
                         SLOT(setPluginUnsavedChanges(IPlugin *)));
                 connect(loaded_plugin, SIGNAL(noChanges(IPlugin *)), this,
                         SLOT(setPluginNoChanges(IPlugin *)));
-                connect(loaded_plugin, SIGNAL(refreshProgress(int)), this,
-                        SLOT(handleProgressState(int)));
+                connect(loaded_plugin, SIGNAL(refreshProgress(int,IPlugin*)), this,
+                        SLOT(handleProgressState(int,IPlugin*)));
                 connect(loaded_plugin, SIGNAL(newInstructionText(std::string)), this,
                         SLOT(handleInstructionText(std::string)));
 
@@ -537,7 +569,7 @@ void Engine::Kernel::loadPlugin()
                 }
             }
         } else {
-            Logger::getInstance()->error(plugin_loader->errorString().toStdString(), false);
+            Logger::getInstance()->critical(plugin_loader->errorString().toStdString(), false);
         }
     }
     setActivePlugin(0);

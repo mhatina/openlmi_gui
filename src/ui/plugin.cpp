@@ -126,7 +126,6 @@ Engine::IPlugin::IPlugin() :
     m_refreshed(false),
     m_still_refreshing(false),
     m_client(NULL),
-    m_mutex(new QMutex(QMutex::Recursive)),
     m_system_id("")
 {
     Logger::getInstance()->debug("Engine::IPlugin::IPlugin()");
@@ -146,7 +145,6 @@ Engine::IPlugin::IPlugin() :
 Engine::IPlugin::~IPlugin()
 {
     Logger::getInstance()->debug("Engine::IPlugin::~IPlugin()");
-    delete m_mutex;
 }
 
 Pegasus::Array<Pegasus::CIMInstance> Engine::IPlugin::enumerateInstances(
@@ -268,13 +266,13 @@ void Engine::IPlugin::refresh(CIMClient *client)
     Logger::getInstance()->debug("Engine::IPlugin::refresh(CIMClient *client)");
 
     if (client == NULL) {
+        emit refreshProgress(Engine::ERROR, this);
         return;
     }
 
     Logger::getInstance()->info("Refreshing " + getLabel());
     m_client = client;
 
-    emit refreshProgress(0);
     m_instructions.clear();
     m_data = new std::vector<void *>();
     m_stop_refresh = false;
@@ -312,6 +310,11 @@ void Engine::IPlugin::setActive(bool active)
     m_active = active;
 }
 
+void Engine::IPlugin::setMutex(QMutex *mutex)
+{
+    m_mutex = mutex;
+}
+
 void Engine::IPlugin::setRefreshed(bool refreshed)
 {
     Logger::getInstance()->debug("Engine::IPlugin::setRefreshed(bool refreshed)");
@@ -326,7 +329,7 @@ void Engine::IPlugin::apply()
         return;
     }
     Logger::getInstance()->info("Applying");
-    emit refreshProgress(0);
+    emit refreshProgress(Engine::NOT_REFRESHED, this);
     boost::thread(boost::bind(&Engine::IPlugin::applyChanges, this));
 }
 
@@ -368,7 +371,7 @@ void Engine::IPlugin::handleDataFetching(std::vector<void *> *data,
         if (!m_stop_refresh) {
             Logger::getInstance()->error(error_message);
         }
-        emit refreshProgress(1);
+        emit refreshProgress(Engine::ERROR, this);
     } else if (data != NULL) {
         if (m_stop_refresh) {
             m_stop_refresh = false;
@@ -376,7 +379,7 @@ void Engine::IPlugin::handleDataFetching(std::vector<void *> *data,
         }
         setRefreshed(true);
         if (!m_still_refreshing) {
-            emit refreshProgress(100);
+            emit refreshProgress(Engine::REFRESHED, this);
         }
         fillTab(data);
         delete data;

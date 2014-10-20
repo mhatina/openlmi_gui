@@ -48,6 +48,6 @@ void StopServiceInstruction::run()
             Logger::getInstance()->info("Unable to stop service.");
         }
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
     }
 }

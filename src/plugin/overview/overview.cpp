@@ -33,7 +33,7 @@ std::string OverviewPlugin::decode(Pegasus::CIMProperty property)
 {
     Pegasus::CIMValue value = property.getValue();
     if (property.getName().equal(Pegasus::CIMName("PowerState"))) {
-        return power_state_values[atoi(value.toString().getCString())];
+        return power_state_values[atoi(CIMValue::to_std_string(value).c_str())];
     }
 
     return "";
@@ -87,6 +87,7 @@ OverviewPlugin::OverviewPlugin() :
     IPlugin(),
     m_changes_enabled(false),
     m_journald_available(false),
+    m_battery_available(true),
     m_log_thread(NULL),
     m_log_mutex(new QMutex()),
     m_ui(new Ui::OverviewPlugin)
@@ -229,9 +230,11 @@ void OverviewPlugin::getData(std::vector<void *> *data)
             );
 
         for (unsigned int i = 0; i < provider.size(); i++) {
-            m_journald_available = CIMValue::get_property_value(provider[i], "RegisteredName").find("Journald") != std::string::npos;
-            if (m_journald_available)
+            m_journald_available = CIMValue::get_property_value(provider[i],
+                                   "RegisteredName").find("Journald") != std::string::npos;
+            if (m_journald_available) {
                 break;
+            }
         }
 
         std::vector<void *> *tmp = new std::vector<void *>();
@@ -263,11 +266,13 @@ void OverviewPlugin::getData(std::vector<void *> *data)
                 false       // include class origin
             );
 
-        tmp = new std::vector<void *>();
-        for (unsigned int i = 0; i < battery.size(); i++) {
-            tmp->push_back(new Pegasus::CIMInstance(battery[i]));
+        if ((m_battery_available = battery.size()) != 0) {
+            tmp = new std::vector<void *>();
+            for (unsigned int i = 0; i < battery.size(); i++) {
+                tmp->push_back(new Pegasus::CIMInstance(battery[i]));
+            }
+            emit doneFetchingData(tmp);
         }
-        emit doneFetchingData(tmp);
 
         Pegasus::Array<Pegasus::CIMInstance> network =
             enumerateInstances(
@@ -279,8 +284,7 @@ void OverviewPlugin::getData(std::vector<void *> *data)
                 false       // include class origin
             );
         for (unsigned int i = 0; i < network.size(); i++) {
-            if (CIMValue::get_property_value(network[i],
-                                             "OperatingStatus") != "16") { // In service
+            if (CIMValue::get_property_value(network[i], "OperatingStatus") != "16") { // In service
                 continue;
             }
 
@@ -297,7 +301,9 @@ void OverviewPlugin::getData(std::vector<void *> *data)
                 tmp->push_back(new Pegasus::CIMInstance(ip[j]));
             }
             emit doneFetchingData(tmp);
-        }       
+        }
+
+        emit refreshProgress(Engine::ALMOST_REFRESHED, this);
 
         if (!m_journald_available) {
             emit doneFetchingData(data);
@@ -324,7 +330,7 @@ void OverviewPlugin::getData(std::vector<void *> *data)
 
     } catch (Pegasus::Exception &ex) {
         m_still_refreshing = false;
-        emit doneFetchingData(NULL, std::string(ex.getMessage().getCString()));
+        emit doneFetchingData(NULL, CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 
@@ -341,8 +347,7 @@ void OverviewPlugin::fillTab(std::vector<void *> *data)
         for (unsigned int i = 0; i < data->size(); i++) {
             Pegasus::CIMInstance instance = *((Pegasus::CIMInstance *) (*data)[i]);
 
-            if (CIMValue::get_property_value(instance,
-                                             "CreationClassName") == "PG_ComputerSystem") {
+            if (CIMValue::get_property_value(instance, "CreationClassName") == "PG_ComputerSystem") {
                 m_ui->name->setText(CIMValue::get_property_value(instance, "Name").c_str());
                 m_ui->description->setText(CIMValue::get_property_value(instance,
                                            "Description").c_str());
@@ -381,8 +386,7 @@ void OverviewPlugin::fillTab(std::vector<void *> *data)
                         text));
 
                 battery_cnt++;
-            } else if (CIMValue::get_property_value(instance,
-                                                    "CreationClassName") == "LMI_IPProtocolEndpoint") {
+            } else if (CIMValue::get_property_value(instance, "CreationClassName") == "LMI_IPProtocolEndpoint") {
                 if (!m_ui->network_box->layout()) {
                     m_ui->network_box->setLayout(new QFormLayout());
                     m_ui->network_box->layout()->setContentsMargins(2, 9, 2, 9);
@@ -397,14 +401,25 @@ void OverviewPlugin::fillTab(std::vector<void *> *data)
                 m_ui->network_box->layout()->addWidget(new LabeledLabel(
                         title,
                         ip));
-            } else if (CIMValue::get_property_value(instance,
-                                                    "CreationClassName") == "LMI_JournalLogRecord") {
+            } else if (CIMValue::get_property_value(instance, "CreationClassName") == "LMI_JournalLogRecord") {
                 filterChanged("");
                 break;
             }
         }
+
+        if (!m_battery_available) {
+            std::string status = "A/C";
+            if (!m_ui->power_box->layout()) {
+                m_ui->power_box->setLayout(new QFormLayout());
+                m_ui->power_box->layout()->setContentsMargins(2, 9, 2, 9);
+            }
+            m_ui->power_box->layout()->addWidget(new LabeledLabel(
+                    "Status:",
+                    status));
+            m_battery_available = true;
+        }
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->error(std::string(ex.getMessage().getCString()));
+        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 
