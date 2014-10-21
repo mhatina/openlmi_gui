@@ -51,8 +51,9 @@ int Engine::IPlugin::throwAwayChanges()
 void Engine::IPlugin::addInstruction(IInstruction *instruction)
 {
     Logger::getInstance()->debug("Engine::IPlugin::addInstruction(IInstruction *instruction)");
-    if (instruction == NULL)
+    if (instruction == NULL) {
         return;
+    }
 
     if (m_instructions.empty()) {
         std::string hostname = m_client->hostname();
@@ -147,6 +148,41 @@ Engine::IPlugin::~IPlugin()
     Logger::getInstance()->debug("Engine::IPlugin::~IPlugin()");
 }
 
+Pegasus::Array<Pegasus::CIMObject> Engine::IPlugin::associators(
+        const Pegasus::CIMNamespaceName &nameSpace,
+        const Pegasus::CIMObjectPath &objectName,
+        const Pegasus::CIMName &assocClass,
+        const Pegasus::CIMName &resultClass,
+        const Pegasus::String &role,
+        const Pegasus::String &resultRole,
+        Pegasus::Boolean includeQualifiers,
+        Pegasus::Boolean includeClassOrigin,
+        const Pegasus::CIMPropertyList &propertyList)
+{
+    boost::this_thread::interruption_point();
+    Pegasus::Array<Pegasus::CIMObject> array;
+    m_mutex->lock();
+    try {
+        array = m_client->associators(
+                    nameSpace,
+                    objectName,
+                    assocClass,
+                    resultClass,
+                    role,
+                    resultRole,
+                    includeQualifiers,
+                    includeClassOrigin,
+                    propertyList);
+    } catch (Pegasus::Exception &ex) {
+        m_mutex->unlock();
+        throw ex;
+    }
+    m_mutex->unlock();
+
+    boost::this_thread::interruption_point();
+    return array;
+}
+
 Pegasus::Array<Pegasus::CIMInstance> Engine::IPlugin::enumerateInstances(
     const Pegasus::CIMNamespaceName &nameSpace,
     const Pegasus::CIMName &className,
@@ -168,6 +204,29 @@ Pegasus::Array<Pegasus::CIMInstance> Engine::IPlugin::enumerateInstances(
                     includeQualifiers,
                     includeClassOrigin,
                     propertyList);
+    } catch (Pegasus::Exception &ex) {
+        m_mutex->unlock();
+        throw ex;
+    }
+    m_mutex->unlock();
+
+    boost::this_thread::interruption_point();
+    return array;
+}
+
+Pegasus::Array<Pegasus::CIMObject> Engine::IPlugin::execQuery(
+        const Pegasus::CIMNamespaceName &nameSpace,
+        const Pegasus::String &queryLanguage,
+        const Pegasus::String &query)
+{
+    boost::this_thread::interruption_point();
+    Pegasus::Array<Pegasus::CIMObject> array;
+    m_mutex->lock();
+    try {
+        array = m_client->execQuery(
+                    nameSpace,
+                    queryLanguage,
+                    query);
     } catch (Pegasus::Exception &ex) {
         m_mutex->unlock();
         throw ex;
@@ -272,6 +331,7 @@ void Engine::IPlugin::refresh(CIMClient *client)
 
     Logger::getInstance()->info("Refreshing " + getLabel());
     m_client = client;
+    m_refreshed = true;
 
     m_instructions.clear();
     m_data = new std::vector<void *>();

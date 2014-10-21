@@ -33,6 +33,7 @@
 
 #include <algorithm>
 #include <boost/thread.hpp>
+#include <QMenu>
 #include <sstream>
 
 Pegasus::CIMInstance SoftwarePlugin::findInstalledPackage(
@@ -78,7 +79,7 @@ std::string SoftwarePlugin::getPackageName(Pegasus::CIMInstance package)
         return "";
     }
 
-    name = CIMValue::to_std_string(property.getValue());
+    name = property.getValue().toString().getCString();
 
     int ch = name.rfind(":", name.rfind(":") - 1);
     name = name.substr(ch + 1, name.length() - ch - 2);
@@ -110,6 +111,117 @@ void SoftwarePlugin::fetchPackageInfo(Pegasus::CIMInstance instance)
     emit havePackageDetails(package);
 }
 
+void SoftwarePlugin::initContextMenu()
+{
+    Logger::getInstance()->debug("SoftwarePlugin::initContextMenu()");
+    QAction *action;
+
+    m_context_menu = new QMenu(this);
+    setContextMenuPolicy(Qt::CustomContextMenu);
+
+    action = m_context_menu->addAction("Show/hide buttons");
+    action->setObjectName("show_hide_buttons_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(showButtons()));
+
+    m_package_context_menu = new QMenu(m_ui->installed);
+    m_ui->installed->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    action = m_package_context_menu->addAction("Verify");
+    action->setObjectName("verify_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(verifyPackage()));
+
+    action = m_package_context_menu->addAction("Install");
+    action->setObjectName("install_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(installPackage()));
+
+    action = m_package_context_menu->addAction("Uninstall");
+    action->setObjectName("uninstall_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(uninstallPackage()));
+
+    action = m_package_context_menu->addAction("Update");
+    action->setObjectName("update_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(updatePackage()));
+
+    m_package_context_menu->addSeparator();
+
+    action = m_package_context_menu->addAction("Show details");
+    action->setObjectName("show_details_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(getPackageDetail()));
+
+    m_package_context_menu->addSeparator();
+
+    action = m_package_context_menu->addAction("Show/hide buttons");
+    action->setObjectName("show_hide_buttons_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(showButtons()));
+
+    m_repo_context_menu = new QMenu(m_ui->repos);
+    m_ui->repos->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    action = m_repo_context_menu->addAction("Enable repo");
+    action->setObjectName("enable_repo_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(enableRepo()));
+
+    action = m_repo_context_menu->addAction("Disable repo");
+    action->setObjectName("disable_repo_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(disableRepo()));
+
+    m_repo_context_menu->addSeparator();
+
+    action = m_repo_context_menu->addAction("Show details");
+    action->setObjectName("show_details_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(showRepoDetail()));
+
+    m_repo_context_menu->addSeparator();
+
+    action = m_repo_context_menu->addAction("Show/hide buttons");
+    action->setObjectName("show_hide_buttons_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(showButtons()));
+}
+
 SoftwarePlugin::SoftwarePlugin() :
     IPlugin(),
     m_changes_enabled(false),
@@ -118,6 +230,14 @@ SoftwarePlugin::SoftwarePlugin() :
     m_ui->setupUi(this);
     m_ui->filter_box->hide();
     setPluginEnabled(false);
+
+    initContextMenu();
+    m_ui->enable_repo_button->setVisible(false);
+    m_ui->disable_repo_button->setVisible(false);
+    m_ui->install_button->setVisible(false);
+    m_ui->verify_package_button->setVisible(false);
+    m_ui->uninstall_button->setVisible(false);
+    m_ui->update_button->setVisible(false);
 
     connect(
         m_ui->installed,
@@ -179,6 +299,21 @@ SoftwarePlugin::SoftwarePlugin() :
         SIGNAL(textChanged(QString)),
         this,
         SLOT(updateList()));
+    connect(
+        this,
+        SIGNAL(customContextMenuRequested(QPoint)),
+        this,
+        SLOT(showContextMenu(QPoint)));
+    connect(
+        m_ui->installed,
+        SIGNAL(customContextMenuRequested(QPoint)),
+        this,
+        SLOT(showPackageContextMenu(QPoint)));
+    connect(
+        m_ui->repos,
+        SIGNAL(customContextMenuRequested(QPoint)),
+        this,
+        SLOT(showRepoContextMenu(QPoint)));
 }
 
 SoftwarePlugin::~SoftwarePlugin()
@@ -210,41 +345,14 @@ std::string SoftwarePlugin::getRefreshInfo()
 
 void SoftwarePlugin::getData(std::vector<void *> *data)
 {
-    Pegasus::Array<Pegasus::CIMInstance> installed;
-    Pegasus::Array<Pegasus::CIMInstance> repos;
-    Pegasus::Array<Pegasus::CIMInstance> verify;
+    m_still_refreshing = true;
+
     std::string filter = m_ui->filter_line->text().toStdString();
 
     try {
-        // installed packages
-        installed = enumerateInstances(
-                        Pegasus::CIMNamespaceName("root/cimv2"),
-                        Pegasus::CIMName("LMI_InstalledSoftwareIdentity"),
-                        true,       // deep inheritance
-                        false,      // local only
-                        false,      // include qualifiers
-                        false       // include class origin
-                    );
-
-        std::vector<Pegasus::CIMInstance> *vector = new
-        std::vector<Pegasus::CIMInstance>();
-        data->push_back(vector);
-
-        for (unsigned int i = 0; i < installed.size(); i++) {
-            Pegasus::Uint32 prop_ind = installed[i].findProperty("InstalledSoftware");
-            Pegasus::CIMProperty property = installed[i].getProperty(prop_ind);
-
-            std::string name;
-            if (!property.getValue().isNull()) {
-                name = CIMValue::to_std_string(property.getValue());
-            }
-
-            if (filter.empty()) {
-                vector->push_back(installed[i]);
-            } else if (name.find(filter) != std::string::npos) {
-                vector->push_back(installed[i]);
-            }
-        }
+        Pegasus::Array<Pegasus::CIMInstance> installed;
+        Pegasus::Array<Pegasus::CIMInstance> repos;
+        Pegasus::Array<Pegasus::CIMInstance> verify;
 
         // repos
         repos = enumerateInstances(
@@ -256,12 +364,41 @@ void SoftwarePlugin::getData(std::vector<void *> *data)
                     false       // include class origin
                 );
 
-        vector = new std::vector<Pegasus::CIMInstance>();
-        data->push_back(vector);
+        std::vector<void *> *tmp = new std::vector<void *>();
         for (unsigned int i = 0; i < repos.size(); i++) {
-            vector->push_back(repos[i]);
+            tmp->push_back(new Pegasus::CIMInstance(repos[i]));
         }
+        emit doneFetchingData(tmp);
 
+        // installed packages
+        installed = enumerateInstances(
+                        Pegasus::CIMNamespaceName("root/cimv2"),
+                        Pegasus::CIMName("LMI_InstalledSoftwareIdentity"),
+                        true,       // deep inheritance
+                        false,      // local only
+                        false,      // include qualifiers
+                        false       // include class origin
+                    );
+
+        tmp = new std::vector<void *>();
+        for (unsigned int i = 0; i < installed.size(); i++) {
+            Pegasus::Uint32 prop_ind = installed[i].findProperty("InstalledSoftware");
+            Pegasus::CIMProperty property = installed[i].getProperty(prop_ind);
+
+            std::string name;
+            if (!property.getValue().isNull()) {
+                name = CIMValue::to_std_string(property.getValue());
+            }
+
+            if (filter.empty()) {
+                tmp->push_back(new Pegasus::CIMInstance(installed[i]));
+            } else if (name.find(filter) != std::string::npos) {
+                tmp->push_back(new Pegasus::CIMInstance(installed[i]));
+            }
+        }
+        emit doneFetchingData(tmp);
+
+        // verification job
         if (!m_verify.empty()) {
             verify = enumerateInstances(
                          Pegasus::CIMNamespaceName("root/cimv2"),
@@ -272,17 +409,17 @@ void SoftwarePlugin::getData(std::vector<void *> *data)
                          false       // include class origin
                      );
 
-            vector = new std::vector<Pegasus::CIMInstance>();
-            data->push_back(vector);
-            for (unsigned int i = 0; i < repos.size(); i++) {
-                vector->push_back(repos[i]);
+            for (unsigned int i = 0; i < verify.size(); i++) {
+                data->push_back(new Pegasus::CIMInstance(verify[i]));
             }
         }
     } catch (Pegasus::Exception &ex) {
+        m_still_refreshing = false;
         emit doneFetchingData(NULL, CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 
+    m_still_refreshing = false;
     emit doneFetchingData(data);
 }
 
@@ -302,41 +439,41 @@ void SoftwarePlugin::fillTab(std::vector<void *> *data)
     m_changes_enabled = false;
 
     try {
-        std::vector<Pegasus::CIMInstance> *vector =
-            ((std::vector<Pegasus::CIMInstance> *) (*data)[0]);
+        for (unsigned int i = 0; i < data->size(); i++) {
+            Pegasus::CIMInstance *instance = ((Pegasus::CIMInstance *) (*data)[i]);
 
-        for (unsigned int i = 0; i < vector->size(); i++) {
-            Pegasus::Uint32 prop_ind = (*vector)[i].findProperty("InstalledSoftware");
-            Pegasus::CIMProperty property = (*vector)[i].getProperty(prop_ind);
+            Pegasus::Uint32 prop_ind = instance->findProperty("InstalledSoftware");
+            if (prop_ind != Pegasus::PEG_NOT_FOUND &&
+                instance->getProperty(prop_ind).getValue().toString().find("LMI:LMI_SoftwareIdentity") != Pegasus::PEG_NOT_FOUND) {
 
-            std::string name;
-            if (!property.getValue().isNull()) {
-                name = CIMValue::to_std_string(property.getValue());
+                Pegasus::CIMProperty property = instance->getProperty(prop_ind);
+                std::string name = (std::string) property.getValue().toString().getCString();
+
+                int ch = name.rfind(":", name.rfind(":") - 1);
+                name = name.substr(ch + 1, name.length() - ch - 2);
+
+                m_ui->installed->addItem(new QListWidgetItem(name.c_str()));
+
+                m_installed.push_back(*instance);
+            } else if (CIMValue::get_property_value(*instance, "CreationClassName") == "LMI_SoftwareIdentityResource") {
+                QListWidgetItem *item = new QListWidgetItem(
+                    CIMValue::get_property_value(*instance, "Caption").c_str());
+                item->setIcon(QIcon(CIMValue::get_property_value(*instance,
+                                    "EnabledState") == "2" ? ":/enabled.png" : ":/disabled.png"));
+                m_ui->repos->addItem(item);
+
+                m_repos.push_back(*instance);
+            } else if (CIMValue::get_property_value(*instance, "CreationClassName") == "LMI_SoftwareVerificationJob") {
+                // TODO
             }
-
-            int ch = name.rfind(":", name.rfind(":") - 1);
-            name = name.substr(ch + 1, name.length() - ch - 2);
-
-            m_ui->installed->addItem(new QListWidgetItem(name.c_str()));
         }
-        m_installed = *vector;
-
-        vector = ((std::vector<Pegasus::CIMInstance> *) (*data)[1]);
-        for (unsigned int i = 0; i < vector->size(); i++) {
-            QListWidgetItem *item = new QListWidgetItem(
-                CIMValue::get_property_value((*vector)[i], "Caption").c_str());
-            item->setIcon(QIcon(CIMValue::get_property_value((*vector)[i],
-                                "EnabledState") == "2" ? ":/enabled.png" : ":/disabled.png"));
-            m_ui->repos->addItem(item);
-        }
-        m_repos = *vector;
     } catch (Pegasus::Exception &ex) {
         Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 
     for (unsigned int i = 0; i < data->size(); i++) {
-        delete ((std::vector<Pegasus::CIMInstance> *) (*data)[i]);
+        delete ((Pegasus::CIMInstance *) (*data)[i]);
     }
 
     disableRepoButtons();
@@ -400,14 +537,24 @@ void SoftwarePlugin::enableRepo()
     }
 }
 
+void SoftwarePlugin::getPackageDetail()
+{
+    QList<QListWidgetItem *> list = m_ui->installed->selectedItems();
+    if (list.empty()) {
+        return;
+    }
+
+    getPackageDetail(list[0]);
+}
+
 void SoftwarePlugin::getPackageDetail(QListWidgetItem *item)
 {
-    emit refreshProgress(Engine::NOT_REFRESHED, this);
-
     if (item != NULL) {
         std::string id = item->text().toStdString();
+        emit refreshProgress(Engine::NOT_REFRESHED, this, "Downloading package data: " + id);
 
-        for (unsigned int i = 0; i < m_installed.size(); i++) {
+        unsigned int cnt = m_installed.size();
+        for (unsigned int i = 0; i < cnt; i++) {
             if (getPackageName(m_installed[i]) != id) {
                 continue;
             }
@@ -419,9 +566,35 @@ void SoftwarePlugin::getPackageDetail(QListWidgetItem *item)
     }
 }
 
+void SoftwarePlugin::showButtons()
+{
+    bool visible = m_ui->enable_repo_button->isVisible();
+    m_ui->enable_repo_button->setVisible(!visible);
+    m_ui->disable_repo_button->setVisible(!visible);
+    m_ui->install_button->setVisible(!visible);
+    m_ui->verify_package_button->setVisible(!visible);
+    m_ui->uninstall_button->setVisible(!visible);
+    m_ui->update_button->setVisible(!visible);
+}
+
+void SoftwarePlugin::showContextMenu(QPoint pos)
+{
+    Logger::getInstance()->debug("ServicePlugin::showContextMenu(QPoint pos)");
+    QPoint globalPos = mapToGlobal(pos);
+    m_context_menu->popup(globalPos);
+}
+
+void SoftwarePlugin::showPackageContextMenu(QPoint pos)
+{
+    Logger::getInstance()->debug("ServicePlugin::showPackageContextMenu(QPoint pos)");
+    QPoint globalPos = m_ui->installed->mapToGlobal(pos);
+    m_package_context_menu->popup(globalPos);
+}
+
 void SoftwarePlugin::showPackageDetail(Pegasus::CIMInstance item)
 {
-    emit refreshProgress(Engine::REFRESHED, this);
+    std::string name = CIMValue::get_property_value(item, "ElementName");
+    emit refreshProgress(Engine::REFRESHED, this, "Downloading package data: " + name);
 
     DetailsDialog dialog("Package details", this);
     dialog.hideCancelButton();
@@ -446,6 +619,23 @@ void SoftwarePlugin::installPackage()
                                     );
         }
     }
+}
+
+void SoftwarePlugin::showRepoContextMenu(QPoint pos)
+{
+    Logger::getInstance()->debug("ServicePlugin::showRepoContextMenu(QPoint pos)");
+    QPoint globalPos = m_ui->repos->mapToGlobal(pos);
+    m_repo_context_menu->popup(globalPos);
+}
+
+void SoftwarePlugin::showRepoDetail()
+{
+    QList<QListWidgetItem *> list = m_ui->repos->selectedItems();
+    if (list.empty()) {
+        return;
+    }
+
+    showRepoDetail(list[0]);
 }
 
 void SoftwarePlugin::showRepoDetail(QListWidgetItem *item)

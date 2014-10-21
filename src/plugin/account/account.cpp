@@ -329,7 +329,7 @@ void AccountPlugin::getData(std::vector<void *> *data)
             ind = collection.reverseFind('=') + 2;
             collection = collection.subString(ind, collection.size() - ind - 1);
 
-            users_obj = m_client->execQuery(
+            users_obj = execQuery(
                             Pegasus::CIMNamespaceName("root/cimv2"),
                             Pegasus::String("WQL"),
                             Pegasus::String(std::string("SELECT * FROM LMI_Account WHERE UserID = \"" +

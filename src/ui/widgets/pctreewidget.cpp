@@ -24,6 +24,7 @@
 
 #include <boost/thread.hpp>
 #include <list>
+#include <QDir>
 #include <QMenu>
 #include <QRegExp>
 #include <QTreeWidgetItem>
@@ -52,7 +53,7 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
 {
     Logger::getInstance()->debug("PCTreeWidget::PCTreeWidget(QWidget *parent)");
     m_ui->setupUi(this);
-    std::string path = "/home/mhatina/.openlmi/openlmi_computers.xml";
+    std::string path = QDir::homePath().toStdString() + "/.config/lmicc_computers.xml";
     m_ui->tree->header()->resizeSection(0, 278);
     initContextMenu();
 
@@ -103,7 +104,7 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
 PCTreeWidget::~PCTreeWidget()
 {
     Logger::getInstance()->debug("PCTreeWidget::~PCTreeWidget()");
-    std::string path = "/home/mhatina/.openlmi/openlmi_computers.xml";
+    std::string path = QDir::homePath().toStdString() + "/.config/lmicc_computers.xml";
     saveAllPcs(path);
     delete m_ui;
     delete m_worker;

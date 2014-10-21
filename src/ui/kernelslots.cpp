@@ -296,8 +296,9 @@ void Engine::Kernel::reloadPlugins()
 void Engine::Kernel::reportBug()
 {
     QString url = BUG_REPORT_URL;
-    if (!QDesktopServices::openUrl(QUrl(url)))
+    if (!QDesktopServices::openUrl(QUrl(url))) {
         Logger::getInstance()->error("Cannot open : " + url.toStdString());
+    }
 }
 
 void Engine::Kernel::resetKeyring()
@@ -348,6 +349,11 @@ void Engine::Kernel::selectionChanged()
     if (list.empty()) {
         return;
     }
+
+    if (list[0] == m_last_system) {
+        return;
+    }
+    m_last_system = list[0];
 
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     tab->setCurrentIndex(0);

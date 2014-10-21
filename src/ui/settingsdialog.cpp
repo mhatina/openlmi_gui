@@ -21,9 +21,8 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 
+#include <QDir>
 #include <QPushButton>
-
-#define SETTINGS_FILE_PATH "/home/mhatina/.openlmi/openlmi_settings.xml"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -93,7 +92,8 @@ ISettings *SettingsDialog::findItem(std::string title)
 void SettingsDialog::load()
 {
     Logger::getInstance()->debug("SettingsDialog::load()");
-    QFile file(SETTINGS_FILE_PATH);
+    std::string file_path = QDir::homePath().toStdString() + "/.config/lmicc_settings.xml";
+    QFile file(file_path.c_str());
     if (!file.exists()) {
         for (unsigned int i = 0; i < m_settings.size(); i++) {
             ISettings *settings = m_settings[i];
@@ -102,7 +102,7 @@ void SettingsDialog::load()
         return;
     }
 
-    std::string path = SETTINGS_FILE_PATH;
+    std::string path = file_path.c_str();
     if (!file.open(QIODevice::ReadOnly)) {
         Logger::getInstance()->error("Failed to read from " + path +
                                      ", error: " + file.errorString().toStdString(), false);
@@ -122,8 +122,8 @@ void SettingsDialog::save()
 {
     Logger::getInstance()->debug("SettingsDialog::save()");
 
-    std::string path = SETTINGS_FILE_PATH;
-    QFile file(SETTINGS_FILE_PATH);
+    std::string path = QDir::homePath().toStdString() + "/.config/lmicc_settings.xml";
+    QFile file(path.c_str());
     if (!file.open(QIODevice::WriteOnly)) {
         Logger::getInstance()->error("Failed to write to " + path +
                                      ", error: " + file.errorString().toStdString(), false);

@@ -114,6 +114,17 @@ public:
      */
     virtual ~IPlugin();
 
+    Pegasus::Array<Pegasus::CIMObject> associators(
+        const Pegasus::CIMNamespaceName& nameSpace,
+        const Pegasus::CIMObjectPath& objectName,
+        const Pegasus::CIMName& assocClass = Pegasus::CIMName(),
+        const Pegasus::CIMName& resultClass = Pegasus::CIMName(),
+        const Pegasus::String& role = Pegasus::String::EMPTY,
+        const Pegasus::String& resultRole = Pegasus::String::EMPTY,
+        Pegasus::Boolean includeQualifiers = false,
+        Pegasus::Boolean includeClassOrigin = false,
+        const Pegasus::CIMPropertyList& propertyList = Pegasus::CIMPropertyList());
+
     Pegasus::Array<Pegasus::CIMInstance> enumerateInstances(
         const Pegasus::CIMNamespaceName &nameSpace,
         const Pegasus::CIMName &className,
@@ -122,6 +133,12 @@ public:
         Pegasus::Boolean includeQualifiers = false,
         Pegasus::Boolean includeClassOrigin = false,
         const Pegasus::CIMPropertyList &propertyList = Pegasus::CIMPropertyList());
+
+    Pegasus::Array<Pegasus::CIMObject> execQuery(
+        const Pegasus::CIMNamespaceName& nameSpace,
+        const Pegasus::String& queryLanguage,
+        const Pegasus::String& query);
+
     /**
      * @brief isFilterShown
      * @return  return true if filter is displayed, otherwise false
@@ -254,6 +271,7 @@ signals:
      * @param progress -- progress state
      */
     void refreshProgress(int progress, IPlugin *plugin);
+    void refreshProgress(int progress, IPlugin *plugin, std::string message);
     /**
      * @brief emitted when there are some changes to be applied/saved
      * @param plugin -- representation of provider

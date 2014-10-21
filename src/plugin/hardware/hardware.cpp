@@ -429,7 +429,7 @@ void HardwarePlugin::getData(std::vector<void *> *data)
             vector->push_back(array[i]);
 
             Pegasus::Array<Pegasus::CIMObject> proc_capab =
-                m_client->associators(
+                associators(
                     Pegasus::CIMNamespaceName("root/cimv2"),
                     array[i].getPath(),
                     Pegasus::CIMName(),
@@ -438,7 +438,7 @@ void HardwarePlugin::getData(std::vector<void *> *data)
             vector->push_back(Pegasus::CIMInstance(proc_capab[0]));
 
             Pegasus::Array<Pegasus::CIMObject> cache =
-                m_client->associators(
+                associators(
                     Pegasus::CIMNamespaceName("root/cimv2"),
                     array[i].getPath(),
                     Pegasus::CIMName(),
@@ -467,7 +467,7 @@ void HardwarePlugin::getData(std::vector<void *> *data)
             vector->push_back(array[i]);
 
             Pegasus::Array<Pegasus::CIMObject> memory =
-                m_client->associators(
+                associators(
                     Pegasus::CIMNamespaceName("root/cimv2"),
                     array[i].getPath(),
                     Pegasus::CIMName(),
@@ -494,7 +494,7 @@ void HardwarePlugin::getData(std::vector<void *> *data)
             vector->push_back(array[i]);
 
             Pegasus::Array<Pegasus::CIMObject> disk =
-                m_client->associators(
+                associators(
                     Pegasus::CIMNamespaceName("root/cimv2"),
                     array[i].getPath(),
                     Pegasus::CIMName(),

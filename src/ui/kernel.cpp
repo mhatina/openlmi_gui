@@ -51,6 +51,7 @@ Engine::Kernel::Kernel() :
     m_refreshEnabled(true),
     m_mutex(new QMutex()),
     m_bar(new ProgressBar()),
+    m_last_system(NULL),
     m_settings(new SettingsDialog(&m_main_window))
 {
     Logger::getInstance()->debug("Engine::Kernel::Kernel()");
@@ -63,9 +64,9 @@ Engine::Kernel::Kernel() :
 
     struct passwd *pw = getpwuid(uid);
     std::string path = pw->pw_dir;
-    path += "/.openlmi";
+    path += "/.config";
     if (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0 && errno != EEXIST) {
-        Logger::getInstance()->error("Cannot create ~/.openlmi dir.\nError: " +
+        Logger::getInstance()->error("Cannot create ~/.config dir.\nError: " +
                                      std::string(strerror(errno)));
     }
 
@@ -557,6 +558,8 @@ void Engine::Kernel::loadPlugin()
                         SLOT(setPluginNoChanges(IPlugin *)));
                 connect(loaded_plugin, SIGNAL(refreshProgress(int,IPlugin*)), this,
                         SLOT(handleProgressState(int,IPlugin*)));
+                connect(loaded_plugin, SIGNAL(refreshProgress(int,IPlugin*,std::string)), this,
+                        SLOT(handleProgressState(int,IPlugin*,std::string)));
                 connect(loaded_plugin, SIGNAL(newInstructionText(std::string)), this,
                         SLOT(handleInstructionText(std::string)));
 

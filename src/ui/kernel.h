@@ -90,6 +90,7 @@ private:
     plugin_map m_loaded_plugins;
     QMutex *m_mutex;
     ProgressBar *m_bar;
+    QTreeWidgetItem *m_last_system;
     SettingsDialog *m_settings;
     ShowTextDialog m_code_dialog;
     std::string m_save_script_path;

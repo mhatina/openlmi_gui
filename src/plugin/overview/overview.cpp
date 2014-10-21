@@ -54,6 +54,10 @@ void OverviewPlugin::fillLogBox(std::string filter)
         std::string title;
         for (int j = 0; ; j++) {
             m_log_mutex->lock();
+            if (m_logs.empty()) {
+                m_log_mutex->unlock();
+                return;
+            }
             switch (j) {
             case 0:
                 title = CIMValue::get_property_value(m_logs[i], "SyslogSeverity");
@@ -289,7 +293,7 @@ void OverviewPlugin::getData(std::vector<void *> *data)
             }
 
             Pegasus::Array<Pegasus::CIMObject> ip =
-                m_client->associators(
+                associators(
                     Pegasus::CIMNamespaceName("root/cimv2"),
                     network[i].getPath(),
                     Pegasus::CIMName(),
@@ -334,8 +338,8 @@ void OverviewPlugin::getData(std::vector<void *> *data)
         return;
     }
 
-    emit doneFetchingData(data);
     m_still_refreshing = false;
+    emit doneFetchingData(data);    
 }
 
 void OverviewPlugin::fillTab(std::vector<void *> *data)

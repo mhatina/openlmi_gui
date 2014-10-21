@@ -126,6 +126,10 @@ bool Logger::error(std::string message, bool show_message)
 
 bool Logger::critical(std::string message, bool show_message)
 {
+    if (message.find("connection timed out") != std::string::npos) {
+        return error(message, show_message);
+    }
+
     message += " Report this issue to developer.";
     if (show_message) {
         log(message,

@@ -134,7 +134,7 @@ void NetworkPlugin::getData(std::vector<void *> *data)
         cnt = network.size();
         for (int i = 0; i < cnt; i++) {
             Pegasus::Array<Pegasus::CIMObject> net_assoc =
-                m_client->associators(
+                associators(
                     Pegasus::CIMNamespaceName("root/cimv2"),
                     network[i].getPath(),
                     Pegasus::CIMName(),

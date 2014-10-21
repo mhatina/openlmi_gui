@@ -39,15 +39,19 @@ class SoftwarePlugin : public Engine::IPlugin
 
 private:
     bool m_changes_enabled;
+    QMenu *m_context_menu;
+    QMenu *m_package_context_menu;
+    QMenu *m_repo_context_menu;
     std::vector<Pegasus::CIMInstance> m_installed;
     std::vector<Pegasus::CIMInstance> m_repos;
-    std::vector<std::string> m_verify;
+    std::vector<std::string> m_verify;    
     Ui::SoftwarePlugin *m_ui;
 
     Pegasus::CIMInstance findInstalledPackage(std::string package_name);
     Pegasus::CIMInstance findRepo(std::string repo_name);
     std::string getPackageName(Pegasus::CIMInstance package);
     void fetchPackageInfo(Pegasus::CIMInstance instance);
+    void initContextMenu();
 
 public:
     explicit SoftwarePlugin();
@@ -64,9 +68,15 @@ private slots:
     void disableRepo();
     void disableRepoButtons();
     void enableRepo();
+    void getPackageDetail();
     void getPackageDetail(QListWidgetItem *item);
     void installPackage();
+    void showButtons();
+    void showContextMenu(QPoint pos);
+    void showPackageContextMenu(QPoint pos);
     void showPackageDetail(Pegasus::CIMInstance item);
+    void showRepoContextMenu(QPoint pos);
+    void showRepoDetail();
     void showRepoDetail(QListWidgetItem *item);
     void uninstallPackage();
     void updateList();

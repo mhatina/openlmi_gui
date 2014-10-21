@@ -134,8 +134,6 @@ void ServicePlugin::getData(std::vector<void *> *data)
     std::string filter = m_ui->filter_line->text().toStdString();
 
     try {
-        m_client->setTimeout(Pegasus::Uint32(600000));
-
         services = enumerateInstances(
                        Pegasus::CIMNamespaceName("root/cimv2"),
                        Pegasus::CIMName("LMI_Service"),
