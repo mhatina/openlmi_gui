@@ -371,6 +371,7 @@ void PCTreeWidget::onAddButtonClicked()
     if (child != NULL) {
         m_new_item = true;
         child->setSelected(true);       
+        m_ui->tree->setCurrentItem(child);
         m_ui->tree->editItem(child);
 
         std::cerr << child->text(0).toStdString() << "\n";

@@ -28,6 +28,7 @@ DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
 CONFIG          +=      link_pkgconfig
 PKGCONFIG       +=      glib-2.0
 RESOURCES       +=      icons.qrc
+CONFIG += qtestlib
 
 UI_DIR          =       uics
 MOC_DIR         =       mocs
@@ -81,7 +82,9 @@ SOURCES         +=      main.cpp \
                         settings/isettings.cpp \
                         settings/generalpluginsettings.cpp \
                         widgets/treewidget.cpp \
-    widgets/progressbar.cpp
+                        widgets/progressbar.cpp \
+                        tests/basictest.cpp \
+                        tests/helps.cpp
 
 HEADERS         +=      mainwindow.h \
                         kernel.h \
@@ -107,7 +110,9 @@ HEADERS         +=      mainwindow.h \
                         settings/isettings.h \
                         settings/generalpluginsettings.h \
                         widgets/treewidget.h \
-    widgets/progressbar.h
+                        widgets/progressbar.h \
+                        tests/basictest.h \
+                        tests/helps.h
 
 FORMS           +=      mainwindow.ui \
                         widgets/providerwidget.ui \

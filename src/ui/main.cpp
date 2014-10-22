@@ -19,6 +19,7 @@
 
 #include "kernel.h"
 #include "logger.h"
+#include "tests/basictest.h"
 
 #include <QApplication>
 #include <unistd.h>
@@ -35,23 +36,27 @@ void usage(const char *arg)
 int main(int argc, char *argv[])
 {
     Logger::getInstance()->debug("main(int argc, char *argv[])");
+
+    QApplication a(argc, argv);
+
     int opt;
-    const char *shortopts = "gh";
+    const char *shortopts = "ght";
     while ((opt = getopt(argc, argv, shortopts)) != -1)
         switch (opt) {
         case 'g':
             Logger::getInstance()->setShowDebug(true);
             break;
+        case 't':
+        {
+            return BasicTest::main_for_tests();
+        }
         case 'h':
         case '?':
             usage(argv[0]);
             return 1;
         default:
             break;
-        }
-
-
-    QApplication a(argc, argv);
+        }    
 
     Engine::Kernel kernel;
     kernel.showMainWindow();
