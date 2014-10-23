@@ -35,7 +35,7 @@
 #define STR(X)  __STRING(X)
 
 #define OPENLMI_KEYRING_DEFAULT "openlmi"
-#define LMI_VERSION "0.1.0"
+#define LMI_VERSION "0.1.1"
 
 namespace PowerStateValues
 {

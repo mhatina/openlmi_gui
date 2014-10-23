@@ -291,6 +291,18 @@ void Engine::Kernel::initConnections()
         SIGNAL(triggered()),
         this,
         SLOT(reportBug()));
+    action = widget<QAction *>("delete_passwd_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(deletePasswd()));
+    action = widget<QAction *>("refresh_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(selectionChanged()));
 }
 
 void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)

@@ -170,7 +170,6 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
 
         boost::thread(boost::bind(&Engine::Kernel::getConnection, this, state));
     } else {
-        widget<QPushButton *>("stop_refresh_button")->setEnabled(false);
         handleProgressState(Engine::ERROR);
         m_main_window.getStatusBar()->clearMessage();
     }
@@ -186,7 +185,6 @@ void Engine::Kernel::handleConnecting(CIMClient *client,
         } else {
             handleProgressState(Engine::ERROR, NULL, getPowerStateMessage(state));
         }
-        widget<QPushButton *>("stop_refresh_button")->setEnabled(false);
         return;
     }
 
@@ -257,6 +255,7 @@ void Engine::Kernel::handleProgressState(int state, IPlugin *plugin, std::string
         plugin->setPluginEnabled(false);
         enableSpecialButtons(true);
         m_bar->hide(process);
+        widget<QPushButton *>("stop_refresh_button")->setEnabled(false);
         break;
     default:
         Logger::getInstance()->critical("Unknown refresh state!");
@@ -461,6 +460,20 @@ void Engine::Kernel::setPowerState(QAction *action)
 {
     Logger::getInstance()->debug("Engine::Kernel::setPowerState(QAction *action)");
     std::string message = "";
+    switch (QMessageBox::information(
+                &m_main_window,
+                "Confirm action",
+                "Do you really want to perform this action?",
+                QMessageBox::Ok,
+                QMessageBox::Cancel)) {
+    case QMessageBox::Ok:
+        break;
+    case QMessageBox::Cancel:
+    default:
+        return;
+    }
+
+
     if (action->objectName().toStdString() == "reboot_action") {
         message = getPowerStateMessage(PowerStateValues::PowerCycleOffSoft);
         m_main_window.getPcTreeWidget()->setComputerIcon(QIcon(":/reboot.png"));

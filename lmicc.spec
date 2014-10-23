@@ -1,8 +1,8 @@
 %define lib_path lmicc
 
 Name:           lmicc
-Version:        0.1.0
-Release:        2%{?dist}
+Version:        0.1.1
+Release:        1%{?dist}
 Summary:        GUI for OpenLMI
 License:        GPLv2.1+, LGPLv2.1+
 URL:            https://github.com/mhatina/openlmi_gui 
@@ -25,6 +25,7 @@ Requires:       lmicc-bin
 %package bin
 Summary:        binary for %{name}
 Group:          System/Management
+Requires:       lmicc
 Requires:       lmicc-logger
 Requires:       lmicc-overview
 
@@ -44,26 +45,32 @@ Requires:       lmicc-software
 %package account
 Summary:        Account tab for %{summary}
 Group:          Development/Libraries
+Requires:       lmicc
 
 %package hardware
 Summary:        Hardware tab for %{summary}
 Group:          Development/Libraries
+Requires:       lmicc
 
 %package network
 Summary:        Network tab for %{summary}
 Group:          Development/Libraries
+Requires:       lmicc
 
 %package overview
 Summary:        Overview tab for %{summary}
 Group:          Development/Libraries
+Requires:       lmicc
 
 %package service
 Summary:        Service tab for %{summary}
 Group:          Development/Libraries
+Requires:       lmicc
 
 %package software
 Summary:        Software tab for %{summary}
 Group:          Development/Libraries
+Requires:       lmicc
 
 %description
 %{name} is a Graphical User Interface for OpenLMI.
@@ -138,6 +145,9 @@ export QA_SKIP_BUILD_ROOT="true"
 %{_libdir}/%{lib_path}/liblmiccsoftware*
 
 %changelog
+* Thu Oct 23 2014 Martin Hatina <mhatina@redhat.com> - 0.1.1-1
+- bug fixes, lot of improvements
+
 * Fri Sep 19 2014 Martin Hatina <mhatina@redhat.com> - 0.1.0-2
 - bug fixes
 

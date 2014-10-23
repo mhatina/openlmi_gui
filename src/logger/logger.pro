@@ -44,7 +44,7 @@ isEmpty(LIB_PATH) {
 }
 
 CONFIG(debug, debug|release) {
-    DEFINES     +=      "DEBUGGING=true"
+    DEFINES     +=      "DEBUGGING=false"
 } else {
     target.path =   $$PREFIX$$LIB_PATH
 }

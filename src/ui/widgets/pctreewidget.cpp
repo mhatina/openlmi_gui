@@ -373,8 +373,6 @@ void PCTreeWidget::onAddButtonClicked()
         child->setSelected(true);       
         m_ui->tree->setCurrentItem(child);
         m_ui->tree->editItem(child);
-
-        std::cerr << child->text(0).toStdString() << "\n";
     }
 }
 
@@ -468,16 +466,16 @@ void PCTreeWidget::showContextMenu(QPoint pos)
     m_item_pos = pos;
 
     if (item == NULL) {
+        findChild<QAction *>("refresh_action")->setEnabled(false);
+        findChild<QAction *>("delete_passwd_action")->setEnabled(false);
         findChild<QAction *>("delete_system_action")->setEnabled(false);
         findChild<QAction *>("delete_group_action")->setEnabled(false);
     } else {
-        if (item->parent()) {
-            findChild<QAction *>("delete_system_action")->setEnabled(true);
-            findChild<QAction *>("delete_group_action")->setEnabled(false);
-        } else {
-            findChild<QAction *>("delete_system_action")->setEnabled(false);
-            findChild<QAction *>("delete_group_action")->setEnabled(true);
-        }
+        bool enable = item->parent() != NULL;
+        findChild<QAction *>("refresh_action")->setEnabled(enable);
+        findChild<QAction *>("delete_passwd_action")->setEnabled(enable);
+        findChild<QAction *>("delete_system_action")->setEnabled(enable);
+        findChild<QAction *>("delete_group_action")->setEnabled(!enable);
     }
 
     m_context_menu->popup(globalPos);
@@ -708,7 +706,18 @@ void PCTreeWidget::initContextMenu()
     Logger::getInstance()->debug("PCTreeWidget::initContextMenu()");
     m_context_menu = new QMenu(this);
     m_ui->tree->setContextMenuPolicy(Qt::CustomContextMenu);
-    QAction *action = m_context_menu->addAction("Delete system");
+
+    QAction *action = m_context_menu->addAction("Refresh");
+    action->setObjectName("refresh_action");
+    action->setEnabled(false);
+
+    m_context_menu->addSeparator();
+
+    action = m_context_menu->addAction("Delete password");
+    action->setObjectName("delete_passwd_action");
+    action->setEnabled(false);
+
+    action = m_context_menu->addAction("Delete system");
     action->setObjectName("delete_system_action");
     connect(
         action,
