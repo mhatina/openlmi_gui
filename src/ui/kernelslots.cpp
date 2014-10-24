@@ -460,7 +460,9 @@ void Engine::Kernel::setPowerState(QAction *action)
 {
     Logger::getInstance()->debug("Engine::Kernel::setPowerState(QAction *action)");
     std::string message = "";
-    switch (QMessageBox::information(
+    QMessageBox box;
+    box.setObjectName("confirm_action_dialog");
+    switch (box.information(
                 &m_main_window,
                 "Confirm action",
                 "Do you really want to perform this action?",
@@ -505,7 +507,9 @@ void Engine::Kernel::showAboutDialog()
                        "Version: " + std::string(LMI_VERSION) + "\n\n"
                        "Authors: Martin Hatina\n"
                        "Email: mhatina@redhat.com";
-    QMessageBox::about(&m_main_window, "About", text.c_str());
+    QMessageBox box;
+    box.setObjectName("about_dialog");
+    box.about(&m_main_window, "About", text.c_str());
 }
 
 void Engine::Kernel::showCodeDialog()

@@ -28,7 +28,7 @@ DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
 CONFIG          +=      link_pkgconfig
 PKGCONFIG       +=      glib-2.0
 RESOURCES       +=      icons.qrc
-CONFIG += qtestlib
+CONFIG          +=      qtestlib
 
 UI_DIR          =       uics
 MOC_DIR         =       mocs
@@ -126,5 +126,3 @@ FORMS           +=      mainwindow.ui \
                         widgets/labeledlabel.ui \
                         settings/generalsettings.ui \
                         settings/generalpluginsettings.ui
-
-

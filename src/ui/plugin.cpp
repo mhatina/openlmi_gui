@@ -40,7 +40,7 @@ bool Engine::IPlugin::isFileEmpty(std::string filename)
 int Engine::IPlugin::throwAwayChanges()
 {
     Logger::getInstance()->debug("Engine::IPlugin::throwAwayChanges()");
-    QMessageBox message_box;
+    QMessageBox message_box(this);
     message_box.setWindowTitle("Throw away changes?");
     message_box.setText("Do you really want to throw away changes?");
     message_box.setStandardButtons(QMessageBox::No | QMessageBox::Yes);

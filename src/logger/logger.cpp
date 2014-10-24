@@ -212,9 +212,12 @@ std::string Logger::getLogModeInfo(log_mode mode)
 
 void Logger::displayDialog(std::string title, std::string text)
 {
+    QMessageBox box;
     if (title == "Warning") {
-        QMessageBox::warning((QWidget *) parent(), title.c_str(), text.c_str());
+        box.setObjectName("error_dialog");
+        box.warning((QWidget *) parent(), title.c_str(), text.c_str());
     } else {
-        QMessageBox::critical((QWidget *) parent(), title.c_str(), text.c_str());
+        box.setObjectName("critical_dialog");
+        box.critical((QWidget *) parent(), title.c_str(), text.c_str());
     }
 }
