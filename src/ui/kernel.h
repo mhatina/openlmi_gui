@@ -19,7 +19,7 @@
 #define KERNEL_H
 
 #include "authenticationdialog.h"
-#include "lmiwbem_client.h"
+#include "cimclient.h"
 #include "mainwindow.h"
 #include "plugin.h"
 #include "settingsdialog.h"

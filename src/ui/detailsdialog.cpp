@@ -19,12 +19,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+#include "cimvalue.h"
 #include "detailsdialog.h"
 #include "logger.h"
 #include "widgets/labeledlineedit.h"
 #include "ui_detailsdialog.h"
 
-#include <lmiwbem_value.h>
 #include <QLabel>
 #include <QPushButton>
 #include <QTextEdit>

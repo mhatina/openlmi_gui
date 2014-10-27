@@ -19,7 +19,7 @@
 #define CONNECTINSTRUCTION_H
 
 #include "instruction.h"
-#include "lmiwbem_client.h"
+#include "cimclient.h"
 
 /**
  * @brief The ConnectInstruction class

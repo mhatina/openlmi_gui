@@ -56,16 +56,16 @@ HEADERS         +=      network.h \
                         ../../ui/plugin.h \
                         ../../ui/instructions/connectinstruction.h \
                         ../../ui/instructions/instruction.h \
-    networkpagewidget.h
+                        networkpagewidget.h
 
 SOURCES         +=      network.cpp \
                         ../../ui/plugin.cpp \
                         ../../ui/instructions/connectinstruction.cpp \
                         ../../ui/instructions/instruction.cpp \
-                        ../../ui/lmiwbem_value.cpp \
-    networkpagewidget.cpp
+                        ../../ui/cimvalue.cpp \
+                        networkpagewidget.cpp
 
 FORMS           +=      network.ui \
-    networkpagewidget.ui
+                        networkpagewidget.ui
 
 RESOURCES       +=      icons.qrc

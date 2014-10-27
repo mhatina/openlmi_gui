@@ -23,7 +23,7 @@
 #define UPDATEPACKAGEINSTRUCTION_H
 
 #include "instructions/softwareinstruction.h"
-#include "lmiwbem_client.h"
+#include "cimclient.h"
 
 class UpdatePackageInstruction : public SoftwareInstruction
 {

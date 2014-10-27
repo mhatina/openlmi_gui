@@ -28,7 +28,7 @@
 #include "instructions/restartserviceinstruction.h"
 #include "instructions/startserviceinstruction.h"
 #include "instructions/stopserviceinstruction.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "service.h"
 #include "ui_service.h"
 

@@ -1,5 +1,5 @@
 #include "kernel.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "settingsdialog.h"
 
 #include <gnome-keyring-1/gnome-keyring.h>
@@ -148,7 +148,10 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
     if (dialog.exec()) {
         std::string username = dialog.getUsername();
         std::string passwd = dialog.getPasswd();
+
         if (username == "" || passwd == "") {
+            handleProgressState(Engine::ERROR);
+            Logger::getInstance()->error("Username/password cannot be empty");
             return;
         }
 
@@ -164,6 +167,7 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
             );
 
         if (res != GNOME_KEYRING_RESULT_OK) {
+            handleProgressState(Engine::ERROR);
             Logger::getInstance()->error("Cannot store password!");
             return;
         }

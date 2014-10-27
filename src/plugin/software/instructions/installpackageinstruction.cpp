@@ -20,7 +20,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "installpackageinstruction.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "logger.h"
 
 #include <sstream>

@@ -19,7 +19,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "networkpagewidget.h"
 #include "ui_networkpagewidget.h"
 

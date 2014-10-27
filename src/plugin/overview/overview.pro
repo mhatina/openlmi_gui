@@ -56,20 +56,20 @@ HEADERS         +=      overview.h \
                         ../../ui/plugin.h \
                         ../../ui/instructions/connectinstruction.h \
                         ../../ui/instructions/instruction.h \
-    ../../ui/widgets/labeledlabel.h \
-    logseveritydialog.h \
-    instructions/createloginstruction.h
+                        ../../ui/widgets/labeledlabel.h \
+                        logseveritydialog.h \
+                        instructions/createloginstruction.h
 
 SOURCES         +=      overview.cpp \
                         ../../ui/plugin.cpp \
                         ../../ui/instructions/connectinstruction.cpp \
                         ../../ui/instructions/instruction.cpp \
-                        ../../ui/lmiwbem_value.cpp \
-    ../../ui/widgets/labeledlabel.cpp \
-    logseveritydialog.cpp \
-    instructions/createloginstruction.cpp
+                        ../../ui/cimvalue.cpp \
+                        ../../ui/widgets/labeledlabel.cpp \
+                        logseveritydialog.cpp \
+                        instructions/createloginstruction.cpp
 
 FORMS           +=      overview.ui \
-    logseveritydialog.ui
+                        logseveritydialog.ui
 
 RESOURCES       +=      icons.qrc

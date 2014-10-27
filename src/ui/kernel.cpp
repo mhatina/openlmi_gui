@@ -16,7 +16,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "kernel.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "logger.h"
 
 #include <boost/thread.hpp>
@@ -303,6 +303,12 @@ void Engine::Kernel::initConnections()
         SIGNAL(triggered()),
         this,
         SLOT(selectionChanged()));
+    action = widget<QAction *>("start_ssh_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(startSsh()));
 }
 
 void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
@@ -361,23 +367,6 @@ void Engine::Kernel::setMac(CIMClient *client)
         std::string mac = CIMValue::get_property_value(Pegasus::CIMInstance(endpoint),
                           "MACAddress");
         item->setMac(mac);
-
-        // temporary
-        Pegasus::Array<Pegasus::CIMObject> ip =
-            client->associators(
-                Pegasus::CIMNamespaceName("root/cimv2"),
-                endpoint.getPath(),
-                Pegasus::CIMName(),
-                Pegasus::CIMName("LMI_IPProtocolEndpoint"));
-
-        for (unsigned int i = 0; i < ip.size(); i++) {
-            std::string ipv6 = CIMValue::get_property_value(Pegasus::CIMInstance(ip[i]),
-                               "IPv6Address");
-            if (!ipv6.empty()) {
-                item->setIpv6(ipv6);
-                break;
-            }
-        }
     } catch (Pegasus::Exception &ex) {
         Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()), false);
     }
@@ -564,6 +553,8 @@ void Engine::Kernel::loadPlugin()
 
                 loaded_plugin->setMutex(m_mutex);
                 loaded_plugin->connectButtons(m_main_window.getToolbar());
+                connect(loaded_plugin, SIGNAL(deletePasswd()), this,
+                        SLOT(deletePasswd()));
                 connect(loaded_plugin, SIGNAL(unsavedChanges(IPlugin *)), this,
                         SLOT(setPluginUnsavedChanges(IPlugin *)));
                 connect(loaded_plugin, SIGNAL(noChanges(IPlugin *)), this,

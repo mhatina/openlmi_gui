@@ -18,7 +18,7 @@
 
 #include <cerrno>
 #include <cstdlib>
-#include "lmiwbem_addr.h"
+#include "address.h"
 #include "logger.h"
 
 Address::Address(std::string url)

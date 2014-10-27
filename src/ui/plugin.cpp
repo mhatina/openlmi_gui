@@ -16,7 +16,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "instructions/connectinstruction.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "plugin.h"
 
 #include <boost/thread.hpp>
@@ -427,10 +427,14 @@ void Engine::IPlugin::handleDataFetching(std::vector<void *> *data,
     }
 
     if (!error_message.empty()) {
-        setRefreshed(false);
-        if (!m_stop_refresh) {
+        if (error_message.find("Unauthorized") != std::string::npos) {
+            Logger::getInstance()->error("Wrong username or password!");
+            emit deletePasswd();
+        } else if (!m_stop_refresh) {
             Logger::getInstance()->error(error_message);
         }
+
+        setRefreshed(false);
         emit refreshProgress(Engine::ERROR, this);
     } else if (data != NULL) {
         if (m_stop_refresh) {

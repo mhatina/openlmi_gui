@@ -21,7 +21,7 @@
 
 #include "removeuserfromgroupinstruction.h"
 #include "logger.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 
 #include <sstream>
 

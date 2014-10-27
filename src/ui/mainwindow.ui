@@ -20,7 +20,7 @@
    <string>LMI Command Center</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="icons.qrc">
+   <iconset resource="../plugin/account/icons.qrc">
     <normaloff>:/openlmi-logo.png</normaloff>:/openlmi-logo.png</iconset>
   </property>
   <property name="layoutDirection">
@@ -90,7 +90,6 @@
     <addaction name="action_reload_plugins"/>
     <addaction name="separator"/>
     <addaction name="action_start_LMIShell"/>
-    <addaction name="action_start_ssh"/>
     <addaction name="separator"/>
     <addaction name="action_reset_password_storage"/>
     <addaction name="action_show_log"/>
@@ -189,7 +188,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="icons.qrc"/>
+  <include location="../plugin/account/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

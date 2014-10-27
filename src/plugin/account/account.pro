@@ -73,7 +73,7 @@ SOURCES         +=      account.cpp \
                         instructions/newuserinstruction.cpp \
                         instructions/deleteuserinstruction.cpp \
                         instructions/changeuserpropertyinstruction.cpp \
-                        ../../ui/lmiwbem_value.cpp \
+                        ../../ui/cimvalue.cpp \
                         ../../ui/cimdatetimeconv.cpp \
                         ../../ui/detailsdialog.cpp \
                         ../../ui/widgets/labeledlineedit.cpp

@@ -22,7 +22,7 @@
 #ifndef INSTALLDIALOG_H
 #define INSTALLDIALOG_H
 
-#include "lmiwbem_client.h"
+#include "cimclient.h"
 
 #include <Pegasus/Common/CIMInstance.h>
 #include <QDialog>

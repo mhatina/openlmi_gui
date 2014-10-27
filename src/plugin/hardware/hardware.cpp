@@ -21,7 +21,7 @@
 
 #include "hardware.h"
 #include "widgets/labeledlabel.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "ui_hardware.h"
 
 #include <QScrollArea>

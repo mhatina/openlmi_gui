@@ -73,7 +73,7 @@ SOURCES         +=      software.cpp \
                         ../../ui/plugin.cpp \
                         ../../ui/instructions/connectinstruction.cpp \
                         ../../ui/instructions/instruction.cpp \
-                        ../../ui/lmiwbem_value.cpp \
+                        ../../ui/cimvalue.cpp \
                         ../../ui/widgets/labeledlineedit.cpp \
                         ../../ui/cimdatetimeconv.cpp \
                         ../../ui/detailsdialog.cpp \

@@ -23,7 +23,7 @@
 #define VERIFYPACKAGEINSTRUCTION_H
 
 #include "instructions/softwareinstruction.h"
-#include "lmiwbem_client.h"
+#include "cimclient.h"
 
 class VerifyPackageInstruction : public SoftwareInstruction
 {

@@ -2,7 +2,7 @@
 #define CREATELOGINSTRUCTION_H
 
 #include "instructions/instruction.h"
-#include "lmiwbem_client.h"
+#include "cimclient.h"
 
 class CreateLogInstruction : public IInstruction
 {

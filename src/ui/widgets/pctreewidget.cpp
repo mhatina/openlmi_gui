@@ -186,10 +186,12 @@ void PCTreeWidget::setTimeSec(int time_sec)
 bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text)
 {
     Logger::getInstance()->debug("PCTreeWidget::parentContainsItem(TreeWidgetItem *parent, std::string text)");
-    for (int i = 0; i < parent->childCount(); i++)
-        if (((TreeWidgetItem *) parent->child(i))->getId() == text) {
+    for (int i = 0; i < parent->childCount(); i++) {
+        TreeWidgetItem *item = (TreeWidgetItem *) parent->child(i);
+        if (item->getIpv4() == text || item->getIpv6() == text || item->getName() == text) {
             return true;
         }
+    }
 
     return false;
 }
@@ -281,6 +283,7 @@ void PCTreeWidget::loadPcs(std::string filename)
                 }
 
                 TreeWidgetItem *item = addPcToTree(parent->text(0).toStdString(), id);
+                m_data_of_item_changed = false;
                 if (item != NULL && parent != NULL) {
                     item->setIpv4(attr.value("ipv4").toString().toStdString());
                     item->setIpv6(attr.value("ipv6").toString().toStdString());
@@ -291,10 +294,13 @@ void PCTreeWidget::loadPcs(std::string filename)
                                                      (item->getIpv4().empty() ? item->getIpv6() : item->getIpv4())
                                                      + ")").c_str());
                     item->setMac(attr.value("mac").toString().toStdString());
+                    if (attr.value("valid").toString() == "false") {
+                        item->setBackgroundColor(0, QColor("red"));
+                    }
                 }
+                m_data_of_item_changed = true;
             }
         }
-
     }
     if (in.hasError()) {
         Logger::getInstance()->error(in.errorString().toStdString(), false);
@@ -326,16 +332,13 @@ void PCTreeWidget::saveAllPcs(std::string filename)
         out.writeAttribute("name", parent->text(0));
         for (int j = 0; j < parent->childCount(); j++) {
             out.writeStartElement("computer");
-            out.writeAttribute("id",
-                               ((TreeWidgetItem *) parent->child(j))->getId().c_str());
-            out.writeAttribute("ipv4",
-                               ((TreeWidgetItem *) parent->child(j))->getIpv4().c_str());
-            out.writeAttribute("ipv6",
-                               ((TreeWidgetItem *) parent->child(j))->getIpv6().c_str());
-            out.writeAttribute("domain",
-                               ((TreeWidgetItem *) parent->child(j))->getName().c_str());
-            out.writeAttribute("mac",
-                               ((TreeWidgetItem *) parent->child(j))->getMac().c_str());
+            out.writeAttribute("id", ((TreeWidgetItem *) parent->child(j))->getId().c_str());
+            out.writeAttribute("ipv4", ((TreeWidgetItem *) parent->child(j))->getIpv4().c_str());
+            out.writeAttribute("ipv6", ((TreeWidgetItem *) parent->child(j))->getIpv6().c_str());
+            out.writeAttribute("domain", ((TreeWidgetItem *) parent->child(j))->getName().c_str());
+            out.writeAttribute("mac", ((TreeWidgetItem *) parent->child(j))->getMac().c_str());
+            out.writeAttribute("valid", parent->child(j)->backgroundColor(0) == QColor("red") ? "false" : "true");
+
             out.writeEndElement();
         }
         out.writeEndElement();
@@ -370,7 +373,7 @@ void PCTreeWidget::onAddButtonClicked()
     TreeWidgetItem *child = addPcToTree("Added", "");
     if (child != NULL) {
         m_new_item = true;
-        child->setSelected(true);       
+        child->setSelected(true);
         m_ui->tree->setCurrentItem(child);
         m_ui->tree->editItem(child);
     }
@@ -467,12 +470,14 @@ void PCTreeWidget::showContextMenu(QPoint pos)
 
     if (item == NULL) {
         findChild<QAction *>("refresh_action")->setEnabled(false);
+        findChild<QAction *>("start_ssh_action")->setEnabled(false);
         findChild<QAction *>("delete_passwd_action")->setEnabled(false);
         findChild<QAction *>("delete_system_action")->setEnabled(false);
         findChild<QAction *>("delete_group_action")->setEnabled(false);
     } else {
         bool enable = item->parent() != NULL;
         findChild<QAction *>("refresh_action")->setEnabled(enable);
+        findChild<QAction *>("start_ssh_action")->setEnabled(enable);
         findChild<QAction *>("delete_passwd_action")->setEnabled(enable);
         findChild<QAction *>("delete_system_action")->setEnabled(enable);
         findChild<QAction *>("delete_group_action")->setEnabled(!enable);
@@ -538,14 +543,15 @@ void PCTreeWidget::validate(QTreeWidgetItem *item , int column)
     }
     m_ui->tree->sortByColumn(0, Qt::AscendingOrder);
 
-    if (item->text(column).isEmpty()) {
+    std::string text = item->text(column).toStdString();
+    if (text.empty() || parentContainsItem(parent, text)) {
         parent->takeChild(parent->indexOfChild(item));
         m_emit_signal = true;
         return;
     }
 
     if (tree_item->getId().empty()) {
-        tree_item->setId(item->text(0).toStdString());
+        tree_item->setId(text);
     }
 
     std::string str_ip = tree_item->getId();
@@ -622,7 +628,6 @@ std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)
     struct addrinfo *result;
     struct sockaddr_in sa4;
     struct sockaddr_in6 sa6;
-    char name[NI_MAXHOST];
 
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family = AF_UNSPEC;
@@ -633,27 +638,32 @@ std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)
     sa4.sin_family = AF_INET;
     sa6.sin6_family = AF_INET6;
 
-    if (getaddrinfo(ip.c_str(), NULL, &hints, &result) != 0) {
+    int err;
+    if ((err = getaddrinfo(ip.c_str(), NULL, &hints, &result)) != 0) {
+        Logger::getInstance()->error(gai_strerror(err));
         return "";
     }
 
     ai_family = result->ai_family;
 
-    if (inet_pton(result->ai_family, ip.c_str(),
-                  ai_family == AF_INET ? (void *) &sa4.sin_addr : (void *) &sa6.sin6_addr) != 1) {
-        return "";
-    }
-    int err;
-    struct sockaddr *sa = (ai_family == AF_INET ? (struct sockaddr *) &sa4 :
-                           (struct sockaddr *) &sa6);
-
-    // BUG not working for ipv6
-    if ((err = getnameinfo(sa, sizeof(*sa), name, sizeof(name), NULL, 0, 0))) {
+    if ((err = inet_pton(result->ai_family, ip.c_str(),
+                         ai_family == AF_INET ? (void *) &sa4.sin_addr : (void *) &sa6.sin6_addr)) != 1) {
         Logger::getInstance()->error(gai_strerror(err));
         return "";
     }
 
-    return name;
+    struct hostent *h;
+    if (ai_family == AF_INET) {
+        h = gethostbyaddr((char *) &sa4.sin_addr, sizeof(struct in_addr), AF_INET);
+    } else {
+        h = gethostbyaddr((char *) &sa6.sin6_addr, sizeof(struct in6_addr), AF_INET6);
+    }
+    if (h == NULL) {
+        Logger::getInstance()->error(hstrerror(h_errno));
+        return "";
+    }
+
+    return h->h_name;
 }
 
 void PCTreeWidget::getIp(std::string &name, std::string &ipv4,
@@ -691,7 +701,7 @@ void PCTreeWidget::getIp(std::string &name, std::string &ipv4,
 
         if (result->ai_family == PF_INET6 && ipv6.empty()) {
             ipv6 = dst;
-        } else if (ipv4.empty()) {
+        } else if (result->ai_family == PF_INET && ipv4.empty()) {
             ipv4 = dst;
         }
 
@@ -709,6 +719,10 @@ void PCTreeWidget::initContextMenu()
 
     QAction *action = m_context_menu->addAction("Refresh");
     action->setObjectName("refresh_action");
+    action->setEnabled(false);
+
+    action = m_context_menu->addAction("Start ssh");
+    action->setObjectName("start_ssh_action");
     action->setEnabled(false);
 
     m_context_menu->addSeparator();

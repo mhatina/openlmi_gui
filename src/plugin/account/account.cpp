@@ -35,7 +35,7 @@
 #include "instructions/newuserinstruction.h"
 #include "instructions/pushinstruction.h"
 #include "instructions/removeuserfromgroupinstruction.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "memberbox.h"
 #include "ui_account.h"
 

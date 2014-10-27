@@ -63,9 +63,6 @@ SOURCES         +=      main.cpp \
                         discoverworker.cpp \
                         authenticationdialog.cpp \
                         kernel.cpp \
-                        lmiwbem_addr.cpp \
-                        lmiwbem_client.cpp \
-                        lmiwbem_value.cpp \
                         cimdatetimeconv.cpp \
                         instructions/instruction.cpp \
                         instructions/connectinstruction.cpp \
@@ -84,7 +81,10 @@ SOURCES         +=      main.cpp \
                         widgets/treewidget.cpp \
                         widgets/progressbar.cpp \
                         tests/basictest.cpp \
-                        tests/helps.cpp
+                        tests/helps.cpp \
+                        address.cpp \
+                        cimclient.cpp \
+                        cimvalue.cpp
 
 HEADERS         +=      mainwindow.h \
                         kernel.h \
@@ -93,9 +93,6 @@ HEADERS         +=      mainwindow.h \
                         widgets/providerwidget.h \
                         discoverworker.h \
                         authenticationdialog.h \
-                        lmiwbem_addr.h \
-                        lmiwbem_client.h \
-                        lmiwbem_value.h \
                         cimdatetimeconv.h \
                         instructions/instruction.h \
                         instructions/connectinstruction.h \
@@ -112,7 +109,10 @@ HEADERS         +=      mainwindow.h \
                         widgets/treewidget.h \
                         widgets/progressbar.h \
                         tests/basictest.h \
-                        tests/helps.h
+                        tests/helps.h \
+                        address.h \
+                        cimclient.h \
+                        cimvalue.h
 
 FORMS           +=      mainwindow.ui \
                         widgets/providerwidget.ui \

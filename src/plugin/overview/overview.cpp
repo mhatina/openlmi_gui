@@ -21,7 +21,7 @@
 
 #include "overview.h"
 #include "instructions/createloginstruction.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "logseveritydialog.h"
 #include "ui_overview.h"
 #include "widgets/labeledlabel.h"

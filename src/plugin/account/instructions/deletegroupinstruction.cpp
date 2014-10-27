@@ -20,7 +20,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "deletegroupinstruction.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "logger.h"
 
 DeleteGroupInstruction::DeleteGroupInstruction(CIMClient *client,

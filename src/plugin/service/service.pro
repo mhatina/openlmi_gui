@@ -72,7 +72,7 @@ HEADERS         +=      service.h \
 SOURCES         +=      service.cpp \
                         ../../ui/plugin.cpp \
                         ../../ui/cimdatetimeconv.cpp \
-                        ../../ui/lmiwbem_value.cpp \
+                        ../../ui/cimvalue.cpp \
                         instructions/startserviceinstruction.cpp \
                         instructions/stopserviceinstruction.cpp \
                         instructions/enableserviceinstruction.cpp \

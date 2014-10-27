@@ -27,7 +27,7 @@
 #include "instructions/uninstallpackageinstruction.h"
 #include "instructions/updatepackageinstruction.h"
 #include "instructions/verifypackageinstruction.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "software.h"
 #include "ui_software.h"
 

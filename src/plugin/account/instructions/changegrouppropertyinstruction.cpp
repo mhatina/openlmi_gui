@@ -21,7 +21,7 @@
 
 #include "changegrouppropertyinstruction.h"
 #include "account.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 
 #include <sstream>
 

@@ -20,7 +20,7 @@
 
 #include "instructions/instruction.h"
 #include "kernel.h"
-#include "lmiwbem_client.h"
+#include "cimclient.h"
 #include "logger.h"
 #include "widgets/providerwidget.h"
 
@@ -245,6 +245,7 @@ protected slots:
     void handleDoneApplying();
 
 signals:
+    void deletePasswd();
     /**
      * @brief Emitted when all changes are applied
      */

@@ -16,7 +16,7 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "cimdatetimeconv.h"
 #include "logger.h"
 

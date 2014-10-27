@@ -63,7 +63,7 @@ SOURCES         +=      hardware.cpp \
                         ../../ui/plugin.cpp \
                         ../../ui/instructions/connectinstruction.cpp \
                         ../../ui/instructions/instruction.cpp \
-                        ../../ui/lmiwbem_value.cpp \
+                        ../../ui/cimvalue.cpp \
                         ../../ui/widgets/labeledlabel.cpp
 
 FORMS           +=      hardware.ui

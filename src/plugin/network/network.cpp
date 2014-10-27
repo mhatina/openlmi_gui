@@ -21,7 +21,7 @@
 
 #include "network.h"
 #include "networkpagewidget.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "ui_network.h"
 
 #include <sstream>

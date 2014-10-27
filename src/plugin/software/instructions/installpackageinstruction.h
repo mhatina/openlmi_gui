@@ -23,7 +23,7 @@
 #define INSTALLPACKAGEINSTRUCTION_H
 
 #include "instructions/softwareinstruction.h"
-#include "lmiwbem_client.h"
+#include "cimclient.h"
 
 class InstallPackageInstruction : public SoftwareInstruction
 {

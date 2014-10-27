@@ -20,7 +20,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "disableserviceinstruction.h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "logger.h"
 
 DisableServiceInstruction::DisableServiceInstruction(CIMClient *client,

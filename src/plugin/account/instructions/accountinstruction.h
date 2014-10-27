@@ -23,7 +23,7 @@
 #define ACCOUNTINSTRUCTION_H
 
 #include "instructions/instruction.h"
-#include "lmiwbem_client.h"
+#include "cimclient.h"
 
 /**
  * @brief The AccountInstruction class
