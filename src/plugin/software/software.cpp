@@ -117,6 +117,7 @@ void SoftwarePlugin::initContextMenu()
     QAction *action;
 
     m_context_menu = new QMenu(this);
+    m_context_menu->setObjectName("software_context_menu");
     setContextMenuPolicy(Qt::CustomContextMenu);
 
     action = m_context_menu->addAction("Show/hide buttons");

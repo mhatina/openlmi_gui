@@ -50,22 +50,22 @@ Logger::~Logger()
 
 Logger *Logger::getInstance()
 {
+    m_mutex.lock();
     if (m_instance == NULL) {
-        m_mutex.lock();
         m_instance = new Logger();
-        m_mutex.unlock();
     }
+    m_mutex.unlock();
     return m_instance;
 }
 
 void Logger::removeInstance()
 {
+    m_mutex.lock();
     if (m_instance != NULL) {
-        m_mutex.lock();
         delete m_instance;
         m_instance = NULL;
-        m_mutex.unlock();
     }
+    m_mutex.unlock();
 }
 
 const std::string Logger::getLogPath() const
@@ -75,12 +75,7 @@ const std::string Logger::getLogPath() const
 
 void Logger::setLogPath(std::string file_path)
 {
-    std::stringstream ss;
     m_log_path = file_path;
-    ss << QDateTime().currentDateTime().date().day()
-       << QDateTime().currentDateTime().date().month()
-       << QDateTime().currentDateTime().date().year();
-    m_log_path += ss.str();
 }
 
 bool Logger::info(std::string message, bool show_message)
@@ -135,7 +130,7 @@ bool Logger::critical(std::string message, bool show_message)
         log(message,
             CRITICAL,
             false
-           );        
+           );
 
         emit showDialog("Critical", message);
 
@@ -189,14 +184,15 @@ bool Logger::log(std::string message, log_mode mode, bool show_message)
 std::string Logger::getTime()
 {
     time_t rawtime;
+    struct tm *timeinfo;
+    char buffer[80];
+
     time(&rawtime);
+    timeinfo = localtime(&rawtime);
 
-    std::string time = asctime(localtime(&rawtime));
-    if (time.at(time.size() - 1) == '\n') {
-        time.at(time.size() - 1) = '\0';
-    }
+    strftime(buffer, 80, "%A %d %B %G %H:%M:%S", timeinfo);
 
-    return std::string(time);
+    return buffer;
 }
 
 std::string Logger::getLogModeInfo(log_mode mode)

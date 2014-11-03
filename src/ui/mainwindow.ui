@@ -89,7 +89,6 @@
     </property>
     <addaction name="action_reload_plugins"/>
     <addaction name="separator"/>
-    <addaction name="action_start_LMIShell"/>
     <addaction name="separator"/>
     <addaction name="action_reset_password_storage"/>
     <addaction name="action_show_log"/>

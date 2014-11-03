@@ -255,19 +255,7 @@ void Engine::Kernel::initConnections()
         SIGNAL(triggered()),
         this,
         SLOT(resetKeyring()));
-    QAction *action = widget<QAction *>("action_start_LMIShell");
-    connect(
-        action,
-        SIGNAL(triggered()),
-        this,
-        SLOT(startLMIShell()));
-    action = widget<QAction *>("action_start_ssh");
-    connect(
-        action,
-        SIGNAL(triggered()),
-        this,
-        SLOT(startSsh()));
-    action = widget<QAction *>("action_reload_plugins");
+    QAction *action = widget<QAction *>("action_reload_plugins");
     connect(
         action,
         SIGNAL(triggered()),
@@ -309,6 +297,12 @@ void Engine::Kernel::initConnections()
         SIGNAL(triggered()),
         this,
         SLOT(startSsh()));
+    action = widget<QAction *>("start_lmishell_action");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(startLMIShell()));
 }
 
 void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
@@ -540,38 +534,37 @@ void Engine::Kernel::loadPlugin()
     QDir plugins_dir(qApp->applicationDirPath());
     plugins_dir.cd(STR(PLUGIN_PATH));
 
+    QPluginLoader *plugin_loader  = NULL;
     foreach (QString file_name, plugins_dir.entryList(QDir::Files)) {
-        QPluginLoader *plugin_loader = new QPluginLoader(plugins_dir.absoluteFilePath(
-                    file_name));
-        QObject *plugin = plugin_loader->instance();
-        IPlugin *loaded_plugin = NULL;
+        plugin_loader = new QPluginLoader(plugins_dir.absoluteFilePath(file_name));
+        IPlugin *plugin = qobject_cast<IPlugin *>(plugin_loader->instance());
         m_loaders.push_back(plugin_loader);
-        if (plugin && (loaded_plugin = qobject_cast<IPlugin *>(plugin))) {
+        if (plugin && plugin != NULL) {
             if (m_loaded_plugins.find(file_name.toStdString()) == m_loaded_plugins.end()) {
-                Logger::getInstance()->debug("Loaded: " + loaded_plugin->getLabel(), true);
-                m_loaded_plugins[file_name.toStdString()] = loaded_plugin;
+                Logger::getInstance()->debug("Loaded: " + plugin->getLabel(), true);
+                m_loaded_plugins[file_name.toStdString()] = plugin;
 
-                loaded_plugin->setMutex(m_mutex);
-                loaded_plugin->connectButtons(m_main_window.getToolbar());
-                connect(loaded_plugin, SIGNAL(deletePasswd()), this,
+                plugin->setMutex(m_mutex);
+                plugin->connectButtons(m_main_window.getToolbar());
+                connect(plugin, SIGNAL(deletePasswd()), this,
                         SLOT(deletePasswd()));
-                connect(loaded_plugin, SIGNAL(unsavedChanges(IPlugin *)), this,
+                connect(plugin, SIGNAL(unsavedChanges(IPlugin *)), this,
                         SLOT(setPluginUnsavedChanges(IPlugin *)));
-                connect(loaded_plugin, SIGNAL(noChanges(IPlugin *)), this,
+                connect(plugin, SIGNAL(noChanges(IPlugin *)), this,
                         SLOT(setPluginNoChanges(IPlugin *)));
-                connect(loaded_plugin, SIGNAL(refreshProgress(int,IPlugin*)), this,
+                connect(plugin, SIGNAL(refreshProgress(int,IPlugin*)), this,
                         SLOT(handleProgressState(int,IPlugin*)));
-                connect(loaded_plugin, SIGNAL(refreshProgress(int,IPlugin*,std::string)), this,
+                connect(plugin, SIGNAL(refreshProgress(int,IPlugin*,std::string)), this,
                         SLOT(handleProgressState(int,IPlugin*,std::string)));
-                connect(loaded_plugin, SIGNAL(newInstructionText(std::string)), this,
+                connect(plugin, SIGNAL(newInstructionText(std::string)), this,
                         SLOT(handleInstructionText(std::string)));
 
-                if (loaded_plugin->getLabel() == "Overview") {
-                    m_main_window.getProviderWidget()->getTabWidget()->insertTab(0, loaded_plugin,
-                            loaded_plugin->getLabel().c_str());
+                if (plugin->getLabel() == "Overview") {
+                    m_main_window.getProviderWidget()->getTabWidget()->insertTab(0, plugin,
+                            plugin->getLabel().c_str());
                 } else {
-                    m_main_window.getProviderWidget()->getTabWidget()->addTab(loaded_plugin,
-                            loaded_plugin->getLabel().c_str());
+                    m_main_window.getProviderWidget()->getTabWidget()->addTab(plugin,
+                            plugin->getLabel().c_str());
                 }
             }
         } else {

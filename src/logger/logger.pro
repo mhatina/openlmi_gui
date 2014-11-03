@@ -49,5 +49,5 @@ CONFIG(debug, debug|release) {
     target.path =   $$PREFIX$$LIB_PATH
 }
 
-DEFINES         +=      DEFAULT_LOG_PATH="\\\"/tmp/openlmi_log\\\""
+DEFINES         +=      DEFAULT_LOG_PATH="\\\"/tmp/lmicc_log\\\""
 INSTALLS        +=      target

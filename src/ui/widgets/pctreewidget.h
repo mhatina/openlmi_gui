@@ -66,7 +66,7 @@ private:
     std::string getHostName(std::string &ip, int &ai_family);
     TreeWidgetItem *addPcToTree(std::string parent, std::string text);
     TreeWidgetItem *findTopLevelNode(std::string item_name);
-    void changeSystemsText();
+    void changeDisplayedName(TreeWidgetItem *item);
     void getIp(std::string &name, std::string &ipv4, std::string &ipv6);
     void initContextMenu();
     void loadPcs(std::string filename);

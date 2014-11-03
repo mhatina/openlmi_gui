@@ -31,7 +31,7 @@ void usage(const char *arg)
               << "Options:\n"
               << "-g\t-- show debug messages\n"
               << "-h\t-- show this help\n"
-              << "-t/t-- run tests";
+              << "-t\t-- run tests\n";
 }
 
 int main(int argc, char *argv[])

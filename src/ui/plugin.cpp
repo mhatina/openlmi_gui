@@ -444,10 +444,10 @@ void Engine::IPlugin::handleDataFetching(std::vector<void *> *data,
         setRefreshed(true);
         if (!m_still_refreshing) {
             emit refreshProgress(Engine::REFRESHED, this);
+            Logger::getInstance()->info(getRefreshInfo());
         }
         fillTab(data);
-        delete data;
-        Logger::getInstance()->info(getRefreshInfo());
+        delete data;        
     }
 }
 

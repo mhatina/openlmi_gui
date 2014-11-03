@@ -32,12 +32,14 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    m_toolbar(new QToolBar()),
+    m_toolbar(new QToolBar(this)),
+    m_log_dialog(this),
     m_ui(new Ui::MainWindow)
 {
     Logger::getInstance()->setParent(this);
     Logger::getInstance()->debug("MainWindow::MainWindow(QWidget *parent)");
     m_ui->setupUi(this);
+
 
     QRect frect = frameGeometry();
     frect.moveCenter(QApplication::desktop()->screen()->geometry().center());
@@ -64,7 +66,6 @@ MainWindow::MainWindow(QWidget *parent) :
         m_ui->status_bar,
         SLOT(showMessage(QString))
     );
-    m_log_dialog.setTitle("Log");
 
     int cnt = sizeof(buttons) / sizeof(buttons[0]);
     for (int i = 0; i < cnt; i++) {
@@ -93,36 +94,37 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QToolButton *button = new QToolButton(m_toolbar);
 
-    QMenu *menu = new QMenu();
-    QAction *action = new QAction(QIcon(":/reboot.png"), "Reboot", menu);
+    m_tool_button_menu = new QMenu();
+    m_tool_button_menu->setObjectName("power_tool_button_menu");
+    QAction *action = new QAction(QIcon(":/reboot.png"), "Reboot", m_tool_button_menu);
     action->setObjectName("reboot_action");
     action->setIconVisibleInMenu(true);
     button->setDefaultAction(action);
-    menu->addAction(action);
+    m_tool_button_menu->addAction(action);
 
-    action = new QAction(QIcon(":/shutdown.png"), "Shutdown", menu);
+    action = new QAction(QIcon(":/shutdown.png"), "Shutdown", m_tool_button_menu);
     action->setObjectName("shutdown_action");
     action->setIconVisibleInMenu(true);
-    menu->addAction(action);
+    m_tool_button_menu->addAction(action);
 
-    action = new QAction(QIcon(":/reboot.png"), "Force reset", menu);
+    action = new QAction(QIcon(":/reboot.png"), "Force reset", m_tool_button_menu);
     action->setObjectName("force_reset_action");
     action->setIconVisibleInMenu(true);
-    menu->addAction(action);
+    m_tool_button_menu->addAction(action);
 
-    action = new QAction(QIcon(":/shutdown.png"), "Force off", menu);
+    action = new QAction(QIcon(":/shutdown.png"), "Force off", m_tool_button_menu);
     action->setObjectName("force_off_action");
     action->setIconVisibleInMenu(true);
-    menu->addAction(action);
+    m_tool_button_menu->addAction(action);
 
-    action = new QAction(QIcon(":/shutdown.png"), "Wake on Lan", menu);
+    action = new QAction(QIcon(":/shutdown.png"), "Wake on Lan", m_tool_button_menu);
     action->setObjectName("wake_on_lan");
     action->setIconVisibleInMenu(true);
-    menu->addAction(action);
+    m_tool_button_menu->addAction(action);
 
     button->setObjectName("power_button");
     button->setPopupMode(QToolButton::MenuButtonPopup);
-    button->setMenu(menu);
+    button->setMenu(m_tool_button_menu);
     button->setBackgroundRole(QPalette::Button);
     button->setEnabled(false);
     m_toolbar->insertWidget(m_toolbar->actions()[12], button); // after apply button
@@ -135,6 +137,8 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     Logger::getInstance()->debug("MainWindow::~MainWindow()");
+    delete m_toolbar;
+    delete m_tool_button_menu;
     delete m_ui;
 }
 
@@ -185,11 +189,8 @@ void MainWindow::closeAll()
 
 void MainWindow::showLog()
 {
-    Logger::getInstance()->debug("MainWindow::showLog()");
-    QFile file(Logger::getInstance()->getLogPath().c_str());
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    QString text = file.readAll();
-    file.close();
-    m_log_dialog.setText(text.toStdString());
+    Logger::getInstance()->debug("MainWindow::showLog()");    
+
+    m_log_dialog.setLogs();
     m_log_dialog.show();
 }

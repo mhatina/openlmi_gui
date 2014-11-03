@@ -19,7 +19,7 @@
 #define MAINWINDOW_H
 
 #include "logger.h"
-#include "showtextdialog.h"
+#include "logdialog.h"
 #include "widgets/pctreewidget.h"
 #include "widgets/providerwidget.h"
 
@@ -74,9 +74,10 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 private:
+    QMenu *m_tool_button_menu;
     QMutex *m_mutex;
     QToolBar *m_toolbar;
-    ShowTextDialog m_log_dialog;
+    LogDialog m_log_dialog;
     Ui::MainWindow *m_ui;
 
 public:

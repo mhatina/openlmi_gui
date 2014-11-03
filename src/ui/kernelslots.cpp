@@ -558,16 +558,24 @@ void Engine::Kernel::startLMIShell()
         m_settings->value<std::string, QLineEdit *>("terminal_emulator");
     QList<QTreeWidgetItem *> list =
         m_main_window.getPcTreeWidget()->getTree()->selectedItems();
-//    if (list.empty())
+    if (list.empty())
+        return;
+
     // TODO certificate
-    command = " -e \" lmishell";
-//    else {
-//        TreeWidgetItem *item = (TreeWidgetItem*) list[0];
-//        command = " -e \" lmishell"
-//            + (!item->getIpv4().empty() ? item->getIpv4() : item->getIpv6()) + "\"";
-//    }
-    QProcess *shell = new QProcess(this);
-    shell->startDetached(command.c_str());
+    command += " -e \"lmishell\"";
+
+    TreeWidgetItem *item = (TreeWidgetItem*) list[0];
+
+    QProcess shell(this);
+    std::string connect = "c = connect(\"" + item->getId() + "\")\n";
+    shell.startDetached(command.c_str());
+
+    shell.waitForStarted();
+
+    // NOTE not working
+    qint64 i = shell.write(connect.c_str());
+    shell.closeWriteChannel();
+    std::cerr << i << "\n";
 }
 
 void Engine::Kernel::startSsh()
@@ -584,8 +592,8 @@ void Engine::Kernel::startSsh()
         m_settings->value<std::string, QLineEdit *>("terminal_emulator");
     command += " -e \"ssh "
                + (!item->getIpv4().empty() ? item->getIpv4() : item->getIpv6()) + "\"";
-    QProcess *shell = new QProcess(this);
-    shell->startDetached(command.c_str());
+    QProcess shell(this);
+    shell.startDetached(command.c_str());
 }
 
 void Engine::Kernel::stopRefresh()

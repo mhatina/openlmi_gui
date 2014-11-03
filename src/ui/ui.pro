@@ -84,7 +84,8 @@ SOURCES         +=      main.cpp \
                         tests/helps.cpp \
                         address.cpp \
                         cimclient.cpp \
-                        cimvalue.cpp
+                        cimvalue.cpp \
+    logdialog.cpp
 
 HEADERS         +=      mainwindow.h \
                         kernel.h \
@@ -112,7 +113,8 @@ HEADERS         +=      mainwindow.h \
                         tests/helps.h \
                         address.h \
                         cimclient.h \
-                        cimvalue.h
+                        cimvalue.h \
+    logdialog.h
 
 FORMS           +=      mainwindow.ui \
                         widgets/providerwidget.ui \
@@ -125,4 +127,5 @@ FORMS           +=      mainwindow.ui \
                         settingsdialog.ui \
                         widgets/labeledlabel.ui \
                         settings/generalsettings.ui \
-                        settings/generalpluginsettings.ui
+                        settings/generalpluginsettings.ui \
+    logdialog.ui

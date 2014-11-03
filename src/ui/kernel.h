@@ -23,6 +23,7 @@
 #include "mainwindow.h"
 #include "plugin.h"
 #include "settingsdialog.h"
+#include "showtextdialog.h"
 #include "widgets/progressbar.h"
 
 #include <map>

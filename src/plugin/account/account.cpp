@@ -75,6 +75,7 @@ void AccountPlugin::initContextMenu()
 {
     Logger::getInstance()->debug("AccountPlugin::initContextMenu()");
     m_context_menu = new QMenu(this);
+    m_context_menu->setObjectName("account_context_menu");
     setContextMenuPolicy(Qt::CustomContextMenu);
 
     QAction *action = m_context_menu->addAction("Create new user/group");

@@ -40,6 +40,7 @@ void ServicePlugin::initContextMenu()
 {
     Logger::getInstance()->debug("ServicePlugin::initContextMenu()");
     m_context_menu = new QMenu(this);
+    m_context_menu->setObjectName("service_context_menu");
     setContextMenuPolicy(Qt::CustomContextMenu);
 
     QAction *action;
