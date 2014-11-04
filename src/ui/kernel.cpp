@@ -52,7 +52,7 @@ Engine::Kernel::Kernel() :
     m_mutex(new QMutex()),
     m_bar(new ProgressBar()),
     m_last_system(NULL),
-    m_settings(new SettingsDialog(&m_main_window))
+    m_settings(SettingsDialog::getInstance(&m_main_window))
 {
     Logger::getInstance()->debug("Engine::Kernel::Kernel()");
 
@@ -74,6 +74,7 @@ Engine::Kernel::Kernel() :
 
     m_main_window.getStatusBar()->addPermanentWidget(m_bar);
     m_main_window.getPcTreeWidget()->setTimeSec(2);
+    m_bar->setMaximum(0);
 
     m_code_dialog.setTitle("LMIShell Code");
     createKeyring();
@@ -84,7 +85,7 @@ Engine::Kernel::~Kernel()
     Logger::getInstance()->debug("Engine::Kernel::~Kernel()");
     delete m_mutex;
     delete m_bar;
-    delete m_settings;
+    SettingsDialog::deleteInstance();
 
     disconnect(
         m_main_window.getProviderWidget()->getTabWidget(),
@@ -116,8 +117,7 @@ std::string Engine::Kernel::getPowerStateMessage(PowerStateValues::POWER_VALUES 
     QTreeWidgetItem *item =
         m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
     std::string message = "";
-    switch (state)
-    {
+    switch (state) {
     case PowerStateValues::PowerCycleOffSoft:
         message = "Rebooting system: ";
         break;
@@ -303,6 +303,11 @@ void Engine::Kernel::initConnections()
         SIGNAL(triggered()),
         this,
         SLOT(startLMIShell()));
+    connect(
+        m_main_window.getPcTreeWidget(),
+        SIGNAL(refreshProgress(int, std::string)),
+        this,
+        SLOT(handleProgressState(int, std::string)));
 }
 
 void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
@@ -552,10 +557,10 @@ void Engine::Kernel::loadPlugin()
                         SLOT(setPluginUnsavedChanges(IPlugin *)));
                 connect(plugin, SIGNAL(noChanges(IPlugin *)), this,
                         SLOT(setPluginNoChanges(IPlugin *)));
-                connect(plugin, SIGNAL(refreshProgress(int,IPlugin*)), this,
-                        SLOT(handleProgressState(int,IPlugin*)));
-                connect(plugin, SIGNAL(refreshProgress(int,IPlugin*,std::string)), this,
-                        SLOT(handleProgressState(int,IPlugin*,std::string)));
+                connect(plugin, SIGNAL(refreshProgress(int, IPlugin *)), this,
+                        SLOT(handleProgressState(int, IPlugin *)));
+                connect(plugin, SIGNAL(refreshProgress(int, std::string, IPlugin *)), this,
+                        SLOT(handleProgressState(int, std::string, IPlugin *)));
                 connect(plugin, SIGNAL(newInstructionText(std::string)), this,
                         SLOT(handleInstructionText(std::string)));
 

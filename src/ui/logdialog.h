@@ -18,6 +18,7 @@
 #ifndef LOGDIALOG_H
 #define LOGDIALOG_H
 
+#include <QClipboard>
 #include <QDialog>
 #include <QFile>
 #include <QTreeWidgetItem>
@@ -45,9 +46,10 @@ private:
     void initShowButton();
 
 private slots:
+    std::string copy(QTreeWidgetItem *child);
     void archive();
     void changeShowOnly(QAction *action);
-    void copy();
+    void copy();    
     void filterChanged(QString text);
     void showContextMenu(QPoint pos);
 

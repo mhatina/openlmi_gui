@@ -66,7 +66,6 @@ protected:
     bool m_active; /**< @brief whether provider is active and is being displayed */
     bool m_changes_enabled; /**< @brief whether any changes are enabled */
     bool m_refreshed; /**< @brief represent refresh state of provider */
-    bool m_still_refreshing;
     boost::thread m_refresh_thread;
     CIMClient *m_client; /**< @brief see CIMClient */
     QMutex *m_mutex; /**< @brief Qt mutex */
@@ -238,7 +237,7 @@ protected slots:
      * @param data
      * @param error_message -- if something occures when fetching data, error_message is filled with error message
      */
-    void handleDataFetching(std::vector<void *> *data, std::string error_message);
+    void handleDataFetching(std::vector<void *> *data, bool still_refreshing = false, std::string error_message = "");
     /**
      * @brief Process applying itself (refresh provider, set to refreshed, ...)
      */
@@ -255,8 +254,7 @@ signals:
      * @param data
      * @param error_message -- if something occures when fetching data, error_message is filled with error message
      */
-    void doneFetchingData(std::vector<void *> *data,
-                          std::string error_message = std::string());
+    void doneFetchingData(std::vector<void *> *data, bool still_refreshing = false, std::string error_message = "");
     /**
      * @brief @brief Emitted when new instruction is added/inserted
      * @param text -- text of new instruction
@@ -272,7 +270,7 @@ signals:
      * @param progress -- progress state
      */
     void refreshProgress(int progress, IPlugin *plugin);
-    void refreshProgress(int progress, IPlugin *plugin, std::string message);
+    void refreshProgress(int progress, std::string message, IPlugin *plugin);
     /**
      * @brief emitted when there are some changes to be applied/saved
      * @param plugin -- representation of provider

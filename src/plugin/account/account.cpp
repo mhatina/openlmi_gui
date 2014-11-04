@@ -242,7 +242,6 @@ void AccountPlugin::getData(std::vector<void *> *data)
 {
     Logger::getInstance()->debug("AccountPlugin::getData(std::vector<void *> *data)");
 
-    m_still_refreshing = true;
     Pegasus::Array<Pegasus::CIMInstance> users;
     Pegasus::Array<Pegasus::CIMObject> users_obj;
     Pegasus::Array<Pegasus::CIMInstance> groups;
@@ -280,7 +279,7 @@ void AccountPlugin::getData(std::vector<void *> *data)
             std::string str_value = CIMValue::get_property_value(users[i], "Name");
             m_users.push_back(str_value);
         }
-        emit doneFetchingData(tmp);
+        emit doneFetchingData(tmp, true);
 
         groups = enumerateInstances(
                      Pegasus::CIMNamespaceName("root/cimv2"),
@@ -344,12 +343,10 @@ void AccountPlugin::getData(std::vector<void *> *data)
         }
 
     } catch (Pegasus::Exception &ex) {
-        m_still_refreshing = false;
-        emit doneFetchingData(NULL, CIMValue::to_std_string(ex.getMessage()));
+        emit doneFetchingData(NULL, false, CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 
-    m_still_refreshing = false;
     emit doneFetchingData(data);
 }
 
@@ -608,7 +605,7 @@ void AccountPlugin::remove()
 
     if (current == m_user_table) {
         for (int i = rows.size() - 1; i >= 0; i--) {
-            m_last_user_name = m_user_table->item(rows[i], 1)->text().toStdString();
+            m_last_user_name = m_user_table->item(rows[i], 0)->text().toStdString();
             m_user_table->selectRow(rows[i]);
             if (m_user_table->selectedItems()[0]->backgroundColor() != Qt::red) {
                 setSelectedLineColor(m_user_table->selectedItems(), Qt::red);
@@ -664,7 +661,6 @@ void AccountPlugin::remove()
             }
             m_group_table->selectRow(rows[i]);
             setSelectedLineColor(m_group_table->selectedItems(), Qt::red);
-            m_group_table->removeRow(rows[i]);
             addInstruction(
                 new GetInstruction(
                     IInstruction::GROUP,

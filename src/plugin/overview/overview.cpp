@@ -221,7 +221,6 @@ void OverviewPlugin::clear()
 
 void OverviewPlugin::getData(std::vector<void *> *data)
 {
-    m_still_refreshing = true;
     try {
         Pegasus::Array<Pegasus::CIMInstance> provider =
             enumerateInstances(
@@ -253,12 +252,12 @@ void OverviewPlugin::getData(std::vector<void *> *data)
             );
 
         if (system.size() != 1) {
-            emit doneFetchingData(NULL, "");
+            emit doneFetchingData(NULL, false);
             return;
         }
 
         tmp->push_back(new Pegasus::CIMInstance(system[0]));
-        emit doneFetchingData(tmp);
+        emit doneFetchingData(tmp , true);
 
         Pegasus::Array<Pegasus::CIMInstance> battery =
             enumerateInstances(
@@ -275,7 +274,7 @@ void OverviewPlugin::getData(std::vector<void *> *data)
             for (unsigned int i = 0; i < battery.size(); i++) {
                 tmp->push_back(new Pegasus::CIMInstance(battery[i]));
             }
-            emit doneFetchingData(tmp);
+            emit doneFetchingData(tmp, true);
         }
 
         Pegasus::Array<Pegasus::CIMInstance> network =
@@ -304,14 +303,13 @@ void OverviewPlugin::getData(std::vector<void *> *data)
             for (unsigned int j = 0; j < ip.size(); j++) {
                 tmp->push_back(new Pegasus::CIMInstance(ip[j]));
             }
-            emit doneFetchingData(tmp);
+            emit doneFetchingData(tmp, true);
         }
 
         emit refreshProgress(Engine::ALMOST_REFRESHED, this);
 
         if (!m_journald_available) {
-            emit doneFetchingData(data);
-            m_still_refreshing = false;
+            emit doneFetchingData(data);            
             return;
         }
 
@@ -333,12 +331,10 @@ void OverviewPlugin::getData(std::vector<void *> *data)
         }
 
     } catch (Pegasus::Exception &ex) {
-        m_still_refreshing = false;
-        emit doneFetchingData(NULL, CIMValue::to_std_string(ex.getMessage()));
+        emit doneFetchingData(NULL, false, CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 
-    m_still_refreshing = false;
     emit doneFetchingData(data);    
 }
 

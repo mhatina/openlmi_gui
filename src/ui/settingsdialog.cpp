@@ -24,6 +24,9 @@
 #include <QDir>
 #include <QPushButton>
 
+QMutex SettingsDialog::m_mutex;
+SettingsDialog *SettingsDialog::m_instance = NULL;
+
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
     m_ui(new Ui::SettingsDialog)
@@ -60,6 +63,26 @@ SettingsDialog::~SettingsDialog()
 {
     save();
     delete m_ui;
+}
+
+SettingsDialog *SettingsDialog::getInstance(QWidget *parent)
+{
+    m_mutex.lock();
+    if (m_instance == NULL) {
+        m_instance = new SettingsDialog(parent);
+    }
+    m_mutex.unlock();
+    return m_instance;
+}
+
+void SettingsDialog::deleteInstance()
+{
+    m_mutex.lock();
+    if (m_instance != NULL) {
+        delete m_instance;
+        m_instance = NULL;
+    }
+    m_mutex.unlock();
 }
 
 void SettingsDialog::addItem(ISettings *item)

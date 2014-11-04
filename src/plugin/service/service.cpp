@@ -144,7 +144,7 @@ void ServicePlugin::getData(std::vector<void *> *data)
                        false       // include class origin
                    );
     } catch (Pegasus::Exception &ex) {
-        emit doneFetchingData(NULL, CIMValue::to_std_string(ex.getMessage()));
+        emit doneFetchingData(NULL, false, CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 

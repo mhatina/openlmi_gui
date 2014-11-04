@@ -88,7 +88,7 @@ private slots:
     void validate(QTreeWidgetItem *, int column);
 
 signals:
-    void getMacAddress(TreeWidgetItem *item);
+    void refreshProgress(int progress, std::string message = "");
     /**
      * @brief Emitted when host is removed from list
      * @param id -- ip or domain name of host

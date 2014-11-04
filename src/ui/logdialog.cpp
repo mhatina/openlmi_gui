@@ -17,11 +17,14 @@
 
 #include "logdialog.h"
 #include "logger.h"
+#include "settingsdialog.h"
 #include "ui_logdialog.h"
 
+#include <iostream>
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
+#include <QFileDialog>
 #include <QMenu>
 #include <sstream>
 
@@ -135,9 +138,18 @@ void LogDialog::archive()
     ss << QDateTime().currentDateTime().date().day()
        << QDateTime().currentDateTime().date().month()
        << QDateTime().currentDateTime().date().year();
-    QString path = QDir::homePath() + "/.config/lmicc_log_archive_" + ss.str().c_str();
-    if (file.copy(path)) {
-        Logger::getInstance()->info("Saved to " + path.toStdString());
+
+    std::string path = SettingsDialog::getInstance()->value<std::string, QLineEdit *>("log_archive");
+    if (path.empty()) {
+        QFileDialog dialog;
+        dialog.setFileMode(QFileDialog::Directory);
+        path = dialog.getExistingDirectory().toStdString();
+        SettingsDialog::getInstance()->findChild<QLineEdit *>("log_archive")->setText(path.c_str());
+    }
+    path += "/lmicc_log_archive_" + ss.str();
+
+    if (file.copy(path.c_str())) {
+        Logger::getInstance()->info("Saved to " + path);
     } else {
         Logger::getInstance()->error(file.errorString().toStdString());
     }
@@ -171,7 +183,41 @@ void LogDialog::changeShowOnly(QAction *action)
 
 void LogDialog::copy()
 {
-    Logger::getInstance()->error("Not yet implemented");
+    QList<QTreeWidgetItem *> list = m_ui->logs->selectedItems();
+    if (list.empty())
+        return;
+
+    std::stringstream ss;
+    int cnt = list.size();
+    for (int i = 0; i < cnt; i++) {
+        ss << copy(list[i]) << "\n";
+    }
+    qApp->clipboard()->setText(ss.str().c_str());
+}
+
+std::string LogDialog::copy(QTreeWidgetItem *child)
+{
+    int cnt = child->childCount();
+
+    if (cnt != 0) {
+        std::stringstream ss;
+        for (int i = 0; i < cnt; i++) {
+            ss << copy(child->child(i));
+            if (i < cnt - 1)
+                ss << "\n";
+        }
+        return ss.str();
+    } else if (!child->isHidden()
+               && (child->text(0).toStdString().find("[Info]") != std::string::npos
+               || child->text(0).toStdString().find("[Debug]") != std::string::npos
+               || child->text(0).toStdString().find("[Error]") != std::string::npos
+               || child->text(0).toStdString().find("[Critical]") != std::string::npos)) {
+        std::string text = child->text(0).toStdString().substr(1);
+        text = "[" + child->parent()->text(0).toStdString() + " " + text;
+        return text;
+    }
+
+    return "";
 }
 
 void LogDialog::filterChanged(QString text)

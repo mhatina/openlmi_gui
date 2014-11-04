@@ -125,7 +125,6 @@ Engine::IPlugin::IPlugin() :
     m_active(true),
     m_changes_enabled(false),
     m_refreshed(false),
-    m_still_refreshing(false),
     m_client(NULL),
     m_system_id("")
 {
@@ -133,9 +132,9 @@ Engine::IPlugin::IPlugin() :
     qRegisterMetaType<std::string>("std::string");
     connect(
         this,
-        SIGNAL(doneFetchingData(std::vector<void *> *, std::string)),
+        SIGNAL(doneFetchingData(std::vector<void*>*,bool,std::string)),
         this,
-        SLOT(handleDataFetching(std::vector<void *> *, std::string)));
+        SLOT(handleDataFetching(std::vector<void*>*,bool,std::string)));
     connect(
         this,
         SIGNAL(doneApplying()),
@@ -418,11 +417,11 @@ void Engine::IPlugin::cancel()
     }
 }
 
-void Engine::IPlugin::handleDataFetching(std::vector<void *> *data,
+void Engine::IPlugin::handleDataFetching(std::vector<void *> *data, bool still_refreshing,
         std::string error_message)
 {
     Logger::getInstance()->debug("Engine::IPlugin::handleDataFetching(std::vector<void *> *data, std::string error_message)");
-    if (!m_stop_refresh && !m_still_refreshing) {
+    if (!m_stop_refresh && !still_refreshing) {
         m_refresh_thread.join();
     }
 
@@ -442,11 +441,11 @@ void Engine::IPlugin::handleDataFetching(std::vector<void *> *data,
             return;
         }
         setRefreshed(true);
-        if (!m_still_refreshing) {
+        fillTab(data);
+        if (!still_refreshing) {
             emit refreshProgress(Engine::REFRESHED, this);
             Logger::getInstance()->info(getRefreshInfo());
-        }
-        fillTab(data);
+        }        
         delete data;        
     }
 }

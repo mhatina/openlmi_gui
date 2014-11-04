@@ -16,6 +16,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "discoverworker.h"
+#include "kernel.h"
 #include "logger.h"
 #include "pctreewidget.h"
 #include "systemdetailsdialog.h"
@@ -537,6 +538,7 @@ void PCTreeWidget::onRemoveButtonClicked()
     if (list.empty()) {
         return;
     }
+    m_emit_signal = false;
 
     for (QList<QTreeWidgetItem *>::Iterator it = list.begin(); it != list.end();
          it++) {
@@ -544,12 +546,14 @@ void PCTreeWidget::onRemoveButtonClicked()
         int pos = (*it)->parent()->indexOfChild(*it);
         (*it)->parent()->takeChild(pos);
     }
+
+    m_emit_signal = true;
 }
 
 void PCTreeWidget::onDiscoverButtonClicked()
 {
     Logger::getInstance()->debug("PCTreeWidget::onDiscoverButtonClicked()");
-    Logger::getInstance()->info("Discovering...");
+    emit refreshProgress(Engine::NOT_REFRESHED, "Discovering...");
     topLevelNode("Discovered");
 
     DiscoverWorker *m_worker = new DiscoverWorker();
@@ -571,7 +575,7 @@ void PCTreeWidget::addDiscoveredPcsToTree(std::list<std::string> *pc)
 
     delete pc;
     delete m_worker;
-    Logger::getInstance()->info("Finished discovering.");
+    emit refreshProgress(Engine::REFRESHED, "Discovering...");
 }
 
 void PCTreeWidget::addGroup()

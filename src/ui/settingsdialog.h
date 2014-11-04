@@ -25,6 +25,7 @@
 #include <QCheckBox>
 #include <QDialog>
 #include <QLineEdit>
+#include <QMutex>
 #include <vector>
 
 namespace Ui
@@ -38,6 +39,8 @@ class SettingsDialog : public QDialog
 
 private:
     Ui::SettingsDialog *m_ui;
+    static QMutex m_mutex;
+    static SettingsDialog *m_instance;
     std::vector<ISettings *> m_settings;
 
     bool checkState(QObject *box)
@@ -57,8 +60,11 @@ private:
     }
 
 public:
-    explicit SettingsDialog(QWidget *parent = 0);
+    explicit SettingsDialog(QWidget *parent);
     ~SettingsDialog();
+
+    static SettingsDialog *getInstance(QWidget *parent = 0);
+    static void deleteInstance();
 
     void addItem(ISettings *item);
     void deleteItem(ISettings *item);

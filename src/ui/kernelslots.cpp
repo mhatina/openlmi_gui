@@ -141,8 +141,14 @@ void Engine::Kernel::enableSpecialButtons(bool state)
 void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
 {
     Logger::getInstance()->debug("Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)");
-    TreeWidgetItem *item = (TreeWidgetItem *)
-                           m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
+    QList<QTreeWidgetItem *> list = m_main_window.getPcTreeWidget()->getTree()->selectedItems();
+    if (list.empty()) {
+        handleProgressState(Engine::ERROR);
+        Logger::getInstance()->error("No such system");
+        return;
+    }
+    TreeWidgetItem *item = (TreeWidgetItem *) list[0];
+
     std::string ip = item->getId();
     AuthenticationDialog dialog(item->text(0).toStdString(), &m_main_window);
     if (dialog.exec()) {
@@ -187,7 +193,7 @@ void Engine::Kernel::handleConnecting(CIMClient *client,
         if (PowerStateValues::NoPowerSetting) {
             handleProgressState(Engine::ERROR);
         } else {
-            handleProgressState(Engine::ERROR, NULL, getPowerStateMessage(state));
+            handleProgressState(Engine::ERROR, getPowerStateMessage(state));
         }
         return;
     }
@@ -208,7 +214,7 @@ void Engine::Kernel::handleConnecting(CIMClient *client,
         setPowerState(client, state);
         std::string message = getPowerStateMessage(state);
         Logger::getInstance()->info(message);
-        handleProgressState(Engine::REFRESHED, NULL, message);
+        handleProgressState(Engine::REFRESHED, message);
     }
 }
 
@@ -227,39 +233,49 @@ void Engine::Kernel::handleInstructionText(std::string text)
 
 void Engine::Kernel::handleProgressState(int state, IPlugin *plugin)
 {
+    Logger::getInstance()->debug("Engine::Kernel::handleProgressState(int state, IPlugin *plugin)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     if (plugin == NULL && (plugin = (IPlugin *) tab->currentWidget()) == NULL) {
         return;
     }
-    handleProgressState(state, plugin, "Refreshing: " + plugin->getLabel());
+    handleProgressState(state, "Refreshing: " + plugin->getLabel(), plugin);
 }
 
-void Engine::Kernel::handleProgressState(int state, IPlugin *plugin, std::string process)
+void Engine::Kernel::handleProgressState(int state, std::string process, IPlugin *plugin)
 {
-    Logger::getInstance()->debug("Engine::Kernel::handleProgressState(int state)");
-    QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
-    if (plugin == NULL && (plugin = (IPlugin *) tab->currentWidget()) == NULL) {
-        return;
+    Logger::getInstance()->debug("Engine::Kernel::handleProgressState(int state, std::string process, IPlugin *plugin)");
+    if (plugin != NULL) {
+        switch (state) {
+        case REFRESHED:
+        case ALMOST_REFRESHED:
+            plugin->setPluginEnabled(true);
+            plugin->setRefreshed(true);
+            break;
+        case NOT_REFRESHED:
+            plugin->setPluginEnabled(false);
+            break;
+        case ERROR:
+            plugin->setPluginEnabled(false);
+            widget<QPushButton *>("stop_refresh_button")->setEnabled(false);
+            break;
+        default:
+            Logger::getInstance()->critical("Unknown refresh state!");
+            break;
+        }
     }
 
     switch (state) {
     case REFRESHED:
         m_bar->hide(process);
     case ALMOST_REFRESHED:
-        plugin->setPluginEnabled(true);
-        plugin->setRefreshed(true);
         setButtonsEnabled(true);
         break;
-    case NOT_REFRESHED:
-        plugin->setPluginEnabled(false);
-        m_bar->setMaximum(0);
+    case NOT_REFRESHED:        
         m_bar->show(process);
         break;
     case ERROR:
-        plugin->setPluginEnabled(false);
         enableSpecialButtons(true);
         m_bar->hide(process);
-        widget<QPushButton *>("stop_refresh_button")->setEnabled(false);
         break;
     default:
         Logger::getInstance()->critical("Unknown refresh state!");
@@ -321,7 +337,6 @@ void Engine::Kernel::saveAsScripts()
     m_save_script_path = "";
     saveScripts();
 }
-
 
 void Engine::Kernel::saveScripts()
 {
@@ -502,7 +517,7 @@ void Engine::Kernel::setPowerState(QAction *action)
         wakeOnLan();
     }
 
-    handleProgressState(Engine::NOT_REFRESHED, NULL, message);
+    handleProgressState(Engine::NOT_REFRESHED, message);
 }
 
 void Engine::Kernel::showAboutDialog()
@@ -558,13 +573,14 @@ void Engine::Kernel::startLMIShell()
         m_settings->value<std::string, QLineEdit *>("terminal_emulator");
     QList<QTreeWidgetItem *> list =
         m_main_window.getPcTreeWidget()->getTree()->selectedItems();
-    if (list.empty())
+    if (list.empty()) {
         return;
+    }
 
     // TODO certificate
     command += " -e \"lmishell\"";
 
-    TreeWidgetItem *item = (TreeWidgetItem*) list[0];
+    TreeWidgetItem *item = (TreeWidgetItem *) list[0];
 
     QProcess shell(this);
     std::string connect = "c = connect(\"" + item->getId() + "\")\n";

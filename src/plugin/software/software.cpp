@@ -346,8 +346,6 @@ std::string SoftwarePlugin::getRefreshInfo()
 
 void SoftwarePlugin::getData(std::vector<void *> *data)
 {
-    m_still_refreshing = true;
-
     std::string filter = m_ui->filter_line->text().toStdString();
 
     try {
@@ -369,7 +367,7 @@ void SoftwarePlugin::getData(std::vector<void *> *data)
         for (unsigned int i = 0; i < repos.size(); i++) {
             tmp->push_back(new Pegasus::CIMInstance(repos[i]));
         }
-        emit doneFetchingData(tmp);
+        emit doneFetchingData(tmp, true);
 
         // installed packages
         installed = enumerateInstances(
@@ -397,7 +395,7 @@ void SoftwarePlugin::getData(std::vector<void *> *data)
                 tmp->push_back(new Pegasus::CIMInstance(installed[i]));
             }
         }
-        emit doneFetchingData(tmp);
+        emit doneFetchingData(tmp, true);
 
         // verification job
         if (!m_verify.empty()) {
@@ -415,12 +413,10 @@ void SoftwarePlugin::getData(std::vector<void *> *data)
             }
         }
     } catch (Pegasus::Exception &ex) {
-        m_still_refreshing = false;
-        emit doneFetchingData(NULL, CIMValue::to_std_string(ex.getMessage()));
+        emit doneFetchingData(NULL, false, CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 
-    m_still_refreshing = false;
     emit doneFetchingData(data);
 }
 
@@ -552,7 +548,7 @@ void SoftwarePlugin::getPackageDetail(QListWidgetItem *item)
 {
     if (item != NULL) {
         std::string id = item->text().toStdString();
-        emit refreshProgress(Engine::NOT_REFRESHED, this, "Downloading package data: " + id);
+        emit refreshProgress(Engine::NOT_REFRESHED, "Downloading package data: " + id, this);
 
         unsigned int cnt = m_installed.size();
         for (unsigned int i = 0; i < cnt; i++) {
@@ -595,7 +591,7 @@ void SoftwarePlugin::showPackageContextMenu(QPoint pos)
 void SoftwarePlugin::showPackageDetail(Pegasus::CIMInstance item)
 {
     std::string name = CIMValue::get_property_value(item, "ElementName");
-    emit refreshProgress(Engine::REFRESHED, this, "Downloading package data: " + name);
+    emit refreshProgress(Engine::REFRESHED, "Downloading package data: " + name, this);
 
     DetailsDialog dialog("Package details", this);
     dialog.hideCancelButton();

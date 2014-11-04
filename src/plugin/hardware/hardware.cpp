@@ -174,11 +174,14 @@ void HardwarePlugin::fillMemory(std::vector<Pegasus::CIMInstance> memory)
     m_ui->device_box->setTitle("Memory");
 
     layout->addWidget(new LabeledLabel("Access", CIMValue::get_property_value(mem, "Access")));
-    layout->addWidget(new LabeledLabel("Capacity", CIMValue::convert_values(CIMValue::get_property_value(phys_mem, "Capacity"), "B")));
+    layout->addWidget(new LabeledLabel("Capacity", CIMValue::convert_values(CIMValue::get_property_value(phys_mem,
+                                       "Capacity"), "B")));
     layout->addWidget(new LabeledLabel("Form factor", CIMValue::get_property_value(phys_mem, "FormFactor")));
     layout->addWidget(new LabeledLabel("Memory type", CIMValue::get_property_value(phys_mem, "MemoryType")));
-    layout->addWidget(new LabeledLabel("Total width", CIMValue::convert_values(CIMValue::get_property_value(phys_mem, "TotalWidth"), "b")));
-    layout->addWidget(new LabeledLabel("Page size", CIMValue::convert_values(CIMValue::get_property_value(mem, "StandardMemoryPageSize"), "b")));
+    layout->addWidget(new LabeledLabel("Total width", CIMValue::convert_values(CIMValue::get_property_value(phys_mem,
+                                       "TotalWidth"), "b")));
+    layout->addWidget(new LabeledLabel("Page size", CIMValue::convert_values(CIMValue::get_property_value(mem,
+                                       "StandardMemoryPageSize"), "b")));
 
     std::string tmp = CIMValue::get_property_value(phys_mem, "ConfiguredMemoryClockSpeed") + " MHz";
     layout->addWidget(new LabeledLabel("Clock speed", tmp));
@@ -274,8 +277,10 @@ void HardwarePlugin::fillProcessor(std::vector<Pegasus::CIMInstance> processor)
     layout->addWidget(new LabeledLabel("Hardware threads", CIMValue::get_property_value(proc_capabilities,
                                        "NumberOfHardwareThreads")));
 
-    layout->addWidget(new LabeledLabel("Address width", CIMValue::convert_values(CIMValue::get_property_value(proc, "AddressWidth"), "b")));
-    layout->addWidget(new LabeledLabel("Data width", CIMValue::convert_values(CIMValue::get_property_value(proc, "DataWidth"), "b")));
+    layout->addWidget(new LabeledLabel("Address width", CIMValue::convert_values(CIMValue::get_property_value(proc,
+                                       "AddressWidth"), "b")));
+    layout->addWidget(new LabeledLabel("Data width", CIMValue::convert_values(CIMValue::get_property_value(proc,
+                                       "DataWidth"), "b")));
 
     tmp = CIMValue::get_property_value(proc, "CurrentClockSpeed") + " MHz";
     layout->addWidget(new LabeledLabel("Current clock speed", tmp));
@@ -478,29 +483,48 @@ void HardwarePlugin::getData(std::vector<void *> *data)
 
         // disk drive
         array = enumerateInstances(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    Pegasus::CIMName("LMI_DiskDrive"),
+                    Pegasus::CIMNamespaceName("root/interop"),
+                    Pegasus::CIMName("PG_SoftwareIdentity"),
                     true,       // deep inheritance
                     false,      // local only
-                    true,       // include qualifiers
+                    false,      // include qualifiers
                     false       // include class origin
                 );
 
-        cnt = array.size();
-        for (unsigned int i = 0; i < cnt; i++, size++) {
-            data->push_back(new std::vector<Pegasus::CIMInstance>());
-            std::vector<Pegasus::CIMInstance> *vector = ((std::vector<Pegasus::CIMInstance>
-                    *) (*data)[size]);
-            vector->push_back(array[i]);
+        bool found = false;
+        for (unsigned int i = 0; i < array.size(); i++) {
+            if (CIMValue::get_property_value(array[i], "InstanceID").find("LMI_Hardware+LMI_DiskDrive") != std::string::npos) {
+                found = true;
+                break;
+            }
+        }
 
-            Pegasus::Array<Pegasus::CIMObject> disk =
-                associators(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    array[i].getPath(),
-                    Pegasus::CIMName(),
-                    Pegasus::CIMName("LMI_DiskPhysicalPackage")
-                );
-            vector->push_back(Pegasus::CIMInstance(disk[0]));
+        if (found) {
+            array = enumerateInstances(
+                        Pegasus::CIMNamespaceName("root/cimv2"),
+                        Pegasus::CIMName("LMI_DiskDrive"),
+                        true,       // deep inheritance
+                        false,      // local only
+                        true,       // include qualifiers
+                        false       // include class origin
+                    );
+
+            cnt = array.size();
+            for (unsigned int i = 0; i < cnt; i++, size++) {
+                data->push_back(new std::vector<Pegasus::CIMInstance>());
+                std::vector<Pegasus::CIMInstance> *vector = ((std::vector<Pegasus::CIMInstance>
+                        *) (*data)[size]);
+                vector->push_back(array[i]);
+
+                Pegasus::Array<Pegasus::CIMObject> disk =
+                    associators(
+                        Pegasus::CIMNamespaceName("root/cimv2"),
+                        array[i].getPath(),
+                        Pegasus::CIMName(),
+                        Pegasus::CIMName("LMI_DiskPhysicalPackage")
+                    );
+                vector->push_back(Pegasus::CIMInstance(disk[0]));
+            }
         }
 
         const char *devices[] = {
@@ -532,7 +556,7 @@ void HardwarePlugin::getData(std::vector<void *> *data)
             }
         }
     } catch (Pegasus::Exception &ex) {
-        emit doneFetchingData(NULL, CIMValue::to_std_string(ex.getMessage()));
+        emit doneFetchingData(NULL, false, CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 
@@ -664,7 +688,7 @@ void HardwarePlugin::fillTab(std::vector<void *> *data)
 
                 QTreeWidgetItem *item = new QTreeWidgetItem();
                 std::string name = CIMValue::get_property_value(tmp[0], "Name") +
-                        " " + CIMValue::get_property_value(tmp[1], "SerialNumber");
+                                   " " + CIMValue::get_property_value(tmp[1], "SerialNumber");
                 item->setText(0, name.c_str());
                 item->setToolTip(0, name.c_str());
 

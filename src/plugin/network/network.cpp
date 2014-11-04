@@ -151,7 +151,7 @@ void NetworkPlugin::getData(std::vector<void *> *data)
             }
         }
     } catch (Pegasus::Exception &ex) {
-        emit doneFetchingData(NULL, CIMValue::to_std_string(ex.getMessage()));
+        emit doneFetchingData(NULL, false, CIMValue::to_std_string(ex.getMessage()));
         return;
     }
 

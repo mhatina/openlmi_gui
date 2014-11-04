@@ -156,7 +156,7 @@ private slots:
     void handleError(std::string message);
     void handleInstructionText(std::string text);
     void handleProgressState(int state, IPlugin *plugin = NULL);
-    void handleProgressState(int state, IPlugin *plugin, std::string process);
+    void handleProgressState(int state, std::string process, IPlugin *plugin = NULL);
     void refresh();
     void reloadPlugins();
     void reportBug();

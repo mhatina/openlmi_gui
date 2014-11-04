@@ -45,6 +45,7 @@ void GeneralSettings::init()
     m_ui->use_certificate_checkbox->setChecked(false);
     m_ui->certificate->setEnabled(false);
     m_ui->certificate->setText("/etc/pki/tls/certs");
+    m_ui->log_archive->setText("");
 }
 
 void GeneralSettings::load(QFile &file)
@@ -88,6 +89,12 @@ void GeneralSettings::load(QFile &file)
             }
             std::string cert = in.text().toString().toStdString();
             m_ui->certificate->setText(cert.c_str());
+        } else if (in.name() == "logArchive") {
+            while (!in.isCharacters()) {
+                in.readNext();
+            }
+            QString archive = in.text().toString();
+            m_ui->log_archive->setText(archive);
         }
     }
 
@@ -107,8 +114,10 @@ void GeneralSettings::save(QXmlStreamWriter &writer)
     writer.writeStartElement("certificate");
     writer.writeAttribute("enabled",
                           m_ui->use_certificate_checkbox->checkState() == Qt::Checked ? "true" : "false");
-    writer.writeCharacters(m_ui->certificate->text());
+    writer.writeCharacters(m_ui->certificate->text());    
     writer.writeEndElement();
+
+    writer.writeTextElement("logArchive", m_ui->log_archive->text());
 }
 
 void GeneralSettings::changeCertificate(int state)

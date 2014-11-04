@@ -190,7 +190,7 @@ std::string Logger::getTime()
     time(&rawtime);
     timeinfo = localtime(&rawtime);
 
-    strftime(buffer, 80, "%A %d %B %G %H:%M:%S", timeinfo);
+    strftime(buffer, 80, "%d %B %G %H:%M:%S", timeinfo);
 
     return buffer;
 }
