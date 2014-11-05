@@ -242,11 +242,6 @@ void Engine::Kernel::initConnections()
         SLOT(handleConnecting(CIMClient *, PowerStateValues::POWER_VALUES)));
     connect(
         this,
-        SIGNAL(error(std::string)),
-        this,
-        SLOT(handleError(std::string)));
-    connect(
-        this,
         SIGNAL(authenticate(PowerStateValues::POWER_VALUES)),
         this,
         SLOT(handleAuthentication(PowerStateValues::POWER_VALUES)));

@@ -38,7 +38,7 @@ int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
             gnome_keyring_found_list_free(res_list);
             return 1;
         } else if (res != GNOME_KEYRING_RESULT_OK) {
-            emit error("Cannot get username and password");
+            Logger::getInstance()->error("Cannot get username and password");
             gnome_keyring_found_list_free(res_list);
             return -1;
         }
@@ -216,13 +216,6 @@ void Engine::Kernel::handleConnecting(CIMClient *client,
         Logger::getInstance()->info(message);
         handleProgressState(Engine::REFRESHED, message);
     }
-}
-
-void Engine::Kernel::handleError(std::string message)
-{
-    Logger::getInstance()->debug("Engine::Kernel::handleError(std::string message)");
-    m_main_window.getStatusBar()->clearMessage();
-    Logger::getInstance()->error(message);
 }
 
 void Engine::Kernel::handleInstructionText(std::string text)

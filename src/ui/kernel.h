@@ -153,7 +153,6 @@ private slots:
     void enableSpecialButtons(bool state);
     void handleAuthentication(PowerStateValues::POWER_VALUES state);
     void handleConnecting(CIMClient *client, PowerStateValues::POWER_VALUES state);
-    void handleError(std::string message);
     void handleInstructionText(std::string text);
     void handleProgressState(int state, IPlugin *plugin = NULL);
     void handleProgressState(int state, std::string process, IPlugin *plugin = NULL);
@@ -182,11 +181,6 @@ signals:
      * @param state -- power state
      */
     void authenticate(PowerStateValues::POWER_VALUES state);
-    /**
-     * @brief Error log
-     * @param message -- text that is logged
-     */
-    void error(std::string message);
     /**
      * @brief Is emitted when client is connected to host
      * @param client -- representation of connection
