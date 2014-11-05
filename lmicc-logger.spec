@@ -1,6 +1,6 @@
 Name:           lmicc-logger
 Version:        0.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Logger for lmicc
 License:        GPLv2.1+, LGPLv2.1+
 URL:            https://github.com/mhatina/openlmi_gui 
@@ -39,6 +39,9 @@ make -C src/logger install
 %dir %{_docdir}/%{name}
 
 %changelog
+* Wed Nov 05 2014 Martin Hatina <mhatina@redhat.com> - 0.1.1-2
+- bug fixes; log dialog changed
+
 * Thu Oct 23 2014 Martin Hatina <mhatina@redhat.com> - 0.1.1-1
 - bug fixes, lot of improvements
 

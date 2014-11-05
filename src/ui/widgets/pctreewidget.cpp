@@ -188,7 +188,10 @@ bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text)
     Logger::getInstance()->debug("PCTreeWidget::parentContainsItem(TreeWidgetItem *parent, std::string text)");
     for (int i = 0; i < parent->childCount(); i++) {
         TreeWidgetItem *item = (TreeWidgetItem *) parent->child(i);
-        if (item->getIpv4() == text || item->getIpv6() == text || item->getName() == text) {
+        std::string ipv4 = item->getIpv4().empty() ? "N/A" : item->getIpv4();
+        std::string ipv6 = item->getIpv6().empty() ? "N/A" : item->getIpv6();
+        std::string domain = item->getName().empty() ? "N/A" : item->getName();
+        if (ipv4 == text || ipv6 == text || domain == text) {
             return true;
         }
     }
