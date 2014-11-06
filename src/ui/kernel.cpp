@@ -148,21 +148,9 @@ void Engine::Kernel::createKeyring()
                              NULL);
     if (res != GNOME_KEYRING_RESULT_OK &&
         res != GNOME_KEYRING_RESULT_KEYRING_ALREADY_EXISTS) {
-        const std::string err[] = {
-            "GNOME_KEYRING_RESULT_OK",
-            "GNOME_KEYRING_RESULT_DENIED",
-            "GNOME_KEYRING_RESULT_NO_KEYRING_DAEMON",
-            "GNOME_KEYRING_RESULT_ALREADY_UNLOCKED",
-            "GNOME_KEYRING_RESULT_NO_SUCH_KEYRING",
-            "GNOME_KEYRING_RESULT_BAD_ARGUMENTS",
-            "GNOME_KEYRING_RESULT_IO_ERROR",
-            "GNOME_KEYRING_RESULT_CANCELLED",
-            "GNOME_KEYRING_RESULT_KEYRING_ALREADY_EXISTS",
-            "GNOME_KEYRING_RESULT_NO_MATCH"
-        };
 
         Logger::getInstance()->error("Cannot create " + std::string(
-                                         OPENLMI_KEYRING_DEFAULT) + " keyring\nError: " + err[res]);
+                                         OPENLMI_KEYRING_DEFAULT) + " keyring\nError: " + gnome_keyring_result_to_message(res));
         exit(EXIT_FAILURE);
     }
 }

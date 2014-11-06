@@ -20,14 +20,22 @@
 
 #include <QTreeWidgetItem>
 
+typedef enum {
+    UNKNOWN,
+    VALID,
+    NOT_VALID
+} validity;
+
+
 class TreeWidgetItem : public QTreeWidgetItem
 {
-private:
+private:    
     std::string m_id;
     std::string m_ipv4;
     std::string m_ipv6;
     std::string m_name;
     std::string m_mac;
+    validity m_valid;
 
 public:
     explicit TreeWidgetItem(QTreeWidgetItem *parent = 0);
@@ -47,6 +55,9 @@ public:
 
     std::string getId() const;
     void setId(const std::string &id);
+
+    validity getValid() const;
+    void setValid(const validity &valid);
 };
 
 #endif // TREEWIDGETITEM_H
