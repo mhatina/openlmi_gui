@@ -320,7 +320,7 @@ void LogDialog::setLogs()
 
         std::string str_line(line);
 
-        int pos1 = str_line.find(" ") + 1;
+        int pos1 = 1;
         int pos2 = str_line.find(" ", pos1);
         std::string day = str_line.substr(pos1, pos2 - pos1);
 

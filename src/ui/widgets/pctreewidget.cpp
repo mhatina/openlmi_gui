@@ -218,8 +218,14 @@ std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)
 
     int err;
     if ((err = getaddrinfo(ip.c_str(), NULL, &hints, &result)) != 0) {
-        Logger::getInstance()->error(gai_strerror(err));
-        return "";
+        switch (err) {
+        case EAI_FAIL:
+        case EAI_AGAIN:
+            return "N/A";
+        default:
+            Logger::getInstance()->error(gai_strerror(err));
+            return "";
+        }
     }
 
     ai_family = result->ai_family;
@@ -237,8 +243,7 @@ std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)
         h = gethostbyaddr((char *) &sa6.sin6_addr, sizeof(struct in6_addr), AF_INET6);
     }
     if (h == NULL) {
-        Logger::getInstance()->error(hstrerror(h_errno));
-        return "";
+        return "N/A";
     }
 
     return h->h_name;
@@ -290,6 +295,7 @@ TreeWidgetItem *PCTreeWidget::findTopLevelNode(std::string item_name)
 void PCTreeWidget::changeDisplayedName(TreeWidgetItem *item)
 {
     if (!item->getName().empty()
+        && item->getName() != "N/A"
         && (item->getName() != item->getIpv4()
             && item->getName() != item->getIpv6())) {
         std::string name = item->getName()
@@ -449,7 +455,13 @@ void PCTreeWidget::loadPcs(std::string filename)
                     changeDisplayedName(item);
                     item->setMac(attr.value("mac").toString().toStdString());
                     if (attr.value("valid").toString() == "false") {
+                        item->setValid(NOT_VALID);
                         item->setBackgroundColor(0, QColor("red"));
+                    } else if (attr.value("valid").toString() == "unknown") {
+                        item->setValid(UNKNOWN);
+                        validate(item, 0);
+                    } else {
+                        item->setValid(VALID);
                     }
                 }
                 m_data_of_item_changed = true;
@@ -485,13 +497,19 @@ void PCTreeWidget::saveAllPcs(std::string filename)
         out.writeStartElement("group");
         out.writeAttribute("name", parent->text(0));
         for (int j = 0; j < parent->childCount(); j++) {
+            TreeWidgetItem *item = (TreeWidgetItem *) parent->child(j);
             out.writeStartElement("computer");
-            out.writeAttribute("id", ((TreeWidgetItem *) parent->child(j))->getId().c_str());
-            out.writeAttribute("ipv4", ((TreeWidgetItem *) parent->child(j))->getIpv4().c_str());
-            out.writeAttribute("ipv6", ((TreeWidgetItem *) parent->child(j))->getIpv6().c_str());
-            out.writeAttribute("domain", ((TreeWidgetItem *) parent->child(j))->getName().c_str());
-            out.writeAttribute("mac", ((TreeWidgetItem *) parent->child(j))->getMac().c_str());
-            out.writeAttribute("valid", parent->child(j)->backgroundColor(0) == QColor("red") ? "false" : "true");
+            out.writeAttribute("id", item->getId().c_str());
+            out.writeAttribute("ipv4", item->getIpv4().c_str());
+            out.writeAttribute("ipv6", item->getIpv6().c_str());
+            out.writeAttribute("domain", item->getName().c_str());
+            out.writeAttribute("mac", item->getMac().c_str());
+
+            std::string valid = "unknown";
+            if (item->getValid() != UNKNOWN) {
+                valid = item->getValid() == NOT_VALID ? "false" : "true";
+            }
+            out.writeAttribute("valid", valid.c_str());
 
             out.writeEndElement();
         }
@@ -744,6 +762,7 @@ void PCTreeWidget::validate(QTreeWidgetItem *item, int column)
         if ((result = !hostname.empty())) {
             // fetch missing ip (version 4 or 6)
             tree_item->setName(hostname);
+            tree_item->setValid(hostname == "N/A" ? UNKNOWN : VALID);
 
             getIp(hostname, ipv4, ipv6);
             if (!ipv4.empty()) {
@@ -776,6 +795,7 @@ void PCTreeWidget::validate(QTreeWidgetItem *item, int column)
     } else {
         tree_item->setSelected(false);
         tree_item->setBackground(0, QBrush(QColor("red")));
+        tree_item->setValid(NOT_VALID);
     }
     m_data_of_item_changed = true;
     m_new_item = false;

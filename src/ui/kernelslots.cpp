@@ -38,7 +38,8 @@ int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
             gnome_keyring_found_list_free(res_list);
             return 1;
         } else if (res != GNOME_KEYRING_RESULT_OK) {
-            Logger::getInstance()->error("Cannot get username and password");
+            std::string err = gnome_keyring_result_to_message(res);
+            Logger::getInstance()->error("Cannot get username and password: " + err);
             gnome_keyring_found_list_free(res_list);
             return -1;
         }
@@ -90,7 +91,7 @@ int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
             return 0;
         } catch (Pegasus::Exception &ex) {
             if (!silent) {
-                Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+                Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
             }
             return -1;
         }
@@ -111,6 +112,12 @@ void Engine::Kernel::deletePasswd()
 void Engine::Kernel::deletePasswd(std::string id)
 {
     Logger::getInstance()->debug("Engine::Kernel::deletePasswd(std::string id)");
+    CIMClient *client = (*m_connections.find(id)).second;
+    if (client->isConnected()) {
+        client->disconnect();
+        m_connections.erase(m_connections.find(id));
+    }
+
     GnomeKeyringResult res = gnome_keyring_delete_password_sync(
                                  GNOME_KEYRING_NETWORK_PASSWORD,
                                  "server", id.c_str(),
@@ -118,7 +125,8 @@ void Engine::Kernel::deletePasswd(std::string id)
                              );
 
     if (res != GNOME_KEYRING_RESULT_OK) {
-        Logger::getInstance()->info("Cannot delete password");
+        std::string err = gnome_keyring_result_to_message(res);
+        Logger::getInstance()->info("Cannot delete password: " + err);
     } else {
         Logger::getInstance()->info("Password deleted");
     }
@@ -144,7 +152,7 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
     QList<QTreeWidgetItem *> list = m_main_window.getPcTreeWidget()->getTree()->selectedItems();
     if (list.empty()) {
         handleProgressState(Engine::ERROR);
-        Logger::getInstance()->error("No such system");
+        Logger::getInstance()->error("No system to authenticate");
         return;
     }
     TreeWidgetItem *item = (TreeWidgetItem *) list[0];
@@ -174,7 +182,8 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
 
         if (res != GNOME_KEYRING_RESULT_OK) {
             handleProgressState(Engine::ERROR);
-            Logger::getInstance()->error("Cannot store password!");
+            std::string err = gnome_keyring_result_to_message(res);
+            Logger::getInstance()->error("Cannot store password: " + err);
             return;
         }
 
@@ -263,7 +272,7 @@ void Engine::Kernel::handleProgressState(int state, std::string process, IPlugin
     case ALMOST_REFRESHED:
         setButtonsEnabled(true);
         break;
-    case NOT_REFRESHED:        
+    case NOT_REFRESHED:
         m_bar->show(process);
         break;
     case ERROR:
@@ -318,7 +327,8 @@ void Engine::Kernel::resetKeyring()
     Logger::getInstance()->debug("Engine::Kernel::resetKeyring()");
     GnomeKeyringResult res = gnome_keyring_delete_sync(OPENLMI_KEYRING_DEFAULT);
     if (res != GNOME_KEYRING_RESULT_OK) {
-        Logger::getInstance()->error("Cannot reset keyring");
+        std::string err = gnome_keyring_result_to_message(res);
+        Logger::getInstance()->error("Cannot reset keyring: " + err);
         return;
     }
     createKeyring();
@@ -361,36 +371,40 @@ void Engine::Kernel::selectionChanged()
         return;
     }
 
-    if (list[0] == m_last_system) {
-        return;
-    }
-    m_last_system = list[0];
-
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
-    tab->setCurrentIndex(0);
+    IPlugin *plugin = (IPlugin *) tab->currentWidget();
 
-    std::string id = ((TreeWidgetItem *) list[0])->getId();
-    std::string title = WINDOW_TITLE;
-    title += " @ " + id;
-    m_main_window.setWindowTitle(title.c_str());
-
-    title = PROVIDER_BOX_TITLE;
-    title += id;
-    m_main_window.getProviderWidget()->setTitle(title);
-
-    int cnt = tab->count();
-    for (int i = 0; i < cnt; i++) {
-        IPlugin *plugin = (IPlugin *) tab->widget(i);
-        if (plugin == NULL) {
+    if (list[0] == m_last_system) {
+        if (plugin->isRefreshed()) {
             return;
         }
+    } else {
+        m_last_system = list[0];
+        tab->setCurrentIndex(0);
 
-        plugin->stopRefresh();
-        plugin->clear();
-        plugin->setRefreshed(false);
+        std::string id = ((TreeWidgetItem *) list[0])->getId();
+        std::string title = WINDOW_TITLE;
+        title += " @ " + id;
+        m_main_window.setWindowTitle(title.c_str());
+
+        title = PROVIDER_BOX_TITLE;
+        title += id;
+        m_main_window.getProviderWidget()->setTitle(title);
+
+        int cnt = tab->count();
+        for (int i = 0; i < cnt; i++) {
+            plugin = (IPlugin *) tab->widget(i);
+            if (plugin == NULL) {
+                return;
+            }
+
+            plugin->stopRefresh();
+            plugin->clear();
+            plugin->setRefreshed(false);
+        }
     }
 
-    IPlugin *plugin = (IPlugin *) tab->widget(0);
+    plugin = (IPlugin *) tab->currentWidget();
     if (plugin == NULL) {
         return;
     }

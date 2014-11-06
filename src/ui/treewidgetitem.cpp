@@ -17,12 +17,15 @@
 
 #include "treewidgetitem.h"
 
+#include <QKeyEvent>
+
 TreeWidgetItem::TreeWidgetItem(QTreeWidgetItem *parent) :
     QTreeWidgetItem(parent),
     m_ipv4(""),
     m_ipv6(""),
     m_name(""),
-    m_mac("")
+    m_mac(""),
+    m_valid(UNKNOWN)
 {
 }
 
@@ -78,4 +81,14 @@ std::string TreeWidgetItem::getId() const
 void TreeWidgetItem::setId(const std::string &id)
 {
     m_id = id;
+}
+
+validity TreeWidgetItem::getValid() const
+{
+    return m_valid;
+}
+
+void TreeWidgetItem::setValid(const validity &valid)
+{
+    m_valid = valid;
 }
