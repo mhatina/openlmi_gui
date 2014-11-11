@@ -7,7 +7,12 @@ class TreeWidget : public QTreeWidget
 {
     Q_OBJECT
 
+private:
+    QTreeWidgetItem *m_dragged_item;
+    QTreeWidgetItem *m_old_parent;
+
 protected:
+    void dropEvent(QDropEvent *event);
     void mousePressEvent(QMouseEvent *e);
 
 public:

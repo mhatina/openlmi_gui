@@ -328,7 +328,6 @@ void Engine::IPlugin::refresh(CIMClient *client)
         return;
     }
 
-    Logger::getInstance()->info("Refreshing " + getLabel());
     m_client = client;
     m_refreshed = true;
 

@@ -94,9 +94,6 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
         this,
         SLOT(menuHidden()));
 
-    m_ui->tree->setSelectionMode(
-        QAbstractItemView::ContiguousSelection);
-
     topLevelNode("Added")->setExpanded(true);
     loadPcs(path);
 }
@@ -197,6 +194,23 @@ bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text)
     }
 
     return false;
+}
+
+int PCTreeWidget::topLevelNodeCount(std::string item_name)
+{
+    Logger::getInstance()->debug("PCTreeWidget::topLevelNodeCount(std::string item_name)");
+    int cnt = 0;
+    TreeWidgetItem *tmp;
+    for (int i = 0; i < m_ui->tree->topLevelItemCount(); i++) {
+        tmp = (TreeWidgetItem *) m_ui->tree->topLevelItem(i);
+        if (item_name.empty())
+            cnt++;
+        else if (tmp != NULL && tmp->text(0).toStdString() == item_name) {
+            cnt++;
+        }
+    }
+
+    return cnt;
 }
 
 std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)
@@ -606,8 +620,10 @@ void PCTreeWidget::addGroup()
         Qt::ItemIsDropEnabled
         | Qt::ItemIsEnabled
         | Qt::ItemIsEditable;
+    m_data_of_item_changed = false;
     QTreeWidgetItem *item = topLevelNode("");
     item->setFlags(flags);
+    m_data_of_item_changed = true;
     m_ui->tree->editItem(item);
 }
 
@@ -710,17 +726,23 @@ void PCTreeWidget::startTime(QTreeWidgetItem *item, int column)
 
 void PCTreeWidget::validate(QTreeWidgetItem *item, int column)
 {
-    if (!m_data_of_item_changed || !item->parent()) {
+    if (!m_data_of_item_changed) {
         return;
     }
+    Logger::getInstance()->debug("PCTreeWidget::validate(TreeWidgetItem* item, int column)");
     TreeWidgetItem *parent = (TreeWidgetItem *) item->parent();
-    TreeWidgetItem *tree_item = (TreeWidgetItem *) item;
     if (parent == NULL) {
+        if (item->text(0).size() == 0
+            || topLevelNodeCount(item->text(0).toStdString()) > 1) {
+            m_ui->tree->takeTopLevelItem(m_ui->tree->indexOfTopLevelItem(item));
+        } else {
+
+        }
         m_emit_signal = true;
         return;
     }
 
-    Logger::getInstance()->debug("PCTreeWidget::validate(TreeWidgetItem* item, int column)");
+    TreeWidgetItem *tree_item = (TreeWidgetItem *) item;    
     m_ui->tree->sortByColumn(0, Qt::AscendingOrder);
 
     m_data_of_item_changed = false;
