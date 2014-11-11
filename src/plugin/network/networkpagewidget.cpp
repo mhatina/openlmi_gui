@@ -86,6 +86,7 @@ void NetworkPageWidget::setIPNetworkConnection(Pegasus::CIMInstance instance)
 
 void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
 {
+    Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     QTableWidgetItem *item;
     int i = 0;
     while (1) {
@@ -104,7 +105,8 @@ void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
     bool v4 = false;
     std::string version;
     item = new QTableWidgetItem((version = CIMValue::get_property_value(instance,
-            "ProtocolIFType")).c_str());
+                                           "ProtocolIFType")).c_str());
+    item->setFlags(flags);
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
         i,
@@ -113,6 +115,7 @@ void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
     v4 = version == "IPv4";
 
     item = new QTableWidgetItem(CIMValue::get_property_value(instance, v4 ? "IPv4Address" : "IPv6Address").c_str());
+    item->setFlags(flags);
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
         i,
@@ -121,6 +124,7 @@ void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
 
     item = new QTableWidgetItem(CIMValue::get_property_value(instance,
                                 v4 ? "SubnetMask" : "IPv6SubnetPrefixLength").c_str());
+    item->setFlags(flags);
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
         i,
@@ -128,6 +132,7 @@ void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
         item);
 
     item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AddressOrigin").c_str());
+    item->setFlags(flags);
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
         i,
@@ -147,6 +152,7 @@ void NetworkPageWidget::setLanEndPoint(Pegasus::CIMInstance instance)
 
 void NetworkPageWidget::setNetworkRemoteService(Pegasus::CIMInstance instance)
 {
+    Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     QTableWidgetItem *item;
     int i = 0;
     while (1) {
@@ -163,6 +169,7 @@ void NetworkPageWidget::setNetworkRemoteService(Pegasus::CIMInstance instance)
     }
 
     item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AccessContext").c_str());
+    item->setFlags(flags);
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
         i,
@@ -170,6 +177,7 @@ void NetworkPageWidget::setNetworkRemoteService(Pegasus::CIMInstance instance)
         item);
 
     item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AccessInfo").c_str());
+    item->setFlags(flags);
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
         i,
