@@ -85,7 +85,8 @@ SOURCES         +=      main.cpp \
                         address.cpp \
                         cimclient.cpp \
                         cimvalue.cpp \
-    logdialog.cpp
+                        logdialog.cpp \
+                        addtreeitemdialog.cpp
 
 HEADERS         +=      mainwindow.h \
                         kernel.h \
@@ -114,7 +115,8 @@ HEADERS         +=      mainwindow.h \
                         address.h \
                         cimclient.h \
                         cimvalue.h \
-    logdialog.h
+                        logdialog.h \
+                        addtreeitemdialog.h
 
 FORMS           +=      mainwindow.ui \
                         widgets/providerwidget.ui \
@@ -128,4 +130,5 @@ FORMS           +=      mainwindow.ui \
                         widgets/labeledlabel.ui \
                         settings/generalsettings.ui \
                         settings/generalpluginsettings.ui \
-    logdialog.ui
+                        logdialog.ui \
+                        addtreeitemdialog.ui

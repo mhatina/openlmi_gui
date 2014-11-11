@@ -15,6 +15,7 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
+#include "addtreeitemdialog.h"
 #include "discoverworker.h"
 #include "kernel.h"
 #include "logger.h"
@@ -166,7 +167,6 @@ void PCTreeWidget::setComputerIcon(QIcon icon)
 }
 
 // private
-
 
 int PCTreeWidget::getTimeSec() const
 {
@@ -556,12 +556,15 @@ void PCTreeWidget::onAddButtonClicked()
         (*it)->setSelected(false);
     }
 
-    TreeWidgetItem *child = addPcToTree("Added", "");
+    AddTreeItemDialog dialog(this);
+    if (!dialog.exec()) {
+        return;
+    }
+
+    TreeWidgetItem *child = addPcToTree("Added", dialog.getName());
     if (child != NULL) {
         m_new_item = true;
         child->setSelected(true);
-        m_ui->tree->setCurrentItem(child);
-        m_ui->tree->editItem(child);
     }
 }
 
