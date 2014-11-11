@@ -80,12 +80,17 @@ SOURCES         +=      main.cpp \
                         settings/generalpluginsettings.cpp \
                         widgets/treewidget.cpp \
                         widgets/progressbar.cpp \
-                        tests/basictest.cpp \
-                        tests/helps.cpp \
                         address.cpp \
                         cimclient.cpp \
                         cimvalue.cpp \
-    logdialog.cpp
+                        logdialog.cpp \
+                        tests/abstracttestsuite.cpp \
+                        tests/menubartestsuite.cpp \
+                        tests/tst_lmicc.cpp \
+                        tests/toolbartestsuite.cpp \
+                        tests/pctreewidgettestsuite.cpp \
+                        tests/startuptestsuite.cpp \
+                        tests/tst_helper.cpp
 
 HEADERS         +=      mainwindow.h \
                         kernel.h \
@@ -109,12 +114,17 @@ HEADERS         +=      mainwindow.h \
                         settings/generalpluginsettings.h \
                         widgets/treewidget.h \
                         widgets/progressbar.h \
-                        tests/basictest.h \
-                        tests/helps.h \
                         address.h \
                         cimclient.h \
                         cimvalue.h \
-    logdialog.h
+                        logdialog.h \
+                        tests/abstracttestsuite.h \
+                        tests/menubartestsuite.h \
+                        tests/tst_lmicc.h \
+                        tests/toolbartestsuite.h \
+                        tests/pctreewidgettestsuite.h \
+                        tests/startuptestsuite.h \
+                        tests/tst_helper.h
 
 FORMS           +=      mainwindow.ui \
                         widgets/providerwidget.ui \
@@ -128,4 +138,4 @@ FORMS           +=      mainwindow.ui \
                         widgets/labeledlabel.ui \
                         settings/generalsettings.ui \
                         settings/generalpluginsettings.ui \
-    logdialog.ui
+                        logdialog.ui

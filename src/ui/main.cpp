@@ -19,7 +19,7 @@
 
 #include "kernel.h"
 #include "logger.h"
-#include "tests/basictest.h"
+#include "tests/tst_lmicc.h"
 
 #include <QApplication>
 #include <unistd.h>
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
             break;
         case 't':
         {
-            return BasicTest::main_for_tests();
+            return Tst_LMICC::main_for_tests();
         }
         case 'h':
         case '?':

@@ -35,6 +35,8 @@
     "?)+(?:[a-zA-Z]{2,})$)"
 #endif
 
+class PCTreeWidgetTestSuite;
+
 namespace Ui
 {
 class PCTreeWidget;
@@ -48,6 +50,8 @@ class PCTreeWidget;
 class PCTreeWidget : public QWidget
 {
     Q_OBJECT
+
+    friend class PCTreeWidgetTestSuite;
 
 private:
     bool m_data_of_item_changed;
