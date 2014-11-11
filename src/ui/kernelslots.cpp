@@ -112,8 +112,11 @@ void Engine::Kernel::deletePasswd()
 void Engine::Kernel::deletePasswd(std::string id)
 {
     Logger::getInstance()->debug("Engine::Kernel::deletePasswd(std::string id)");
-    CIMClient *client = (*m_connections.find(id)).second;
-    if (client->isConnected()) {
+
+    CIMClient *client = NULL;
+    if (!m_connections.empty())
+        client = (*m_connections.find(id)).second;
+    if (client && client->isConnected()) {
         client->disconnect();
         m_connections.erase(m_connections.find(id));
     }
