@@ -125,6 +125,9 @@ void AccountPlugin::setSelectedLineColor(QList<QTableWidgetItem *>
 
 AccountPlugin::AccountPlugin() :
     IPlugin(),
+    m_account_refreshed(false),
+    m_do_not_clear(false),
+    m_group_refreshed(false),
     m_last_group_name(""),
     m_last_user_name(""),
     m_ui(new Ui::AccountPlugin)
@@ -187,6 +190,11 @@ AccountPlugin::AccountPlugin() :
         SIGNAL(customContextMenuRequested(QPoint)),
         this,
         SLOT(showContextMenu(QPoint)));
+    connect(
+        m_ui->tab_widget,
+        SIGNAL(currentChanged(int)),
+        this,
+        SLOT(currentTabChanged(int)));
     m_ui->filter_box->hide();
     setPluginEnabled(false);
 }
@@ -233,8 +241,12 @@ std::string AccountPlugin::getLabel()
 std::string AccountPlugin::getRefreshInfo()
 {
     std::stringstream ss;
-    ss << getLabel() << ": " << m_user_instances.size() << " user(s), "
-       << m_group_instances.size() << " group(s) shown";
+    ss << getLabel() << ": " << m_user_instances.size() << " user(s)";
+    if (!m_group_instances.empty()) {
+        ss << " ," << m_group_instances.size() << " group(s) shown";
+    } else {
+        ss << " shown";
+    }
     return ss.str();
 }
 
@@ -245,103 +257,106 @@ void AccountPlugin::getData(std::vector<void *> *data)
     Pegasus::Array<Pegasus::CIMInstance> users;
     Pegasus::Array<Pegasus::CIMObject> users_obj;
     Pegasus::Array<Pegasus::CIMInstance> groups;
-    m_user_instances.clear();
-    m_group_instances.clear();
 
     std::string filter_user = m_ui->filter_user_line->text().toStdString();
     std::string filter_group = m_ui->filter_group_line->text().toStdString();
     try {
-        std::vector<void *> *tmp = new std::vector<void *>();
-        users = enumerateInstances(
-                    Pegasus::CIMNamespaceName("root/cimv2"),
-                    Pegasus::CIMName("LMI_Account"),
-                    true,       // deep inheritance
-                    false,      // local only
-                    true,       // include qualifiers
-                    false       // include class origin
-                );
+        if (!m_account_refreshed && m_ui->tab_widget->currentWidget()->children()[1] == m_user_table) {
+            m_user_instances.clear();
+            users = enumerateInstances(
+                        Pegasus::CIMNamespaceName("root/cimv2"),
+                        Pegasus::CIMName("LMI_Account"),
+                        true,       // deep inheritance
+                        false,      // local only
+                        true,       // include qualifiers
+                        false       // include class origin
+                    );
 
-        for (unsigned int i = 0; i < users.size(); i++) {
-            Pegasus::CIMInstance *instance;
-            if (!filter_user.empty()) {
-                instance = new Pegasus::CIMInstance(users[i]);
-                if (CIMValue::get_property_value(*instance, "Name").find(filter_user) == std::string::npos) {
-                    continue;
+            for (unsigned int i = 0; i < users.size(); i++) {
+                Pegasus::CIMInstance *instance;
+                if (!filter_user.empty()) {
+                    instance = new Pegasus::CIMInstance(users[i]);
+                    if (CIMValue::get_property_value(*instance, "Name").find(filter_user) == std::string::npos) {
+                        continue;
+                    }
+                } else {
+                    instance = new Pegasus::CIMInstance(users[i]);
                 }
-            } else {
-                instance = new Pegasus::CIMInstance(users[i]);
+
+                data->push_back(instance);
+                m_user_instances.push_back(*instance);
             }
+            for (unsigned int i = 0; i < users.size(); i++) {
+                std::string str_value = CIMValue::get_property_value(users[i], "Name");
+                m_users.push_back(str_value);
+            }
+            m_account_refreshed = true;
+        } else if (!m_group_refreshed && m_ui->tab_widget->currentWidget()->children()[1] == m_group_table) {
+            m_group_instances.clear();
+            groups = enumerateInstances(
+                         Pegasus::CIMNamespaceName("root/cimv2"),
+                         Pegasus::CIMName("LMI_Group"),
+                         true,       // deep inheritance
+                         false,      // local only
+                         true,       // include qualifiers
+                         false       // include class origin
+                     );
 
-            tmp->push_back(instance);
-            m_user_instances.push_back(*instance);
-        }
-        for (unsigned int i = 0; i < users.size(); i++) {
-            std::string str_value = CIMValue::get_property_value(users[i], "Name");
-            m_users.push_back(str_value);
-        }
-        emit doneFetchingData(tmp, true);
-
-        groups = enumerateInstances(
-                     Pegasus::CIMNamespaceName("root/cimv2"),
-                     Pegasus::CIMName("LMI_Group"),
-                     true,       // deep inheritance
-                     false,      // local only
-                     true,       // include qualifiers
-                     false       // include class origin
-                 );
-
-        for (unsigned int i = 0; i < groups.size(); i++) {
-            Pegasus::CIMInstance *instance;
-            if (!filter_group.empty()) {
-                instance = new Pegasus::CIMInstance(groups[i]);
-                if (CIMValue::get_property_value(*instance, "Name").find(filter_group) == std::string::npos) {
-                    continue;
+            for (unsigned int i = 0; i < groups.size(); i++) {
+                Pegasus::CIMInstance *instance;
+                if (!filter_group.empty()) {
+                    instance = new Pegasus::CIMInstance(groups[i]);
+                    if (CIMValue::get_property_value(*instance, "Name").find(filter_group) == std::string::npos) {
+                        continue;
+                    }
+                } else {
+                    instance = new Pegasus::CIMInstance(groups[i]);
                 }
-            } else {
-                instance = new Pegasus::CIMInstance(groups[i]);
+
+                data->push_back(instance);
+                m_group_instances.push_back(*instance);
             }
+            data->push_back(new std::multimap<Pegasus::String, Pegasus::CIMInstance>());
 
-            data->push_back(instance);
-            m_group_instances.push_back(*instance);
+            Pegasus::Array<Pegasus::CIMInstance> members;
+            members = enumerateInstances(
+                          Pegasus::CIMNamespaceName("root/cimv2"),
+                          Pegasus::CIMName("LMI_MemberOfGroup"),
+                          true,       // deep inheritance
+                          false,      // local only
+                          false,      // include qualifiers
+                          false       // include class origin
+                      );
+
+            int members_cnt = members.size();
+            for (int j = 0; j < members_cnt; j++) {
+                int prop_ind = members[j].findProperty("Member");
+                Pegasus::String member = members[j].getProperty(prop_ind).getValue().toString();
+                Pegasus::Uint32 ind = member.reverseFind(':') + 1;
+                member = member.subString(ind, member.size() - ind - 1);
+
+                prop_ind = members[j].findProperty("Collection");
+                Pegasus::String collection = members[j].getProperty(
+                                                 prop_ind).getValue().toString();
+                ind = collection.reverseFind('=') + 2;
+                collection = collection.subString(ind, collection.size() - ind - 1);
+
+                users_obj = execQuery(
+                                Pegasus::CIMNamespaceName("root/cimv2"),
+                                Pegasus::String("WQL"),
+                                Pegasus::String(std::string("SELECT * FROM LMI_Account WHERE UserID = \"" +
+                                                CIMValue::to_std_string(member) + "\"").c_str())
+                            );
+
+                unsigned pos = data->size() - 1;
+                ((std::multimap<Pegasus::String, Pegasus::CIMInstance> *) (*data)[pos])->insert(
+                    std::pair<Pegasus::String, Pegasus::CIMInstance>(collection,
+                            Pegasus::CIMInstance(users_obj[0])));
+            }
+            m_group_refreshed = true;
+        } else {
+            return;
         }
-        data->push_back(new std::multimap<Pegasus::String, Pegasus::CIMInstance>());
-
-        Pegasus::Array<Pegasus::CIMInstance> members;
-        members = enumerateInstances(
-                      Pegasus::CIMNamespaceName("root/cimv2"),
-                      Pegasus::CIMName("LMI_MemberOfGroup"),
-                      true,       // deep inheritance
-                      false,      // local only
-                      false,      // include qualifiers
-                      false       // include class origin
-                  );
-
-        int members_cnt = members.size();
-        for (int j = 0; j < members_cnt; j++) {
-            int prop_ind = members[j].findProperty("Member");
-            Pegasus::String member = members[j].getProperty(prop_ind).getValue().toString();
-            Pegasus::Uint32 ind = member.reverseFind(':') + 1;
-            member = member.subString(ind, member.size() - ind - 1);
-
-            prop_ind = members[j].findProperty("Collection");
-            Pegasus::String collection = members[j].getProperty(
-                                             prop_ind).getValue().toString();
-            ind = collection.reverseFind('=') + 2;
-            collection = collection.subString(ind, collection.size() - ind - 1);
-
-            users_obj = execQuery(
-                            Pegasus::CIMNamespaceName("root/cimv2"),
-                            Pegasus::String("WQL"),
-                            Pegasus::String(std::string("SELECT * FROM LMI_Account WHERE UserID = \"" +
-                                            CIMValue::to_std_string(member) + "\"").c_str())
-                        );
-
-            unsigned pos = data->size() - 1;
-            ((std::multimap<Pegasus::String, Pegasus::CIMInstance> *) (*data)[pos])->insert(
-                std::pair<Pegasus::String, Pegasus::CIMInstance>(collection,
-                        Pegasus::CIMInstance(users_obj[0])));
-        }
-
     } catch (Pegasus::Exception &ex) {
         emit doneFetchingData(NULL, false, CIMValue::to_std_string(ex.getMessage()));
         return;
@@ -354,11 +369,18 @@ void AccountPlugin::clear()
 {
     Logger::getInstance()->debug("AccountPlugin::clear()");
 
+    if (m_do_not_clear) {
+        m_do_not_clear = false;
+        return;
+    }
+
     m_changes_enabled = false;
     m_user_table->setRowCount(0);
     m_group_table->setRowCount(0);
     m_last_user_name = "";
     m_last_group_name = "";
+    m_account_refreshed = false;
+    m_group_refreshed = false;
     m_changes_enabled = true;
 }
 
@@ -371,8 +393,10 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
     int prop_cnt;
     try {
         unsigned int cnt = data->size();
-        Pegasus::CIMInstance *tmp = ((Pegasus::CIMInstance *) (*data)[0]);
-        group = CIMValue::get_property_value(*tmp, "CreationClassName") == "LMI_Group";
+        if (cnt > 0) {
+            Pegasus::CIMInstance *tmp = ((Pegasus::CIMInstance *) (*data)[0]);
+            group = CIMValue::get_property_value(*tmp, "CreationClassName") == "LMI_Group";
+        }
         for (unsigned int i = 0; i < cnt; i++) {
             if (group && i == cnt - 1) {
                 break;
@@ -586,6 +610,18 @@ void AccountPlugin::addUserToGroup(std::string group)
                        )
                       );
     }
+}
+
+void AccountPlugin::currentTabChanged(int i)
+{
+    Q_UNUSED(i)
+    if (m_account_refreshed && m_group_refreshed) {
+        return;
+    }
+
+    emit refreshProgress(Engine::NOT_REFRESHED, this);
+    m_do_not_clear = true;
+    refresh(m_client);
 }
 
 void AccountPlugin::remove()

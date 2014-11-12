@@ -203,9 +203,9 @@ int PCTreeWidget::topLevelNodeCount(std::string item_name)
     TreeWidgetItem *tmp;
     for (int i = 0; i < m_ui->tree->topLevelItemCount(); i++) {
         tmp = (TreeWidgetItem *) m_ui->tree->topLevelItem(i);
-        if (item_name.empty())
+        if (item_name.empty()) {
             cnt++;
-        else if (tmp != NULL && tmp->text(0).toStdString() == item_name) {
+        } else if (tmp != NULL && tmp->text(0).toStdString() == item_name) {
             cnt++;
         }
     }
@@ -556,15 +556,23 @@ void PCTreeWidget::onAddButtonClicked()
         (*it)->setSelected(false);
     }
 
+    bool simple_addition = SettingsDialog::getInstance()->value<bool, QCheckBox *>("simple_addition");
+
+    TreeWidgetItem *child = NULL;
     AddTreeItemDialog dialog(this);
-    if (!dialog.exec()) {
-        return;
+    if (!simple_addition) {
+        if (!dialog.exec()) {
+            return;
+        }
     }
 
-    TreeWidgetItem *child = addPcToTree("Added", dialog.getName());
+    child = addPcToTree("Added", dialog.getName());
     if (child != NULL) {
         m_new_item = true;
         child->setSelected(true);
+        if (simple_addition) {
+            m_ui->tree->editItem(child, 0);
+        }
     }
 }
 
@@ -745,7 +753,7 @@ void PCTreeWidget::validate(QTreeWidgetItem *item, int column)
         return;
     }
 
-    TreeWidgetItem *tree_item = (TreeWidgetItem *) item;    
+    TreeWidgetItem *tree_item = (TreeWidgetItem *) item;
     m_ui->tree->sortByColumn(0, Qt::AscendingOrder);
 
     m_data_of_item_changed = false;

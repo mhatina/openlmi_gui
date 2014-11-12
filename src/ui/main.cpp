@@ -21,7 +21,7 @@
 #include "logger.h"
 #include "tests/basictest.h"
 
-#include <QApplication>
+#include <QtSolutions/QtSingleApplication>
 #include <unistd.h>
 
 void usage(const char *arg)
@@ -38,7 +38,13 @@ int main(int argc, char *argv[])
 {
     Logger::getInstance()->debug("main(int argc, char *argv[])");
 
-    QApplication a(argc, argv);
+    QtSingleApplication a(argc, argv);
+
+    if (a.isRunning()) {
+        Logger::getInstance()->error("Application already running");
+        Logger::removeInstance();
+        return 0;
+    }
 
     int opt;
     const char *shortopts = "ght";
@@ -60,6 +66,7 @@ int main(int argc, char *argv[])
         }    
 
     Engine::Kernel kernel;
+    a.setActivationWindow(kernel.getMainWindow());
     kernel.showMainWindow();
 
     return a.exec();

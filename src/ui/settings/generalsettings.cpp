@@ -27,6 +27,8 @@ GeneralSettings::GeneralSettings(QWidget *parent) :
 
     connect(m_ui->use_certificate_checkbox, SIGNAL(stateChanged(int)), this,
             SLOT(changeCertificate(int)));
+    connect(m_ui->simple_addition, SIGNAL(stateChanged(int)), this,
+            SLOT(changeSimpleAddition(int)));
 }
 
 GeneralSettings::~GeneralSettings()
@@ -46,6 +48,7 @@ void GeneralSettings::init()
     m_ui->certificate->setEnabled(false);
     m_ui->certificate->setText("/etc/pki/tls/certs");
     m_ui->log_archive->setText("");
+    m_ui->simple_addition->setChecked(false);
 }
 
 void GeneralSettings::load(QFile &file)
@@ -95,6 +98,10 @@ void GeneralSettings::load(QFile &file)
             }
             QString archive = in.text().toString();
             m_ui->log_archive->setText(archive);
+        } else if (in.name() == "simpleAddition") {
+            QXmlStreamAttributes attr = in.attributes();
+            bool enabled = (attr.value("enabled").toString().toStdString() == "true");
+            m_ui->simple_addition->setChecked(enabled);
         }
     }
 
@@ -103,8 +110,9 @@ void GeneralSettings::load(QFile &file)
         return;
     }
 
-    if (!found)
+    if (!found) {
         init();
+    }
 }
 
 void GeneralSettings::save(QXmlStreamWriter &writer)
@@ -114,13 +122,23 @@ void GeneralSettings::save(QXmlStreamWriter &writer)
     writer.writeStartElement("certificate");
     writer.writeAttribute("enabled",
                           m_ui->use_certificate_checkbox->checkState() == Qt::Checked ? "true" : "false");
-    writer.writeCharacters(m_ui->certificate->text());    
+    writer.writeCharacters(m_ui->certificate->text());
     writer.writeEndElement();
 
     writer.writeTextElement("logArchive", m_ui->log_archive->text());
+
+    writer.writeStartElement("simpleAddition");
+    writer.writeAttribute("enabled", m_ui->simple_addition->checkState() == Qt::Checked ? "true" : "false");
+    writer.writeEndElement();
 }
 
 void GeneralSettings::changeCertificate(int state)
 {
     m_ui->certificate->setEnabled(state == Qt::Checked);
+}
+
+void GeneralSettings::changeSimpleAddition(int state)
+{
+    m_ui->simple_addition->setText(state == Qt::Checked ? "Warning: There is known bug \n\"Adding groups - "
+                                   "possible to add group with no name set\", \nwhen adding groups" : "");
 }

@@ -77,6 +77,9 @@ class AccountPlugin : public Engine::IPlugin
     Q_INTERFACES(Engine::IPlugin)
 
 private:
+    bool m_account_refreshed;
+    bool m_do_not_clear;
+    bool m_group_refreshed;
     QMenu *m_context_menu;
     QTableWidget *m_group_table;
     QTableWidget *m_user_table;
@@ -107,6 +110,7 @@ public:
 private slots:
     void add();
     void addUserToGroup(std::string group);
+    void currentTabChanged(int i);
     void remove();
     void removeUserFromGroup(std::string group);
     void showButtons();

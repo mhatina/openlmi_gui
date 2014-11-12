@@ -43,6 +43,7 @@ public:
 
 private slots:
     void changeCertificate(int state);
+    void changeSimpleAddition(int state);
 };
 
 #endif // GENERALSETTINGS_H

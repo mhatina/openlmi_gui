@@ -9,12 +9,14 @@ URL:            https://github.com/mhatina/openlmi_gui
 Source0:        lmicc.tar.gz 
 
 BuildRequires:  qt-devel >= 4.8.5
+BuildRequires:  qtsingleapplication-devel >= 2.6.1
 BuildRequires:  tog-pegasus-devel >= 2.12.0
 BuildRequires:  tog-pegasus-libs >= 2.12.0
 BuildRequires:  libgnome-keyring-devel >= 3.10.1
 BuildRequires:  boost-devel >= 1.54.0
 BuildRequires:  openslp-devel >= 1.2.1
 BuildRequires:  lmicc-logger
+Requires:       qtsingleapplication >= 2.6.1
 Requires:       tog-pegasus >= 2.12.0
 Requires:       boost >= 1.54.0
 Requires:       boost-thread >= 1.54.0

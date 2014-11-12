@@ -29,6 +29,7 @@ CONFIG          +=      link_pkgconfig
 PKGCONFIG       +=      glib-2.0
 RESOURCES       +=      icons.qrc
 CONFIG          +=      qtestlib
+include(/usr/lib64/qt4/mkspecs/features/qtsingleapplication.prf)
 
 UI_DIR          =       uics
 MOC_DIR         =       mocs

@@ -30,6 +30,10 @@ AddTreeItemDialog::AddTreeItemDialog(QWidget *parent) :
 
     setWindowFlags(Qt::Popup);
 
+    move(
+        parent->mapToGlobal(parent->pos()).rx() + 15,
+        parent->mapToGlobal(parent->rect().center()).ry() - 150);
+
     connect(
         m_ui->name,
         SIGNAL(textChanged(QString)),
