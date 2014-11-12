@@ -34,9 +34,27 @@ std::string OverviewPlugin::decode(Pegasus::CIMProperty property)
     Pegasus::CIMValue value = property.getValue();
     if (property.getName().equal(Pegasus::CIMName("PowerState"))) {
         return power_state_values[atoi(CIMValue::to_std_string(value).c_str())];
+    } else if (property.getName().equal(Pegasus::CIMName("SyslogSeverity"))) {
+        return syslog_severity_values[atoi(CIMValue::to_std_string(value).c_str())];
+    } else if (property.getName().equal(Pegasus::CIMName("PerceivedSeverity"))) {
+        return perceived_severity_values[atoi(CIMValue::to_std_string(value).c_str())];
     }
 
     return "";
+}
+
+std::string OverviewPlugin::getTime()
+{
+    time_t rawtime;
+    struct tm *timeinfo;
+    char buffer[80];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, 80, "%G%m%d000000", timeinfo);
+
+    return buffer;
 }
 
 void OverviewPlugin::fillLogBox(std::string filter)
@@ -58,12 +76,15 @@ void OverviewPlugin::fillLogBox(std::string filter)
                 m_log_mutex->unlock();
                 return;
             }
+            Pegasus::Uint32 ind;
             switch (j) {
             case 0:
-                title = CIMValue::get_property_value(m_logs[i], "SyslogSeverity");
+                ind = m_logs[i].findProperty("SyslogSeverity");
+                title = decode(m_logs[i].getProperty(ind));
                 break;
             case 1:
-                title = CIMValue::get_property_value(m_logs[i], "PerceivedSeverity");
+                ind = m_logs[i].findProperty("PerceivedSeverity");
+                title = decode(m_logs[i].getProperty(ind));
                 break;
             default:
                 title = "Unknown";
@@ -99,6 +120,7 @@ OverviewPlugin::OverviewPlugin() :
     m_ui->setupUi(this);
     m_ui->filter_box->hide();
     setPluginEnabled(false);
+    m_ui->new_log_entry->setFocus(Qt::ActiveWindowFocusReason);
 
     connect(
         m_ui->filter,
@@ -182,7 +204,7 @@ std::string OverviewPlugin::getRefreshInfo()
     std::stringstream ss;
     ss << getLabel() << ": ";
     if (m_journald_available) {
-        ss << m_logs.size() << " log records shown";
+        ss << m_logs.size() << " log records from today shown";
     } else {
         ss << "Journald provider not available";
     }
@@ -309,24 +331,24 @@ void OverviewPlugin::getData(std::vector<void *> *data)
         emit refreshProgress(Engine::ALMOST_REFRESHED, this);
 
         if (!m_journald_available) {
-            emit doneFetchingData(data);            
+            emit doneFetchingData(data);
             return;
         }
 
-        Pegasus::Array<Pegasus::CIMInstance> log =
-            enumerateInstances(
-                Pegasus::CIMNamespaceName("root/cimv2"),
-                Pegasus::CIMName("LMI_JournalLogRecord"),
-                true,       // deep inheritance
-                false,      // local only
-                true,       // include qualifiers
-                false       // include class origin
-            );
+        std::string time = getTime();
+        std::string query = "Select * FROM LMI_JournalLogRecord WHERE MessageTimestamp > \"";
+        query += time + "\"";
+        Pegasus::Array<Pegasus::CIMObject> log =
+                execQuery(
+                    Pegasus::CIMNamespaceName("root/cimv2"),
+                    Pegasus::String("WQL"),
+                    Pegasus::String(query.c_str())
+                    );
 
         for (unsigned int i = 0; i < log.size(); i++) {
             data->push_back(new Pegasus::CIMInstance(log[i]));
             m_log_mutex->lock();
-            m_logs.push_back(log[i]);
+            m_logs.push_back(Pegasus::CIMInstance(log[i]));
             m_log_mutex->unlock();
         }
 
@@ -335,7 +357,7 @@ void OverviewPlugin::getData(std::vector<void *> *data)
         return;
     }
 
-    emit doneFetchingData(data);    
+    emit doneFetchingData(data);
 }
 
 void OverviewPlugin::fillTab(std::vector<void *> *data)

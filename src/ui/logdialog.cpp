@@ -272,6 +272,7 @@ LogDialog::LogDialog(QWidget *parent) :
     m_ui->setupUi(this);
     initContextMenu();
     initShowButton();
+    m_ui->filter->setFocus(Qt::ActiveWindowFocusReason);
 
     connect(
         m_ui->show_button,

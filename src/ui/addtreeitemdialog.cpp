@@ -29,6 +29,7 @@ AddTreeItemDialog::AddTreeItemDialog(QWidget *parent) :
     m_ui->name->setCursorPosition(0);
 
     setWindowFlags(Qt::Popup);
+    m_ui->name->setFocus(Qt::PopupFocusReason);
 
     move(
         parent->mapToGlobal(parent->pos()).rx() + 15,
@@ -43,7 +44,8 @@ AddTreeItemDialog::AddTreeItemDialog(QWidget *parent) :
 
 AddTreeItemDialog::~AddTreeItemDialog()
 {
-    delete m_ui;
+    m_ui->name->clearFocus();
+    delete m_ui;    
 }
 
 std::string AddTreeItemDialog::getName()

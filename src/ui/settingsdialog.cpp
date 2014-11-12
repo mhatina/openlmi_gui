@@ -57,6 +57,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     load();
     updateList("");
+    m_ui->filter->setFocus(Qt::ActiveWindowFocusReason);
 }
 
 SettingsDialog::~SettingsDialog()

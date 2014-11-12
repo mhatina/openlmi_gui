@@ -33,6 +33,7 @@ NewUserDialog::NewUserDialog(QWidget *parent) :
             SLOT(changeHomeDir(QString)));
     m_ui->name_line->setFocus();
     setWindowFlags(Qt::Popup);
+    m_ui->name_line->setFocus(Qt::PopupFocusReason);
 }
 
 NewUserDialog::~NewUserDialog()

@@ -83,13 +83,7 @@ private:
      * @param show_message -- whether @ref showMessage() should be emitted
      * @return true if successful; otherwise false
      */
-    bool log(std::string message, log_mode mode, bool show_message);
-
-    /**
-     * @brief getTime
-     * @return current time
-     */
-    std::string getTime();
+    bool log(std::string message, log_mode mode, bool show_message);    
 
     /**
      * @brief getLogModeInfo
@@ -163,6 +157,12 @@ public:
      * @return true if successful; otherwise false
      */
     bool critical(std::string message, bool show_message = true);
+
+    /**
+     * @brief getTime
+     * @return current time
+     */
+    std::string getTime();
 
     void setShowDebug(bool value);
 

@@ -562,6 +562,7 @@ void PCTreeWidget::onAddButtonClicked()
     AddTreeItemDialog dialog(this);
     if (!simple_addition) {
         if (!dialog.exec()) {
+            m_emit_signal = true;
             return;
         }
     }

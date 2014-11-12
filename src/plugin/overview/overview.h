@@ -39,6 +39,28 @@ const char *const power_state_values[] = {
     "Power Save - Soft Off"
 };
 
+const char *const syslog_severity_values[] = {
+    "Emergency",
+    "Alert",
+    "Critical",
+    "Error",
+    "Warning",
+    "Notice",
+    "Informational",
+    "Debug"
+};
+
+const char *const perceived_severity_values[] = {
+    "Unknown",
+    "Other",
+    "Information",
+    "Degraded/Warning",
+    "Minor",
+    "Major",
+    "Critical",
+    "Fatal/NonRecoverable"
+};
+
 namespace Ui
 {
 class OverviewPlugin;
@@ -59,6 +81,7 @@ private:
     Ui::OverviewPlugin *m_ui;
 
     std::string decode(Pegasus::CIMProperty property);
+    std::string getTime();
     void fillLogBox(std::string filter);
 
 private slots:

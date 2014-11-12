@@ -243,7 +243,7 @@ std::string AccountPlugin::getRefreshInfo()
     std::stringstream ss;
     ss << getLabel() << ": " << m_user_instances.size() << " user(s)";
     if (!m_group_instances.empty()) {
-        ss << " ," << m_group_instances.size() << " group(s) shown";
+        ss << ", " << m_group_instances.size() << " group(s) shown";
     } else {
         ss << " shown";
     }
