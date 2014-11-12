@@ -81,8 +81,6 @@ SOURCES         +=      main.cpp \
                         settings/generalpluginsettings.cpp \
                         widgets/treewidget.cpp \
                         widgets/progressbar.cpp \
-                        tests/basictest.cpp \
-                        tests/helps.cpp \
                         address.cpp \
                         cimclient.cpp \
                         cimvalue.cpp \
@@ -111,8 +109,6 @@ HEADERS         +=      mainwindow.h \
                         settings/generalpluginsettings.h \
                         widgets/treewidget.h \
                         widgets/progressbar.h \
-                        tests/basictest.h \
-                        tests/helps.h \
                         address.h \
                         cimclient.h \
                         cimvalue.h \

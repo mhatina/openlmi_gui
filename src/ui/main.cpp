@@ -19,7 +19,6 @@
 
 #include "kernel.h"
 #include "logger.h"
-#include "tests/basictest.h"
 
 #include <QtSolutions/QtSingleApplication>
 #include <unistd.h>
@@ -55,7 +54,7 @@ int main(int argc, char *argv[])
             break;
         case 't':
         {
-            return BasicTest::main_for_tests();
+            return -1;
         }
         case 'h':
         case '?':
