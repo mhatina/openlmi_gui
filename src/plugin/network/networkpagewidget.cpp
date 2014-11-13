@@ -31,6 +31,8 @@ NetworkPageWidget::NetworkPageWidget(QWidget *parent) :
 
     m_ui->ip_address_details_table->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     m_ui->ip_address_details_table->setMaximumHeight(25);
+    m_ui->ip_address_details_table->setShowGrid(false);
+    m_ui->ip_address_details_table->setAlternatingRowColors(true);
 
     int cnt = sizeof(items) / sizeof(items[0]);
     m_ui->ip_address_details_table->setColumnCount(cnt);
@@ -107,6 +109,7 @@ void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
     item = new QTableWidgetItem((version = CIMValue::get_property_value(instance,
                                            "ProtocolIFType")).c_str());
     item->setFlags(flags);
+    item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
         i,
@@ -116,6 +119,7 @@ void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
 
     item = new QTableWidgetItem(CIMValue::get_property_value(instance, v4 ? "IPv4Address" : "IPv6Address").c_str());
     item->setFlags(flags);
+    item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
         i,
@@ -125,6 +129,7 @@ void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
     item = new QTableWidgetItem(CIMValue::get_property_value(instance,
                                 v4 ? "SubnetMask" : "IPv6SubnetPrefixLength").c_str());
     item->setFlags(flags);
+    item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
         i,
@@ -133,6 +138,7 @@ void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
 
     item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AddressOrigin").c_str());
     item->setFlags(flags);
+    item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
         i,
@@ -170,6 +176,7 @@ void NetworkPageWidget::setNetworkRemoteService(Pegasus::CIMInstance instance)
 
     item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AccessContext").c_str());
     item->setFlags(flags);
+    item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
         i,
@@ -178,6 +185,7 @@ void NetworkPageWidget::setNetworkRemoteService(Pegasus::CIMInstance instance)
 
     item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AccessInfo").c_str());
     item->setFlags(flags);
+    item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     item->setToolTip(item->text());
     m_ui->ip_address_details_table->setItem(
         i,

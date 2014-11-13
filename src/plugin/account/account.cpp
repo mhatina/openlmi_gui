@@ -134,7 +134,9 @@ AccountPlugin::AccountPlugin() :
 {
     m_ui->setupUi(this);
     m_user_table = findChild<QTableWidget *>("user_table");
+    m_user_table->setShowGrid(false);
     m_group_table = findChild<QTableWidget *>("group_table");
+    m_group_table->setShowGrid(false);
 
     initContextMenu();
     m_ui->add_button->setVisible(false);
@@ -413,6 +415,7 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
                     std::string str_value = CIMValue::get_property_value(*instance, userProperties[k].property);
                     QTableWidgetItem *item =
                         new QTableWidgetItem(str_value.c_str());
+                    item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
                     item->setToolTip(str_value.c_str());
                     m_user_table->setItem(
                         row_count,
@@ -439,6 +442,7 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
                     }
                     QTableWidgetItem *item =
                         new QTableWidgetItem(str_value.c_str());
+                    item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
                     item->setToolTip(str_value.c_str());
                     m_group_table->setItem(
                         row_count,
