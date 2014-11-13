@@ -77,6 +77,7 @@ ServicePlugin::ServicePlugin() :
     m_services_table = m_ui->services_table;
     int prop_cnt = sizeof(serviceHeaderItem) / sizeof(serviceHeaderItem[0]);
     m_services_table->setColumnCount(prop_cnt);
+    m_services_table->setShowGrid(false);
     for (int i = 0; i < prop_cnt; i++) {
         QTableWidgetItem *item = new QTableWidgetItem(serviceHeaderItem[i].name);
         item->setToolTip(serviceHeaderItem[i].tooltip);
@@ -207,7 +208,7 @@ void ServicePlugin::fillTab(std::vector<void *> *data)
 
                 QTableWidgetItem *item =
                     new QTableWidgetItem(str_value.c_str());
-
+                item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
                 item->setToolTip(str_value.c_str());
                 m_services_table->setItem(
                     row_count,

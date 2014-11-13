@@ -30,9 +30,9 @@
 namespace
 {
 
-bool is_not_digit(char c)
+bool is_not_digit_and_space(char c)
 {
-    return !(c >= '0' && c <= '9');
+    return !((c >= '0' && c <= '9') || c == ' ');
 }
 
 /**
@@ -242,9 +242,9 @@ std::string CIMValue::decode_values(Pegasus::CIMProperty property)
     if (!cim_value.isArray()) {
         return decode[value];
     } else {
-        value.erase(std::remove_if(value.begin(), value.end(), is_not_digit),
+        value.erase(std::remove_if(value.begin(), value.end(), is_not_digit_and_space),
                     value.end());
-        std::string tmp = "{";
+        std::string result = "";
 
         char *str = (char *) malloc((value.length() + 1) * sizeof(char));
         char *token;
@@ -258,14 +258,16 @@ std::string CIMValue::decode_values(Pegasus::CIMProperty property)
             if (token == NULL) {
                 break;
             } else if (i != 0) {
-                tmp += ", ";
+                result += ", ";
             }
 
-            tmp += decode[token];
+            result += decode[token];
         }
-        tmp += "}";
+        if (!result.empty()) {
+            result = "{" + result + "}";
+        }
 
-        return tmp;
+        return result;
     }
 
     return "";
@@ -274,7 +276,7 @@ std::string CIMValue::decode_values(Pegasus::CIMProperty property)
 std::string CIMValue::get_property_value(Pegasus::CIMInstance instance,
         std::string propertyName, Pegasus::CIMProperty *property)
 {
-    const char* name = propertyName.c_str();
+    const char *name = propertyName.c_str();
     const Pegasus::Uint32 propIndex = instance.findProperty(name);
     if (propIndex == Pegasus::PEG_NOT_FOUND) {
         return "";
