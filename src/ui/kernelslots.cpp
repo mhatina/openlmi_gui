@@ -16,6 +16,15 @@
 
 extern const GnomeKeyringPasswordSchema *GNOME_KEYRING_NETWORK_PASSWORD;
 
+static int transformLabel(int c)
+{
+    if (c == ' ') {
+        return '_';
+    } else {
+        return tolower(c);
+    }
+}
+
 int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
 {
     Logger::getInstance()->debug("Engine::Kernel::getSilentConnection(std::string ip)");
@@ -114,8 +123,9 @@ void Engine::Kernel::deletePasswd(std::string id)
     Logger::getInstance()->debug("Engine::Kernel::deletePasswd(std::string id)");
 
     CIMClient *client = NULL;
-    if (!m_connections.empty())
+    if (!m_connections.empty()) {
         client = (*m_connections.find(id)).second;
+    }
     if (client && client->isConnected()) {
         client->disconnect();
         m_connections.erase(m_connections.find(id));
@@ -413,7 +423,7 @@ void Engine::Kernel::selectionChanged()
     }
 
     std::string label = plugin->getLabel();
-    std::transform(label.begin(), label.end(), label.begin(), ::tolower);
+    std::transform(label.begin(), label.end(), label.begin(), transformLabel);
 
     if (!m_settings->value<bool, QCheckBox *>(label)) {
         return;
@@ -455,7 +465,7 @@ void Engine::Kernel::setActivePlugin(int index)
     }
 
     std::string label = plugin->getLabel();
-    std::transform(label.begin(), label.end(), label.begin(), ::tolower);
+    std::transform(label.begin(), label.end(), label.begin(), transformLabel);
 
     bool enabled = m_settings->value<bool, QCheckBox *>(label);
     bool refreshed = plugin->isRefreshed();

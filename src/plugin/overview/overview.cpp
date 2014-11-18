@@ -237,6 +237,7 @@ void OverviewPlugin::clear()
         delete list[i];
     }
     m_logs.clear();
+    m_ui->log_box->setEnabled(false);
 
     m_changes_enabled = true;
 }
@@ -447,6 +448,10 @@ void OverviewPlugin::fillTab(std::vector<void *> *data)
 
     for (unsigned int i = 0; i < data->size(); i++) {
         delete (Pegasus::CIMInstance *) (*data)[i];
+    }
+
+    if (!m_journald_available) {
+        m_ui->log_box->setEnabled(false);
     }
 
     m_changes_enabled = true;

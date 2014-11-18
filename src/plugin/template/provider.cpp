@@ -20,7 +20,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include ".h"
-#include "lmiwbem_value.h"
+#include "cimvalue.h"
 #include "ui_.h"
 
 #include <sstream>
@@ -31,8 +31,9 @@ Plugin::Plugin() :
     m_ui(new Ui::Plugin)
 {
     m_ui->setupUi(this);
-    showFilter(false);
     setPluginEnabled(false);
+
+    m_ui->filter_box->hide();
 }
 
 Plugin::~Plugin()
@@ -68,7 +69,7 @@ void Plugin::getData(std::vector<void *> *data)
 {
     try {
     } catch (Pegasus::Exception &ex) {
-        emit doneFetchingData(NULL, std::string(ex.getMessage().getCString()));
+        emit doneFetchingData(NULL, false, std::string(ex.getMessage().getCString()));
         return;
     }
 

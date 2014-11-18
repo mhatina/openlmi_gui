@@ -68,5 +68,6 @@ int main(int argc, char *argv[])
     a.setActivationWindow(kernel.getMainWindow());
     kernel.showMainWindow();
 
-    return a.exec();
+    int res = a.exec();
+    return res;
 }

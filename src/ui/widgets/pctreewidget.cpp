@@ -180,14 +180,16 @@ void PCTreeWidget::setTimeSec(int time_sec)
     m_time_sec = time_sec * 1000;
 }
 
-bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text)
+bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text, QTreeWidgetItem *item)
 {
     Logger::getInstance()->debug("PCTreeWidget::parentContainsItem(TreeWidgetItem *parent, std::string text)");
     for (int i = 0; i < parent->childCount(); i++) {
-        TreeWidgetItem *item = (TreeWidgetItem *) parent->child(i);
-        std::string ipv4 = item->getIpv4().empty() ? "N/A" : item->getIpv4();
-        std::string ipv6 = item->getIpv6().empty() ? "N/A" : item->getIpv6();
-        std::string domain = item->getName().empty() ? "N/A" : item->getName();
+        TreeWidgetItem *check_item = (TreeWidgetItem *) parent->child(i);
+        if (item && check_item == item)
+            continue;
+        std::string ipv4 = check_item->getIpv4().empty() ? "N/A" : check_item->getIpv4();
+        std::string ipv6 = check_item->getIpv6().empty() ? "N/A" : check_item->getIpv6();
+        std::string domain = check_item->getName().empty() ? "N/A" : check_item->getName();
         if (ipv4 == text || ipv6 == text || domain == text) {
             return true;
         }
@@ -633,10 +635,24 @@ void PCTreeWidget::addGroup()
         | Qt::ItemIsEnabled
         | Qt::ItemIsEditable;
     m_data_of_item_changed = false;
-    QTreeWidgetItem *item = topLevelNode("");
+
+    bool simple_addition = SettingsDialog::getInstance()->value<bool, QCheckBox *>("simple_addition");
+
+    QTreeWidgetItem *item = NULL;
+    AddTreeItemDialog dialog(this);
+    if (!simple_addition) {
+        if (!dialog.exec()) {
+            return;
+        }
+    }
+
+    item = topLevelNode(dialog.getName());
     item->setFlags(flags);
     m_data_of_item_changed = true;
-    m_ui->tree->editItem(item);
+    if (item != NULL && simple_addition) {
+        m_ui->tree->editItem(item, 0);
+    }
+
 }
 
 void PCTreeWidget::deleteGroup()

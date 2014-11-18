@@ -27,20 +27,25 @@ INCLUDEPATH     +=      ../logger
 DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
 CONFIG          +=      link_pkgconfig
 PKGCONFIG       +=      glib-2.0
-RESOURCES       +=      icons.qrc
+RESOURCES       += \     
+    ../../icons/icons.qrc
 CONFIG          +=      qtestlib
-include(/usr/lib64/qt4/mkspecs/features/qtsingleapplication.prf)
 
 UI_DIR          =       uics
 MOC_DIR         =       mocs
 OBJECTS_DIR     =       objs
 
+isEmpty(QT_SINGLE_APP) {
+    QT_SINGLE_APP =     /usr/lib64/qt4/mkspecs/features/qtsingleapplication.prf
+}
 isEmpty(PREFIX) {
     PREFIX      =       /usr
 }
 isEmpty(LIB_PATH) {
     LIB_PATH    =       /lib
 }
+
+include($$QT_SINGLE_APP)
 
 CONFIG(debug, debug|release) {
     DEFINES     +=      "PLUGIN_PATH=../plugin/libs"

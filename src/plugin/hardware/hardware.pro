@@ -68,4 +68,4 @@ SOURCES         +=      hardware.cpp \
 
 FORMS           +=      hardware.ui
 
-RESOURCES       +=      icons.qrc
+RESOURCES       +=      ../../../icons/icons.qrc

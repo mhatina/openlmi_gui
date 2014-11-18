@@ -192,3 +192,9 @@ void NetworkPageWidget::setNetworkRemoteService(Pegasus::CIMInstance instance)
         6,
         item);
 }
+
+void NetworkPageWidget::setDNSSettingData(Pegasus::CIMInstance instance)
+{
+    // TODO complete after lmi class is completed
+    Q_UNUSED(instance)
+}

@@ -60,6 +60,7 @@ public:
     void setIPProtocolEndpoint(Pegasus::CIMInstance instance);
     void setLanEndPoint(Pegasus::CIMInstance instance);
     void setNetworkRemoteService(Pegasus::CIMInstance instance);
+    void setDNSSettingData(Pegasus::CIMInstance instance);
 };
 
 #endif // NETWORKPAGEWIDGET_H

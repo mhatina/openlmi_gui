@@ -66,7 +66,7 @@ Engine::Kernel::Kernel() :
     std::string path = pw->pw_dir;
     path += "/.config";
     if (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0 && errno != EEXIST) {
-        Logger::getInstance()->error("Cannot create ~/.config dir.\nError: " +
+        Logger::getInstance()->error("Cannot create ~/.config dir: " +
                                      std::string(strerror(errno)));
     }
 
@@ -150,7 +150,7 @@ void Engine::Kernel::createKeyring()
         res != GNOME_KEYRING_RESULT_KEYRING_ALREADY_EXISTS) {
 
         Logger::getInstance()->error("Cannot create " + std::string(
-                                         OPENLMI_KEYRING_DEFAULT) + " keyring\nError: " + gnome_keyring_result_to_message(res));
+                                         OPENLMI_KEYRING_DEFAULT) + " keyring: " + gnome_keyring_result_to_message(res));
         exit(EXIT_FAILURE);
     }
 }
@@ -500,7 +500,6 @@ void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
     TreeWidgetItem *item = (TreeWidgetItem *)
                            m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
     std::string ip = item->getId();
-    Logger::getInstance()->info("Connecting to " + item->text(0).toStdString());
 
     switch (getSilentConnection(ip, false)) {
     case 0:

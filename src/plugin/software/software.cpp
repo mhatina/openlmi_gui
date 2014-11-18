@@ -229,8 +229,7 @@ SoftwarePlugin::SoftwarePlugin() :
     m_ui(new Ui::SoftwarePlugin)
 {
     m_ui->setupUi(this);
-    m_ui->filter_box->hide();
-    setPluginEnabled(false);
+    m_ui->filter_box->hide();    
 
     initContextMenu();
     m_ui->enable_repo_button->setVisible(false);
@@ -315,6 +314,8 @@ SoftwarePlugin::SoftwarePlugin() :
         SIGNAL(customContextMenuRequested(QPoint)),
         this,
         SLOT(showRepoContextMenu(QPoint)));
+
+    setPluginEnabled(false);
 }
 
 SoftwarePlugin::~SoftwarePlugin()
@@ -461,7 +462,7 @@ void SoftwarePlugin::fillTab(std::vector<void *> *data)
 
                 m_repos.push_back(*instance);
             } else if (CIMValue::get_property_value(*instance, "CreationClassName") == "LMI_SoftwareVerificationJob") {
-                // TODO
+                // TODO complete
             }
         }
     } catch (Pegasus::Exception &ex) {

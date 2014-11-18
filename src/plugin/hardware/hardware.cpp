@@ -231,7 +231,6 @@ void HardwarePlugin::fillPCI(Pegasus::CIMInstance pci)
     layout->addWidget(new LabeledLabel("Bridge Type", CIMValue::get_property_value(pci, "BridgeType")));
     layout->addWidget(new LabeledLabel("Primary Bus Number", CIMValue::get_property_value(pci, "PrimaryBusNumber")));
 
-    // BUG SecondaryBusNumber
     layout->addWidget(new LabeledLabel("Secondary Bus Number", CIMValue::get_property_value(pci, "SecondayBusNumber")));
     layout->addWidget(new LabeledLabel("Subordinate Bus Number", CIMValue::get_property_value(pci,
                                        "SubordinateBusNumber")));

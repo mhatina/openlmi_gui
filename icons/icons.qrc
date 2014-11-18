@@ -1,0 +1,31 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="add.png">add.png</file>
+        <file alias="apply.png">apply.png</file>
+        <file alias="cancel.png">cancel.png</file>
+        <file alias="change-password.png">change-password.png</file>
+        <file alias="changes-allow.png">changes-allow.png</file>
+        <file alias="changes-prevent.png">changes-prevent.png</file>
+        <file alias="computer.png">computer.png</file>
+        <file alias="discover.png">discover.png</file>
+        <file alias="filter.png">filter.png</file>
+        <file alias="network-error.png">network-error.png</file>
+        <file alias="network-idle.png">network-idle.png</file>
+        <file alias="network-offline.png">network-offline.png</file>
+        <file alias="network-receive.png">network-receive.png</file>
+        <file alias="network-transmit.png">network-transmit.png</file>
+        <file alias="network-transmit-receive.png">network-transmit-receive.png</file>
+        <file alias="openlmi-logo.png">openlmi-logo_full-color_light-bg.png</file>
+        <file alias="reboot.png">reboot.png</file>
+        <file alias="refresh.png">refresh.png</file>
+        <file alias="remove.png">remove.png</file>
+        <file alias="save-as.png">save-as.png</file>
+        <file alias="save.png">save.png</file>
+        <file alias="show-code.png">show-code.png</file>
+        <file alias="shutdown.png">shutdown.png</file>
+        <file alias="stop-refresh.png">stop-refresh.png</file>
+        <file alias="disabled.png">disabled.png</file>
+        <file alias="enabled.png">enabled.png</file>
+        <file alias="state_changed.png">state_changed.png</file>
+    </qresource>
+</RCC>

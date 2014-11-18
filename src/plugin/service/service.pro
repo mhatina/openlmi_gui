@@ -90,4 +90,4 @@ SOURCES         +=      service.cpp \
 FORMS           +=      service.ui \
                         actionbox.ui
 
-RESOURCES       +=      icons.qrc
+RESOURCES       +=      ../../../icons/icons.qrc

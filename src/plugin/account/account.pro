@@ -107,4 +107,4 @@ FORMS           +=      account.ui \
                         memberbox.ui \
                         dialogs/groupmemberdialog.ui
 
-RESOURCES       =       icons.qrc
+RESOURCES       =       ../../../icons/icons.qrc

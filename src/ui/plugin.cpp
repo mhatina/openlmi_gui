@@ -132,9 +132,9 @@ Engine::IPlugin::IPlugin() :
     qRegisterMetaType<std::string>("std::string");
     connect(
         this,
-        SIGNAL(doneFetchingData(std::vector<void*>*,bool,std::string)),
+        SIGNAL(doneFetchingData(std::vector<void *> *, bool, std::string)),
         this,
-        SLOT(handleDataFetching(std::vector<void*>*,bool,std::string)));
+        SLOT(handleDataFetching(std::vector<void *> *, bool, std::string)));
     connect(
         this,
         SIGNAL(doneApplying()),
@@ -148,15 +148,15 @@ Engine::IPlugin::~IPlugin()
 }
 
 Pegasus::Array<Pegasus::CIMObject> Engine::IPlugin::associators(
-        const Pegasus::CIMNamespaceName &nameSpace,
-        const Pegasus::CIMObjectPath &objectName,
-        const Pegasus::CIMName &assocClass,
-        const Pegasus::CIMName &resultClass,
-        const Pegasus::String &role,
-        const Pegasus::String &resultRole,
-        Pegasus::Boolean includeQualifiers,
-        Pegasus::Boolean includeClassOrigin,
-        const Pegasus::CIMPropertyList &propertyList)
+    const Pegasus::CIMNamespaceName &nameSpace,
+    const Pegasus::CIMObjectPath &objectName,
+    const Pegasus::CIMName &assocClass,
+    const Pegasus::CIMName &resultClass,
+    const Pegasus::String &role,
+    const Pegasus::String &resultRole,
+    Pegasus::Boolean includeQualifiers,
+    Pegasus::Boolean includeClassOrigin,
+    const Pegasus::CIMPropertyList &propertyList)
 {
     boost::this_thread::interruption_point();
     Pegasus::Array<Pegasus::CIMObject> array;
@@ -214,9 +214,9 @@ Pegasus::Array<Pegasus::CIMInstance> Engine::IPlugin::enumerateInstances(
 }
 
 Pegasus::Array<Pegasus::CIMObject> Engine::IPlugin::execQuery(
-        const Pegasus::CIMNamespaceName &nameSpace,
-        const Pegasus::String &queryLanguage,
-        const Pegasus::String &query)
+    const Pegasus::CIMNamespaceName &nameSpace,
+    const Pegasus::String &queryLanguage,
+    const Pegasus::String &query)
 {
     boost::this_thread::interruption_point();
     Pegasus::Array<Pegasus::CIMObject> array;
@@ -328,16 +328,14 @@ void Engine::IPlugin::refresh(CIMClient *client)
         return;
     }
 
-    m_client = client;
-    m_refreshed = true;
-
-    m_instructions.clear();
+    m_client = client;    
     m_data = new std::vector<void *>();
     m_stop_refresh = false;
+
+    m_instructions.clear();
     clear();
 
-    m_refresh_thread = boost::thread(boost::bind(&Engine::IPlugin::getData, this,
-                                     m_data));
+    m_refresh_thread = boost::thread(boost::bind(&Engine::IPlugin::getData, this, m_data));
 }
 
 void Engine::IPlugin::saveScript(std::string filename)
@@ -444,8 +442,8 @@ void Engine::IPlugin::handleDataFetching(std::vector<void *> *data, bool still_r
         if (!still_refreshing) {
             emit refreshProgress(Engine::REFRESHED, this);
             Logger::getInstance()->info(getRefreshInfo());
-        }        
-        delete data;        
+        }
+        delete data;
     }
 }
 
@@ -459,10 +457,18 @@ void Engine::IPlugin::handleDoneApplying()
 void Engine::IPlugin::setPluginEnabled(bool state)
 {
     Logger::getInstance()->debug("Engine::IPlugin::setPluginEnabled(bool state)");
-    setEnabled(true);
     QList<QWidget *> children = findChildren<QWidget *>();
-    int cnt = children.size();
 
+    int cnt = children.size();
+    bool enabled = children[0]->isEnabled();
+    for (int i = 1; i < cnt; i++) {
+        enabled |= children[i]->isEnabled();
+    }
+    if (enabled == state) {
+        return;
+    }
+
+    setEnabled(state);
     for (int i = 0; i < cnt; i++) {
         children[i]->setEnabled(state);
     }

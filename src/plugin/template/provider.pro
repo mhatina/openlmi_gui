@@ -19,49 +19,45 @@
 #
 # ***** END LICENSE BLOCK ***** */
 
-QT       += core gui
-TEMPLATE      = lib
-CONFIG       += plugin
-QMAKE_CXXFLAGS += -ansi -pedantic -Wall -Wextra
-INCLUDEPATH  += ../../ui ../../ui/uics ../../logger
+QT              +=      core gui
+TEMPLATE        =       lib
+CONFIG          +=      plugin
+QMAKE_CXXFLAGS  +=      -ansi -pedantic -Wall -Wextra
+INCLUDEPATH     +=      ../../ui ../../ui/uics ../../logger
 
 # TODO change name
-TARGET        = $$qtLibraryTarget()
-DESTDIR       = ../libs
-DEFINES += PEGASUS_PLATFORM_LINUX_X86_64_GNU
+TARGET          =       $$qtLibraryTarget(lmicc)
+DESTDIR         =       ../libs
+DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
 
-UI_DIR = uics
-MOC_DIR = mocs
-OBJECTS_DIR = objs
+UI_DIR          =       uics
+MOC_DIR         =       mocs
+OBJECTS_DIR     =       objs
 
-HEADERS += \
-    .h \
-    ../../ui/plugin.h \
-    ../../ui/instructions/connectinstruction.h \
-    ../../ui/instructions/instruction.h
+HEADERS         +=      .h \
+                        ../../ui/plugin.h \
+                        ../../ui/instructions/connectinstruction.h \
+                        ../../ui/instructions/instruction.h
 
-SOURCES += \
-    .cpp \
-    ../../ui/plugin.cpp \
-    ../../ui/instructions/connectinstruction.cpp \
-    ../../ui/instructions/instruction.cpp \
-    ../../ui/lmiwbem_value.cpp 
+SOURCES         +=      .cpp \
+                        ../../ui/plugin.cpp \
+                        ../../ui/instructions/connectinstruction.cpp \
+                        ../../ui/instructions/instruction.cpp \
+                        ../../ui/cimvalue.cpp
 
-FORMS += \
-    .ui 
+FORMS           +=      .ui
 
 CONFIG(debug, debug|release) {
-    target.path = ../libs
-    LIBS += -L../../logger -llogger
+    target.path =       ../libs
+    LIBS        +=      -L../../logger -llogger
 } else {
     linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-        target.path = /usr/lib64/openlmi
+        target.path =   /usr/lib64/openlmi
     } else {
-        target.path = /usr/lib/openlmi
+        target.path =   /usr/lib/openlmi
     }
-    LIBS += -llogger
+    LIBS        +=      -llogger
 }
-INSTALLS += target
+INSTALLS        +=      target
 
-RESOURCES += \
-    icons.qrc
+RESOURCES       +=      ./../../icons/icons.qrc

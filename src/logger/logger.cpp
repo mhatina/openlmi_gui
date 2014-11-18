@@ -31,7 +31,7 @@
 #include <iostream>
 
 Logger *Logger::m_instance = NULL;
-QMutex Logger::m_mutex;
+QMutex Logger::m_log_mutex;
 
 Logger::Logger() :
     m_show_debug_message(DEBUGGING)
@@ -50,22 +50,22 @@ Logger::~Logger()
 
 Logger *Logger::getInstance()
 {
-    m_mutex.lock();
+    m_log_mutex.lock();
     if (m_instance == NULL) {
         m_instance = new Logger();
     }
-    m_mutex.unlock();
+    m_log_mutex.unlock();
     return m_instance;
 }
 
 void Logger::removeInstance()
 {
-    m_mutex.lock();
+    m_log_mutex.lock();
     if (m_instance != NULL) {
         delete m_instance;
         m_instance = NULL;
     }
-    m_mutex.unlock();
+    m_log_mutex.unlock();
 }
 
 const std::string Logger::getLogPath() const
@@ -152,14 +152,14 @@ void Logger::setShowDebug(bool value)
 
 bool Logger::log(std::string message, log_mode mode, bool show_message)
 {
-    m_mutex.lock();
+    m_log_mutex.lock();
     m_log_file.open(
         m_log_path.c_str(),
         std::ios_base::out | std::ios_base::app
     );
     if (!m_log_file.is_open()) {
         setLogPath(DEFAULT_LOG_PATH);
-        m_mutex.unlock();
+        m_log_mutex.unlock();
         std::string err =
             "Log file '" + m_log_path + "' cannot be opened!";
         if (message != err) {
@@ -176,7 +176,7 @@ bool Logger::log(std::string message, log_mode mode, bool show_message)
     m_log_file << "[" << getTime().c_str() << "] [" << getLogModeInfo(mode) << "] "
                << message << (message.at(message.size() - 1) == '\n' ? "" : "\n");
     m_log_file.close();
-    m_mutex.unlock();
+    m_log_mutex.unlock();
 
     return true;
 }

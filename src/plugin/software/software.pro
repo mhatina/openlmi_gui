@@ -91,4 +91,4 @@ FORMS           +=      software.ui \
                         listwidget.ui \
                         installdialog.ui
 
-RESOURCES       +=      icons.qrc
+RESOURCES       +=      ../../../icons/icons.qrc

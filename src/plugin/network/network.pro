@@ -68,4 +68,4 @@ SOURCES         +=      network.cpp \
 FORMS           +=      network.ui \
                         networkpagewidget.ui
 
-RESOURCES       +=      icons.qrc
+RESOURCES       +=      ../../../icons/icons.qrc

@@ -72,7 +72,7 @@ private:
     bool m_show_debug_message;
     std::ofstream m_log_file;
     std::string m_log_path;
-    static QMutex m_mutex;
+    static QMutex m_log_mutex;
     static Logger *m_instance;
 
     /**

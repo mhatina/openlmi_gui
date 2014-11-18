@@ -82,6 +82,10 @@ void GeneralPluginSettings::load(QFile &file)
             QXmlStreamAttributes attr = in.attributes();
             bool enabled = (attr.value("enabled").toString().toStdString() == "true");
             m_ui->hardware->setChecked(enabled);
+        } else if (in.name() == "logicalFileAutoRefresh") {
+            QXmlStreamAttributes attr = in.attributes();
+            bool enabled = (attr.value("enabled").toString().toStdString() == "true");
+            m_ui->logical_file->setChecked(enabled);
         } else if (in.name() == "networkAutoRefresh") {
             QXmlStreamAttributes attr = in.attributes();
             bool enabled = (attr.value("enabled").toString().toStdString() == "true");
@@ -122,6 +126,11 @@ void GeneralPluginSettings::save(QXmlStreamWriter &writer)
     writer.writeStartElement("hardwareAutoRefresh");
     writer.writeAttribute("enabled",
                           m_ui->hardware->checkState() == Qt::Checked ? "true" : "false");
+    writer.writeEndElement();
+
+    writer.writeStartElement("logicalFileAutoRefresh");
+    writer.writeAttribute("enabled",
+                          m_ui->logical_file->checkState() == Qt::Checked ? "true" : "false");
     writer.writeEndElement();
 
     writer.writeStartElement("networkAutoRefresh");

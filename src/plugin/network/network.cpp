@@ -150,6 +150,20 @@ void NetworkPlugin::getData(std::vector<void *> *data)
                 data->push_back(new Pegasus::CIMInstance(net_assoc[j]));
             }
         }
+
+        Pegasus::Array<Pegasus::CIMInstance> dns =
+            enumerateInstances(
+                Pegasus::CIMNamespaceName("root/cimv2"),
+                Pegasus::CIMName("LMI_DNSSettingData"),
+                true,       // deep inheritance
+                false,      // local only
+                true,       // include qualifiers
+                false       // include class origin
+            );
+        cnt = dns.size();
+        for (int i = 0; i < cnt; i++) {
+            data->push_back(new Pegasus::CIMInstance(dns[i]));
+        }
     } catch (Pegasus::Exception &ex) {
         emit doneFetchingData(NULL, false, CIMValue::to_std_string(ex.getMessage()));
         return;
@@ -208,6 +222,9 @@ void NetworkPlugin::fillTab(std::vector<void *> *data)
                 w->setIPProtocolEndpoint(instance);
             } else if (CIMValue::get_property_value(instance, "CreationClassName") == "LMI_NetworkRemoteServiceAccessPoint") {
                 NetworkPageWidget *w = findWidget(CIMValue::get_property_value(instance, "Name"));
+                w->setNetworkRemoteService(instance);
+            } else if (CIMValue::get_property_value(instance, "CreationClassName") == "LMI_DNSSettingData") {
+                NetworkPageWidget *w = findWidget(CIMValue::get_property_value(instance, "ElementName"));
                 w->setNetworkRemoteService(instance);
             }
         }

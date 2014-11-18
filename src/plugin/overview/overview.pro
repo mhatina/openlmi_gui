@@ -72,4 +72,4 @@ SOURCES         +=      overview.cpp \
 FORMS           +=      overview.ui \
                         logseveritydialog.ui
 
-RESOURCES       +=      icons.qrc
+RESOURCES       +=      ../../../icons/icons.qrc
