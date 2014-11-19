@@ -310,18 +310,10 @@ void Engine::IPlugin::refresh(CIMClient *client)
     }
 
     m_client = client;
-<<<<<<< HEAD
-    m_refreshed = true;
-
-    m_instructions.clear();
-    m_data = new std::vector<void *>();
-    m_stop_refresh = false;
-=======
     m_data = new std::vector<void *>();
     setRefreshing(true);
 
     cancelChanges();
->>>>>>> 53878f0... few buttons deleted
     clear();
 
     m_refresh_thread = boost::thread(boost::bind(&Engine::IPlugin::getData, this,
