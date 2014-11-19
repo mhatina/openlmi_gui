@@ -127,7 +127,7 @@ MainWindow::MainWindow(QWidget *parent) :
     button->setMenu(m_tool_button_menu);
     button->setBackgroundRole(QPalette::Button);
     button->setEnabled(false);
-    m_toolbar->insertWidget(m_toolbar->actions()[9], button); // after apply button
+    m_toolbar->insertWidget(m_toolbar->actions()[8], button); // after apply button
     m_toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
 
     addToolBar(m_toolbar);
