@@ -66,6 +66,7 @@ namespace Engine
 typedef enum {
     ERROR = -1,
     NOT_REFRESHED = 0,
+    STOP_REFRESH = 50,
     ALMOST_REFRESHED = 90,
     REFRESHED = 100
 } refreshState;
@@ -86,11 +87,11 @@ class Kernel : public QObject
 
 private:
     bool m_refreshEnabled;
-    connection_map m_connections;    
+    connection_map m_connections;
     MainWindow m_main_window;
     plugin_map m_loaded_plugins;
-    QMutex *m_mutex;
     ProgressBar *m_bar;
+    QMutex *m_mutex;
     QTreeWidgetItem *m_last_system;
     SettingsDialog *m_settings;
     ShowTextDialog m_code_dialog;
@@ -99,6 +100,7 @@ private:
 
     int  getIndexOfTab(std::string name);
     std::string getPowerStateMessage(PowerStateValues::POWER_VALUES state);
+    void changeRefreshConnection(bool refresh);
     void createKeyring();
     void initConnections();
     /**
@@ -147,7 +149,8 @@ public:
     }
 
 private slots:
-    int  getSilentConnection(std::string ip, bool silent = true);
+    int  getSilentConnection(std::string ip, bool silent = true);    
+    void changeButtonConnection(bool control);
     void deletePasswd();
     void deletePasswd(std::string id);
     void enableSpecialButtons(bool state);

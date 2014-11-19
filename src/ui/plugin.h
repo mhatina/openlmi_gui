@@ -59,7 +59,7 @@ class IPlugin : public QWidget
     Q_OBJECT
 
 private:
-    bool m_stop_refresh;
+    bool m_refreshing;
     bool isFileEmpty(std::string filename);
 
 protected:
@@ -192,11 +192,6 @@ public:
      */
     void cancelChanges();
     /**
-     * @brief Connect buttons' signals with handlers
-     * @param toolbar -- contains buttons
-     */
-    void connectButtons(QToolBar *toolbar);
-    /**
      * @brief Refresh whole provider
      * @param client -- see CIMClient
      */
@@ -220,6 +215,9 @@ public:
     void setRefreshed(bool refreshed);
 
     void stopRefresh();
+
+    bool isRefreshing() const;
+    void setRefreshing(bool refreshing);
 
 protected slots:
     /**

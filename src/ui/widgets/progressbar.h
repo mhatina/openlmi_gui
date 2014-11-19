@@ -28,6 +28,7 @@ private:
 public:
     ProgressBar();
     ~ProgressBar() {}
+    bool empty();
     void show(std::string process);
     void hide(std::string process);
 };

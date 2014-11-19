@@ -26,6 +26,11 @@ ProgressBar::ProgressBar()
     QProgressBar::hide();
 }
 
+bool ProgressBar::empty()
+{
+    return m_process_info.empty();
+}
+
 void ProgressBar::hide(std::string process)
 {
     std::string tool = "";

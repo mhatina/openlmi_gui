@@ -49,8 +49,9 @@ bool isColon(int c)
 
 Engine::Kernel::Kernel() :
     m_refreshEnabled(true),
-    m_mutex(new QMutex()),
+    m_main_window(),
     m_bar(new ProgressBar()),
+    m_mutex(new QMutex()),
     m_last_system(NULL),
     m_settings(SettingsDialog::getInstance(&m_main_window))
 {
@@ -141,6 +142,36 @@ std::string Engine::Kernel::getPowerStateMessage(PowerStateValues::POWER_VALUES 
     return message;
 }
 
+void Engine::Kernel::changeRefreshConnection(bool refresh)
+{
+    QPushButton *refresh_button = widget<QPushButton *>("refresh_button");
+    if (refresh && m_bar->empty()) {
+        connect(
+            refresh_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(refresh()));
+        disconnect(
+            refresh_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(stopRefresh()));
+        refresh_button->setIcon(QIcon(":/refresh.png"));
+    } else {
+        connect(
+            refresh_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(stopRefresh()));
+        disconnect(
+            refresh_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(refresh()));
+        refresh_button->setIcon(QIcon(":/stop-refresh.png"));
+    }
+}
+
 void Engine::Kernel::createKeyring()
 {
     Logger::getInstance()->debug("Engine::Kernel::createKeyring()");
@@ -165,12 +196,6 @@ void Engine::Kernel::initConnections()
         SIGNAL(clicked()),
         this,
         SLOT(refresh()));
-    button = widget<QPushButton *>("stop_refresh_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(stopRefresh()));
     QToolButton *power_button = widget<QToolButton *>("power_button");
     connect(
         power_button,
@@ -200,13 +225,7 @@ void Engine::Kernel::initConnections()
         button,
         SIGNAL(clicked()),
         this,
-        SLOT(saveScripts()));
-    button = widget<QPushButton *>("save_as_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(saveAsScripts()));
+        SLOT(saveScripts()));   
     connect(
         m_main_window.getPcTreeWidget(),
         SIGNAL(removed(std::string)),
@@ -291,6 +310,11 @@ void Engine::Kernel::initConnections()
         SIGNAL(refreshProgress(int, std::string)),
         this,
         SLOT(handleProgressState(int, std::string)));
+    connect(
+        &m_main_window,
+        SIGNAL(changeButtonConnection(bool)),
+        this,
+        SLOT(changeButtonConnection(bool)));
 }
 
 void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
@@ -305,14 +329,8 @@ void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
 
     ((QPushButton *) widget<QPushButton *>("apply_button"))->setEnabled(
         state & refreshed);
-    ((QPushButton *) widget<QPushButton *>("cancel_button"))->setEnabled(
-        state & refreshed);
     ((QPushButton *) widget<QPushButton *>("save_button"))->setEnabled(
-        state & refreshed);
-    ((QPushButton *) widget<QPushButton *>("save_as_button"))->setEnabled(
-        state & refreshed);
-    ((QPushButton *) widget<QPushButton *>("stop_refresh_button"))->setEnabled(
-        !state);
+        state & refreshed);    
     if (refresh_button) {
         enableSpecialButtons(state);
     }
@@ -533,7 +551,6 @@ void Engine::Kernel::loadPlugin()
                 m_loaded_plugins[file_name.toStdString()] = plugin;
 
                 plugin->setMutex(m_mutex);
-                plugin->connectButtons(m_main_window.getToolbar());
                 connect(plugin, SIGNAL(deletePasswd()), this,
                         SLOT(deletePasswd()));
                 connect(plugin, SIGNAL(unsavedChanges(IPlugin *)), this,
@@ -546,6 +563,8 @@ void Engine::Kernel::loadPlugin()
                         SLOT(handleProgressState(int, std::string, IPlugin *)));
                 connect(plugin, SIGNAL(newInstructionText(std::string)), this,
                         SLOT(handleInstructionText(std::string)));
+                connect(widget<QPushButton *>("apply_button"), SIGNAL(clicked()), plugin,
+                        SLOT(apply()));
 
                 if (plugin->getLabel() == "Overview") {
                     m_main_window.getProviderWidget()->getTabWidget()->insertTab(0, plugin,
