@@ -201,13 +201,7 @@ void Engine::Kernel::initConnections()
         power_button,
         SIGNAL(triggered(QAction *)),
         this,
-        SLOT(setPowerState(QAction *)));
-    button = widget<QPushButton *>("delete_passwd_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(deletePasswd()));
+        SLOT(setPowerState(QAction *)));    
     button = widget<QPushButton *>("show_code_button");
     connect(
         button,
