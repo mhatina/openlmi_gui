@@ -40,7 +40,6 @@ MainWindow::MainWindow(QWidget *parent) :
     Logger::getInstance()->debug("MainWindow::MainWindow(QWidget *parent)");
     m_ui->setupUi(this);
 
-
     QRect frect = frameGeometry();
     frect.moveCenter(QApplication::desktop()->screen()->geometry().center());
     move(frect.topLeft());
@@ -86,8 +85,9 @@ MainWindow::MainWindow(QWidget *parent) :
         button->setShortcut(QKeySequence(buttons[i].shortcut));
         button->setEnabled(!buttons[i].disabled);
         button->setCheckable(buttons[i].checkable);
-        if (buttons[i].checkable)
+        if (buttons[i].checkable) {
             button->setChecked(false);
+        }
         button->setFlat(true);
         m_toolbar->addWidget(button);
     }
@@ -127,7 +127,7 @@ MainWindow::MainWindow(QWidget *parent) :
     button->setMenu(m_tool_button_menu);
     button->setBackgroundRole(QPalette::Button);
     button->setEnabled(false);
-    m_toolbar->insertWidget(m_toolbar->actions()[12], button); // after apply button
+    m_toolbar->insertWidget(m_toolbar->actions()[9], button); // after apply button
     m_toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
 
     addToolBar(m_toolbar);
@@ -189,8 +189,26 @@ void MainWindow::closeAll()
 
 void MainWindow::showLog()
 {
-    Logger::getInstance()->debug("MainWindow::showLog()");    
+    Logger::getInstance()->debug("MainWindow::showLog()");
 
     m_log_dialog.setLogs();
     m_log_dialog.show();
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Control) {
+        emit changeButtonConnection(true);
+        return;
+    }
+    QMainWindow::keyPressEvent(event);
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Control) {
+        emit changeButtonConnection(false);
+        return;
+    }
+    QMainWindow::keyReleaseEvent(event);
 }

@@ -109,6 +109,37 @@ int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
     return 0;
 }
 
+void Engine::Kernel::changeButtonConnection(bool control)
+{
+    changeRefreshConnection(!control);
+    QPushButton *save_button = widget<QPushButton *>("save_button");
+    if (control) {
+        connect(
+            save_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(saveAsScripts()));
+        disconnect(
+            save_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(saveScripts()));
+        save_button->setIcon(QIcon(":/save-as.png"));
+    } else {
+        connect(
+            save_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(saveScripts()));
+        disconnect(
+            save_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(saveAsScripts()));
+        save_button->setIcon(QIcon(":/save.png"));
+    }
+}
+
 void Engine::Kernel::deletePasswd()
 {
     Logger::getInstance()->debug("Engine::Kernel::deletePasswd()");
@@ -229,8 +260,6 @@ void Engine::Kernel::handleConnecting(CIMClient *client,
             setMac(client);
 
             plugin->refresh(client);
-            QPushButton *button = widget<QPushButton *>("stop_refresh_button");
-            button->setEnabled(true);
         }
     } else {
         setPowerState(client, state);
@@ -259,35 +288,16 @@ void Engine::Kernel::handleProgressState(int state, IPlugin *plugin)
 void Engine::Kernel::handleProgressState(int state, std::string process, IPlugin *plugin)
 {
     Logger::getInstance()->debug("Engine::Kernel::handleProgressState(int state, std::string process, IPlugin *plugin)");
-    if (plugin != NULL) {
-        switch (state) {
-        case REFRESHED:
-        case ALMOST_REFRESHED:
-            plugin->setPluginEnabled(true);
-            plugin->setRefreshed(true);
-            break;
-        case NOT_REFRESHED:
-            plugin->setPluginEnabled(false);
-            break;
-        case ERROR:
-            plugin->setPluginEnabled(false);
-            widget<QPushButton *>("stop_refresh_button")->setEnabled(false);
-            break;
-        default:
-            Logger::getInstance()->critical("Unknown refresh state!");
-            break;
-        }
-    }
-
     switch (state) {
     case REFRESHED:
-        m_bar->hide(process);
+        m_bar->hide(process);        
     case ALMOST_REFRESHED:
         setButtonsEnabled(true);
         break;
     case NOT_REFRESHED:
         m_bar->show(process);
         break;
+    case STOP_REFRESH:
     case ERROR:
         enableSpecialButtons(true);
         m_bar->hide(process);
@@ -295,6 +305,34 @@ void Engine::Kernel::handleProgressState(int state, std::string process, IPlugin
     default:
         Logger::getInstance()->critical("Unknown refresh state!");
         break;
+    }
+
+    if (plugin != NULL) {
+        switch (state) {
+        case REFRESHED:
+            if (m_bar->empty()) {
+                changeRefreshConnection(true);
+            }
+        case ALMOST_REFRESHED:
+            plugin->setPluginEnabled(true);
+            plugin->setRefreshed(true);
+            break;
+        case STOP_REFRESH:
+            if (m_bar->empty()) {
+                changeRefreshConnection(true);
+            }
+            break;
+        case NOT_REFRESHED:
+            changeRefreshConnection(false);
+            plugin->setPluginEnabled(false);
+            break;
+        case ERROR:
+            plugin->setPluginEnabled(false);
+            break;
+        default:
+            Logger::getInstance()->critical("Unknown refresh state!");
+            break;
+        }
     }
 }
 
@@ -309,7 +347,7 @@ void Engine::Kernel::refresh()
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     IPlugin *plugin = (IPlugin *) tab->currentWidget();
 
-    if (plugin == NULL) {
+    if (plugin == NULL || plugin->isRefreshing()) {
         return;
     }
 
@@ -351,6 +389,7 @@ void Engine::Kernel::saveAsScripts()
 {
     Logger::getInstance()->debug("Engine::Kernel::saveAsScripts()");
     m_save_script_path = "";
+    changeButtonConnection(false);
     saveScripts();
 }
 
@@ -358,13 +397,13 @@ void Engine::Kernel::saveScripts()
 {
     Logger::getInstance()->debug("Engine::Kernel::saveScripts()");
     if (m_save_script_path.empty()) {
-        QFileDialog dialog;
-        dialog.setFileMode(QFileDialog::Directory);
+        QFileDialog dialog(&m_main_window);
+        dialog.setFileMode(QFileDialog::AnyFile);
         m_save_script_path = dialog.getExistingDirectory().toStdString();
         TreeWidgetItem *item = (TreeWidgetItem *)
                                m_main_window.getPcTreeWidget()->getTree()
                                ->selectedItems()[0];
-        m_save_script_path += "/" + item->getName();
+        m_save_script_path += "_" + item->getName();
     }
 
     plugin_map::iterator it;
@@ -636,14 +675,14 @@ void Engine::Kernel::stopRefresh()
 {
     Logger::getInstance()->debug("Engine::Kernel::stopRefresh()");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
-    IPlugin *plugin = (IPlugin *) tab->currentWidget();
-
-    if (plugin == NULL) {
-        return;
+    IPlugin *plugin;
+    for (int i = 0; i < tab->count(); i++) {
+        plugin = (IPlugin *) tab->widget(i);
+        if (plugin == NULL) {
+            continue;
+        }
+        plugin->stopRefresh();
     }
 
-    plugin->stopRefresh();
-    Logger::getInstance()->info(plugin->getLabel() + " has been stopped");
-    QPushButton *button = widget<QPushButton *>("stop_refresh_button");
-    button->setEnabled(false);
+    Logger::getInstance()->info("All plugins have been stopped");
 }

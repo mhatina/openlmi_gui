@@ -121,7 +121,7 @@ int Engine::IPlugin::findInstruction(IInstruction::Subject subject,
 }
 
 Engine::IPlugin::IPlugin() :
-    m_stop_refresh(false),
+    m_refreshing(false),
     m_active(true),
     m_changes_enabled(false),
     m_refreshed(false),
@@ -300,25 +300,6 @@ void Engine::IPlugin::cancelChanges()
     emit noChanges(this);
 }
 
-void Engine::IPlugin::connectButtons(QToolBar *toolbar)
-{
-    Logger::getInstance()->debug("Engine::IPlugin::connectButtons(QToolBar *toolbar)");
-    QPushButton *button = toolbar->findChild<QPushButton *>("apply_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(apply())
-    );
-    button = toolbar->findChild<QPushButton *>("cancel_button");
-    connect(
-        button,
-        SIGNAL(clicked()),
-        this,
-        SLOT(cancel())
-    );
-}
-
 void Engine::IPlugin::refresh(CIMClient *client)
 {
     Logger::getInstance()->debug("Engine::IPlugin::refresh(CIMClient *client)");
@@ -328,11 +309,11 @@ void Engine::IPlugin::refresh(CIMClient *client)
         return;
     }
 
-    m_client = client;    
+    m_client = client;
     m_data = new std::vector<void *>();
-    m_stop_refresh = false;
+    setRefreshing(true);
 
-    m_instructions.clear();
+    cancelChanges();
     clear();
 
     m_refresh_thread = boost::thread(boost::bind(&Engine::IPlugin::getData, this, m_data));
@@ -418,7 +399,7 @@ void Engine::IPlugin::handleDataFetching(std::vector<void *> *data, bool still_r
         std::string error_message)
 {
     Logger::getInstance()->debug("Engine::IPlugin::handleDataFetching(std::vector<void *> *data, std::string error_message)");
-    if (!m_stop_refresh && !still_refreshing) {
+    if (!still_refreshing) {
         m_refresh_thread.join();
     }
 
@@ -426,20 +407,16 @@ void Engine::IPlugin::handleDataFetching(std::vector<void *> *data, bool still_r
         if (error_message.find("Unauthorized") != std::string::npos) {
             Logger::getInstance()->error("Wrong username or password!");
             emit deletePasswd();
-        } else if (!m_stop_refresh) {
+        } else {
+            setRefreshed(false);
+            emit refreshProgress(Engine::ERROR, this);
             Logger::getInstance()->error(error_message);
         }
-
-        setRefreshed(false);
-        emit refreshProgress(Engine::ERROR, this);
-    } else if (data != NULL) {
-        if (m_stop_refresh) {
-            m_stop_refresh = false;
-            return;
-        }
+    } else if (data != NULL) {        
         setRefreshed(true);
         fillTab(data);
         if (!still_refreshing) {
+            setRefreshing(false);
             emit refreshProgress(Engine::REFRESHED, this);
             Logger::getInstance()->info(getRefreshInfo());
         }
@@ -489,7 +466,17 @@ void Engine::IPlugin::setPluginEnabled(bool state)
 void Engine::IPlugin::stopRefresh()
 {
     Logger::getInstance()->debug("Engine::IPlugin::stopRefresh()");
-    m_stop_refresh = true;
     m_refresh_thread.interrupt();
-    handleDataFetching(NULL, "stop_refresh");
+    setRefreshing(false);
+    emit refreshProgress(Engine::STOP_REFRESH, this);
+}
+
+bool Engine::IPlugin::isRefreshing() const
+{
+    return m_refreshing;
+}
+
+void Engine::IPlugin::setRefreshing(bool refreshing)
+{
+    m_refreshing = refreshing;
 }

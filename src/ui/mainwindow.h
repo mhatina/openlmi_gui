@@ -21,6 +21,7 @@
 #include "logger.h"
 #include "logdialog.h"
 #include "widgets/pctreewidget.h"
+#include "widgets/progressbar.h"
 #include "widgets/providerwidget.h"
 
 #include <QMainWindow>
@@ -47,10 +48,7 @@ const button buttons[] = {
     {"delete_passwd_button", ":/change-password.png", "Delete \npassword", "", true, false},
     {"", "", "", "", true, false},
     {"refresh_button", ":/refresh.png", "Refresh", "Ctrl+R", true, false},
-    {"stop_refresh_button", ":/stop-refresh.png", "Stop refresh", "Ctrl+S", true, false},
-    {"cancel_button", ":/cancel.png", "Cancel", "", true, false},
     {"save_button", ":/save.png", "Save", "", true, false},
-    {"save_as_button", ":/save-as.png", "Save as...", "", true, false},
     {"apply_button", ":/apply.png", "Apply", "", true, false},
     {"", "", "", "", true, false},
     {"", "", "", "", true, false},
@@ -78,7 +76,11 @@ private:
     QMutex *m_mutex;
     QToolBar *m_toolbar;
     LogDialog m_log_dialog;
-    Ui::MainWindow *m_ui;
+    Ui::MainWindow *m_ui;       
+
+protected:
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
 public:
     /**
@@ -89,7 +91,7 @@ public:
     /**
      * @brief Destructor
      */
-    ~MainWindow();    
+    ~MainWindow();
 
     /**
      * @brief Getter
@@ -111,7 +113,7 @@ public:
      * @brief Getter
      * @return ToolBar
      */
-    QToolBar *getToolbar();
+    QToolBar *getToolbar();    
     /**
      * @brief Close all dialogs
      * @param event -- not used
@@ -123,6 +125,7 @@ private slots:
     void showLog();
 
 signals:
+    void changeButtonConnection(bool refresh);
     void closing();
 };
 
