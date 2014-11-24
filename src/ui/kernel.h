@@ -23,7 +23,7 @@
 #include "mainwindow.h"
 #include "plugin.h"
 #include "settingsdialog.h"
-#include "showtextdialog.h"
+#include "codedialog.h"
 #include "widgets/progressbar.h"
 
 #include <map>
@@ -94,7 +94,7 @@ private:
     QMutex *m_mutex;
     QTreeWidgetItem *m_last_system;
     SettingsDialog *m_settings;
-    ShowTextDialog m_code_dialog;
+    CodeDialog m_code_dialog;
     std::string m_save_script_path;
     std::vector<QPluginLoader *> m_loaders;
 

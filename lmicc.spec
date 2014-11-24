@@ -15,6 +15,7 @@ BuildRequires:  tog-pegasus-libs >= 2.12.0
 BuildRequires:  libgnome-keyring-devel >= 3.10.1
 BuildRequires:  boost-devel >= 1.54.0
 BuildRequires:  openslp-devel >= 1.2.1
+BuildRequires:  qscintilla-devel >= 2.7.2
 BuildRequires:  lmicc-logger
 Requires:       qtsingleapplication >= 2.6.1
 Requires:       tog-pegasus >= 2.12.0
@@ -22,6 +23,7 @@ Requires:       boost >= 1.54.0
 Requires:       boost-thread >= 1.54.0
 Requires:       openslp >= 1.2.1
 Requires:       libgnome-keyring >= 3.10.1
+Requires:       qscintilla >= 2.7.2
 Requires:       lmicc-bin
 
 %package bin

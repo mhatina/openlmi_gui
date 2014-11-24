@@ -22,14 +22,11 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET          =       lmicc
 TEMPLATE        =       app
 QMAKE_CXXFLAGS  +=      -ansi -pedantic -Wall -Wextra
-LIBS            +=      -lslp -lpegclient -lpegcommon -lboost_thread -lgnome-keyring
+LIBS            +=      -lslp -lpegclient -lpegcommon -lboost_thread -lgnome-keyring -lqscintilla2
 INCLUDEPATH     +=      ../logger
 DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
-CONFIG          +=      link_pkgconfig
+CONFIG          +=      link_pkgconfig qtestlib qscintilla2
 PKGCONFIG       +=      glib-2.0
-RESOURCES       += \     
-    ../../icons/icons.qrc
-CONFIG          +=      qtestlib
 
 UI_DIR          =       uics
 MOC_DIR         =       mocs
@@ -73,7 +70,6 @@ SOURCES         +=      main.cpp \
                         instructions/instruction.cpp \
                         instructions/connectinstruction.cpp \
                         plugin.cpp \
-                        showtextdialog.cpp \
                         widgets/labeledlineedit.cpp \
                         detailsdialog.cpp \
                         kernelslots.cpp \
@@ -90,7 +86,8 @@ SOURCES         +=      main.cpp \
                         cimclient.cpp \
                         cimvalue.cpp \
                         logdialog.cpp \
-                        addtreeitemdialog.cpp
+                        addtreeitemdialog.cpp \
+                        codedialog.cpp
 
 HEADERS         +=      mainwindow.h \
                         kernel.h \
@@ -102,7 +99,6 @@ HEADERS         +=      mainwindow.h \
                         cimdatetimeconv.h \
                         instructions/instruction.h \
                         instructions/connectinstruction.h \
-                        showtextdialog.h \
                         widgets/labeledlineedit.h \
                         detailsdialog.h \
                         treewidgetitem.h \
@@ -118,13 +114,13 @@ HEADERS         +=      mainwindow.h \
                         cimclient.h \
                         cimvalue.h \
                         logdialog.h \
-                        addtreeitemdialog.h
+                        addtreeitemdialog.h \
+                        codedialog.h
 
 FORMS           +=      mainwindow.ui \
                         widgets/providerwidget.ui \
                         widgets/pctreewidget.ui \
                         authenticationdialog.ui \
-                        showtextdialog.ui \
                         widgets/labeledlineedit.ui \
                         detailsdialog.ui \
                         systemdetailsdialog.ui \
@@ -133,4 +129,7 @@ FORMS           +=      mainwindow.ui \
                         settings/generalsettings.ui \
                         settings/generalpluginsettings.ui \
                         logdialog.ui \
-                        addtreeitemdialog.ui
+                        addtreeitemdialog.ui \
+                        codedialog.ui
+
+RESOURCES       +=      ../../icons/icons.qrc

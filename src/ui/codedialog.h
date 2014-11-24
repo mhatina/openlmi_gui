@@ -15,50 +15,50 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef SHOWLOGDIALOG_H
-#define SHOWLOGDIALOG_H
+#ifndef CODEDIALOG_H
+#define CODEDIALOG_H
 
 #include <QDialog>
 
 namespace Ui
 {
-class ShowTextDialog;
+class CodeDialog;
 }
 
 /**
- * @brief The ShowTextDialog class
+ * @brief The CodeDialog class
  *
  * Show text in dialog.
  */
-class ShowTextDialog : public QDialog
+class CodeDialog : public QDialog
 {
     Q_OBJECT
+
+private:
+    Ui::CodeDialog *m_ui;
+
+    void initEditor();
+
+private slots:
+    void textChanged();
 
 public:
     /**
      * @brief Constructor
      * @param parent -- parent of dialog
      */
-    explicit ShowTextDialog(QWidget *parent = 0);
+    explicit CodeDialog(QWidget *parent = 0);
     /**
      * @brief Destructor
      */
-    ~ShowTextDialog();
+    ~CodeDialog();
 
     /**
      * @brief Set text of dialog
      * @param text
      * @param move_to_end -- whether to move cursor to end
      */
-    void setText(std::string text, bool move_to_end = true);
-    /**
-     * @brief Set title of dialog
-     * @param title
-     */
-    void setTitle(std::string title);
-
-private:
-    Ui::ShowTextDialog *m_ui;
+    void setText(std::string text);
 };
 
-#endif // SHOWLOGDIALOG_H
+#endif // CODEDIALOG_H

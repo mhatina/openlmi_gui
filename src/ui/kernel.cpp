@@ -52,8 +52,9 @@ Engine::Kernel::Kernel() :
     m_main_window(),
     m_bar(new ProgressBar()),
     m_mutex(new QMutex()),
-    m_last_system(NULL),
-    m_settings(SettingsDialog::getInstance(&m_main_window))
+    m_last_system(NULL),    
+    m_settings(SettingsDialog::getInstance(&m_main_window)),
+    m_code_dialog(&m_main_window)
 {
     Logger::getInstance()->debug("Engine::Kernel::Kernel()");
 
@@ -77,7 +78,6 @@ Engine::Kernel::Kernel() :
     m_main_window.getPcTreeWidget()->setTimeSec(2);
     m_bar->setMaximum(0);
 
-    m_code_dialog.setTitle("LMIShell Code");
     createKeyring();
 }
 

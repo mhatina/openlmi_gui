@@ -16,7 +16,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "mainwindow.h"
-#include "showtextdialog.h"
+#include "codedialog.h"
 #include "ui_mainwindow.h"
 
 #include <iostream>

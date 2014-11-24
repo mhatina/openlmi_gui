@@ -184,8 +184,6 @@ void Engine::Kernel::enableSpecialButtons(bool state)
     bool refresh = !list.empty() & m_refreshEnabled & state;
     QPushButton *button = widget<QPushButton *>("refresh_button");
     button->setEnabled(refresh);
-    button = widget<QPushButton *>("delete_passwd_button");
-    button->setEnabled(refresh);
     widget<QToolButton *>("power_button")->setEnabled(
         refresh);
 }
@@ -272,7 +270,7 @@ void Engine::Kernel::handleConnecting(CIMClient *client,
 void Engine::Kernel::handleInstructionText(std::string text)
 {
     Logger::getInstance()->debug("Engine::Kernel::handleInstructionText(std::string text)");
-    m_code_dialog.setText(text, false);
+    m_code_dialog.setText(text);
 }
 
 void Engine::Kernel::handleProgressState(int state, IPlugin *plugin)
@@ -486,7 +484,7 @@ void Engine::Kernel::setActivePlugin(int index)
 
         if (i == index) {
             plugin->setActive(true);
-            m_code_dialog.setText(plugin->getInstructionText(), false);
+            m_code_dialog.setText(plugin->getInstructionText());
             setButtonsEnabled(true, false);
             QPushButton *button = widget<QPushButton *>("filter_button");
             if (button != NULL) {
@@ -598,7 +596,7 @@ void Engine::Kernel::showCodeDialog()
     if (plugin == NULL) {
         return;
     }
-    m_code_dialog.setText(plugin->getInstructionText(), false);
+    m_code_dialog.setText(plugin->getInstructionText());
     m_code_dialog.show();
 }
 
