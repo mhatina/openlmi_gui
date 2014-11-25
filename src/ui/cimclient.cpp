@@ -18,7 +18,7 @@
 
 #include <Pegasus/Common/SSLContext.h>
 #include "cimclient.h"
-#include "address.h"
+#include "cimaddress.h"
 #include "logger.h"
 #include "kernel.h"
 

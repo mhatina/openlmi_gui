@@ -20,7 +20,7 @@
    <string>LMI Command Center</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../plugin/account/icons.qrc">
+   <iconset resource="../../../icons/icons.qrc">
     <normaloff>:/openlmi-logo.png</normaloff>:/openlmi-logo.png</iconset>
   </property>
   <property name="layoutDirection">
@@ -104,6 +104,7 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="action_help"/>
     <addaction name="action_report_bug"/>
     <addaction name="separator"/>
     <addaction name="action_about"/>
@@ -170,6 +171,14 @@
     <string>Report bug...</string>
    </property>
   </action>
+  <action name="action_help">
+   <property name="text">
+    <string>Help...</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -187,7 +196,14 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../plugin/account/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

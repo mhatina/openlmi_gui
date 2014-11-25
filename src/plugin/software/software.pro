@@ -58,7 +58,7 @@ HEADERS         +=      software.h \
                         ../../ui/instructions/connectinstruction.h \
                         ../../ui/instructions/instruction.h \
                         ../../ui/widgets/labeledlineedit.h \
-                        ../../ui/detailsdialog.h \
+                        ../../ui/dialogs/detailsdialog.h \
                         listwidget.h \
                         instructions/enablerepoinstruction.h \
                         instructions/disablerepoinstruction.h \
@@ -67,7 +67,7 @@ HEADERS         +=      software.h \
                         instructions/uninstallpackageinstruction.h \
                         instructions/updatepackageinstruction.h \
                         instructions/softwareinstruction.h \
-                        installdialog.h
+    dialogs/installdialog.h
 
 SOURCES         +=      software.cpp \
                         ../../ui/plugin.cpp \
@@ -76,7 +76,7 @@ SOURCES         +=      software.cpp \
                         ../../ui/cimvalue.cpp \
                         ../../ui/widgets/labeledlineedit.cpp \
                         ../../ui/cimdatetimeconv.cpp \
-                        ../../ui/detailsdialog.cpp \
+                        ../../ui/dialogs/detailsdialog.cpp \
                         listwidget.cpp \
                         instructions/enablerepoinstruction.cpp \
                         instructions/disablerepoinstruction.cpp \
@@ -85,10 +85,10 @@ SOURCES         +=      software.cpp \
                         instructions/uninstallpackageinstruction.cpp \
                         instructions/updatepackageinstruction.cpp \
                         instructions/softwareinstruction.cpp \
-                        installdialog.cpp
+    dialogs/installdialog.cpp
 
 FORMS           +=      software.ui \
                         listwidget.ui \
-                        installdialog.ui
+    dialogs/installdialog.ui
 
 RESOURCES       +=      ../../../icons/icons.qrc

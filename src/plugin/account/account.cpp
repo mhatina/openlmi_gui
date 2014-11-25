@@ -20,7 +20,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "account.h"
-#include "detailsdialog.h"
+#include "dialogs/detailsdialog.h"
 #include "dialogs/groupmemberdialog.h"
 #include "dialogs/newgroupdialog.h"
 #include "dialogs/newuserdialog.h"

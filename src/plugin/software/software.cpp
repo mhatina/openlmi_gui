@@ -19,8 +19,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include "detailsdialog.h"
-#include "installdialog.h"
+#include "dialogs/detailsdialog.h"
+#include "dialogs/installdialog.h"
 #include "instructions/disablerepoinstruction.h"
 #include "instructions/enablerepoinstruction.h"
 #include "instructions/installpackageinstruction.h"

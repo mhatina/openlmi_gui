@@ -75,7 +75,7 @@ SOURCES         +=      account.cpp \
                         instructions/changeuserpropertyinstruction.cpp \
                         ../../ui/cimvalue.cpp \
                         ../../ui/cimdatetimeconv.cpp \
-                        ../../ui/detailsdialog.cpp \
+                        ../../ui/dialogs/detailsdialog.cpp \
                         ../../ui/widgets/labeledlineedit.cpp
 
 HEADERS         +=      account.h \
@@ -98,7 +98,7 @@ HEADERS         +=      account.h \
                         instructions/changeuserpropertyinstruction.h \
                         ../../ui/plugin.h \
                         ../../ui/instructions/instruction.h \
-                        ../../ui/detailsdialog.h \
+                        ../../ui/dialogs/detailsdialog.h \
                         ../../ui/widgets/labeledlineedit.h
 
 FORMS           +=      account.ui \

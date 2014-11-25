@@ -15,12 +15,12 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK ***** */
 
-#include "addtreeitemdialog.h"
+#include "dialogs/addtreeitemdialog.h"
 #include "discoverworker.h"
 #include "kernel.h"
 #include "logger.h"
 #include "pctreewidget.h"
-#include "systemdetailsdialog.h"
+#include "dialogs/systemdetailsdialog.h"
 #include "treewidgetitem.h"
 #include "ui_pctreewidget.h"
 

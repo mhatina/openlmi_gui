@@ -60,76 +60,78 @@ CONFIG(debug, debug|release) {
 INSTALLS        +=      target
 
 SOURCES         +=      main.cpp \
-                        mainwindow.cpp \
                         widgets/pctreewidget.cpp \
                         widgets/providerwidget.cpp \
                         discoverworker.cpp \
-                        authenticationdialog.cpp \
                         kernel.cpp \
                         cimdatetimeconv.cpp \
                         instructions/instruction.cpp \
                         instructions/connectinstruction.cpp \
                         plugin.cpp \
                         widgets/labeledlineedit.cpp \
-                        detailsdialog.cpp \
                         kernelslots.cpp \
-                        treewidgetitem.cpp \
-                        systemdetailsdialog.cpp \
-                        settingsdialog.cpp \
                         widgets/labeledlabel.cpp \
                         settings/generalsettings.cpp \
                         settings/isettings.cpp \
                         settings/generalpluginsettings.cpp \
                         widgets/treewidget.cpp \
                         widgets/progressbar.cpp \
-                        address.cpp \
                         cimclient.cpp \
                         cimvalue.cpp \
-                        logdialog.cpp \
-                        addtreeitemdialog.cpp \
-                        codedialog.cpp
+                        dialogs/helpdialog.cpp \
+                        dialogs/addtreeitemdialog.cpp \
+                        dialogs/authenticationdialog.cpp \
+                        dialogs/codedialog.cpp \
+                        dialogs/detailsdialog.cpp \
+                        dialogs/logdialog.cpp \
+                        dialogs/mainwindow.cpp \
+                        dialogs/settingsdialog.cpp \
+                        dialogs/systemdetailsdialog.cpp \
+                        cimaddress.cpp \
+                        widgets/treewidgetitem.cpp
 
-HEADERS         +=      mainwindow.h \
-                        kernel.h \
+HEADERS         +=      kernel.h \
                         plugin.h \
                         widgets/pctreewidget.h \
                         widgets/providerwidget.h \
                         discoverworker.h \
-                        authenticationdialog.h \
                         cimdatetimeconv.h \
                         instructions/instruction.h \
                         instructions/connectinstruction.h \
                         widgets/labeledlineedit.h \
-                        detailsdialog.h \
-                        treewidgetitem.h \
-                        systemdetailsdialog.h \
-                        settingsdialog.h \
                         widgets/labeledlabel.h \
                         settings/generalsettings.h \
                         settings/isettings.h \
                         settings/generalpluginsettings.h \
                         widgets/treewidget.h \
                         widgets/progressbar.h \
-                        address.h \
                         cimclient.h \
                         cimvalue.h \
-                        logdialog.h \
-                        addtreeitemdialog.h \
-                        codedialog.h
+                        dialogs/helpdialog.h \
+                        cimaddress.h \
+                        dialogs/addtreeitemdialog.h \
+                        dialogs/authenticationdialog.h \
+                        dialogs/codedialog.h \
+                        dialogs/detailsdialog.h \
+                        dialogs/logdialog.h \
+                        dialogs/mainwindow.h \
+                        dialogs/settingsdialog.h \
+                        dialogs/systemdetailsdialog.h \
+                        widgets/treewidgetitem.h
 
-FORMS           +=      mainwindow.ui \
-                        widgets/providerwidget.ui \
+FORMS           +=      widgets/providerwidget.ui \
                         widgets/pctreewidget.ui \
-                        authenticationdialog.ui \
                         widgets/labeledlineedit.ui \
-                        detailsdialog.ui \
-                        systemdetailsdialog.ui \
-                        settingsdialog.ui \
                         widgets/labeledlabel.ui \
                         settings/generalsettings.ui \
                         settings/generalpluginsettings.ui \
-                        logdialog.ui \
-                        addtreeitemdialog.ui \
-                        codedialog.ui
+                        dialogs/addtreeitemdialog.ui \
+                        dialogs/authenticationdialog.ui \
+                        dialogs/codedialog.ui \
+                        dialogs/detailsdialog.ui \
+                        dialogs/logdialog.ui \
+                        dialogs/mainwindow.ui \
+                        dialogs/settingsdialog.ui \
+                        dialogs/systemdetailsdialog.ui
 
 RESOURCES       +=      ../../icons/icons.qrc

@@ -20,7 +20,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "actionbox.h"
-#include "detailsdialog.h"
+#include "dialogs/detailsdialog.h"
 #include "instructions/disableserviceinstruction.h"
 #include "instructions/enableserviceinstruction.h"
 #include "instructions/getinstruction.h"

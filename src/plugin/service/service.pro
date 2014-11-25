@@ -66,7 +66,7 @@ HEADERS         +=      service.h \
                         instructions/restartserviceinstruction.h \
                         instructions/reloadserviceinstruction.h \
                         ../../ui/instructions/instruction.h \
-                        ../../ui/detailsdialog.h \
+                        ../../ui/dialogs/detailsdialog.h \
                         ../../ui/widgets/labeledlineedit.h
 
 SOURCES         +=      service.cpp \
@@ -84,7 +84,7 @@ SOURCES         +=      service.cpp \
                         ../../ui/instructions/instruction.cpp \
                         instructions/restartserviceinstruction.cpp \
                         instructions/reloadserviceinstruction.cpp \
-                        ../../ui/detailsdialog.cpp \
+                        ../../ui/dialogs/detailsdialog.cpp \
                         ../../ui/widgets/labeledlineedit.cpp
 
 FORMS           +=      service.ui \

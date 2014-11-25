@@ -19,7 +19,7 @@
 #define PCTREEWIDGET_H
 
 #include "discoverworker.h"
-#include "systemdetailsdialog.h"
+#include "dialogs/systemdetailsdialog.h"
 #include "treewidgetitem.h"
 
 #include <QPlainTextEdit>

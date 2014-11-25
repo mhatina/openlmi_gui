@@ -18,12 +18,13 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
-#include "authenticationdialog.h"
 #include "cimclient.h"
-#include "mainwindow.h"
+#include "dialogs/authenticationdialog.h"
+#include "dialogs/codedialog.h"
+#include "dialogs/helpdialog.h"
+#include "dialogs/mainwindow.h"
+#include "dialogs/settingsdialog.h"
 #include "plugin.h"
-#include "settingsdialog.h"
-#include "codedialog.h"
 #include "widgets/progressbar.h"
 
 #include <map>
@@ -88,6 +89,7 @@ class Kernel : public QObject
 private:
     bool m_refreshEnabled;
     connection_map m_connections;
+    HelpDialog help;
     MainWindow m_main_window;
     plugin_map m_loaded_plugins;
     ProgressBar *m_bar;
@@ -173,6 +175,7 @@ private slots:
     void showAboutDialog();
     void showCodeDialog();
     void showFilter();
+    void showHelp();
     void showSettings();
     void startLMIShell();
     void startSsh();

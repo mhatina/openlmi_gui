@@ -1,6 +1,6 @@
 #include "kernel.h"
 #include "cimvalue.h"
-#include "settingsdialog.h"
+#include "dialogs/settingsdialog.h"
 
 #include <gnome-keyring-1/gnome-keyring.h>
 #include <QCheckBox>
@@ -288,7 +288,7 @@ void Engine::Kernel::handleProgressState(int state, std::string process, IPlugin
     Logger::getInstance()->debug("Engine::Kernel::handleProgressState(int state, std::string process, IPlugin *plugin)");
     switch (state) {
     case REFRESHED:
-        m_bar->hide(process);        
+        m_bar->hide(process);
     case ALMOST_REFRESHED:
         setButtonsEnabled(true);
         break;
@@ -617,6 +617,11 @@ void Engine::Kernel::showFilter()
     button->setChecked(checked);
 }
 
+void Engine::Kernel::showHelp()
+{
+    help.showHelp("index.html");
+}
+
 void Engine::Kernel::showSettings()
 {
     Logger::getInstance()->debug("Engine::Kernel::showSettings()");
@@ -634,21 +639,14 @@ void Engine::Kernel::startLMIShell()
         return;
     }
 
-    // TODO certificate
-    command += " -e \"lmishell\"";
 
     TreeWidgetItem *item = (TreeWidgetItem *) list[0];
+    std::string connect = "'c = connect(\"" + item->getId() + "\")'";
+    // TODO certificate
+    command += " -e \"lmishell -c "+ connect +"\"";
 
     QProcess shell(this);
-    std::string connect = "c = connect(\"" + item->getId() + "\")\n";
     shell.startDetached(command.c_str());
-
-    shell.waitForStarted();
-
-    // NOTE not working
-    qint64 i = shell.write(connect.c_str());
-    shell.closeWriteChannel();
-    std::cerr << i << "\n";
 }
 
 void Engine::Kernel::startSsh()

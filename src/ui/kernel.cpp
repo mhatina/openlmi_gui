@@ -299,6 +299,12 @@ void Engine::Kernel::initConnections()
         SIGNAL(triggered()),
         this,
         SLOT(startLMIShell()));
+    action = widget<QAction *>("action_help");
+    connect(
+        action,
+        SIGNAL(triggered()),
+        this,
+        SLOT(showHelp()));
     connect(
         m_main_window.getPcTreeWidget(),
         SIGNAL(refreshProgress(int, std::string)),

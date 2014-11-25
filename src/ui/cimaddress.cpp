@@ -18,7 +18,8 @@
 
 #include <cerrno>
 #include <cstdlib>
-#include "address.h"
+
+#include "cimaddress.h"
 #include "logger.h"
 
 Address::Address(std::string url)
