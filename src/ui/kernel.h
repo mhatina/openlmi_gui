@@ -21,7 +21,6 @@
 #include "cimclient.h"
 #include "dialogs/authenticationdialog.h"
 #include "dialogs/codedialog.h"
-#include "dialogs/helpdialog.h"
 #include "dialogs/mainwindow.h"
 #include "dialogs/settingsdialog.h"
 #include "plugin.h"
@@ -37,7 +36,6 @@
 #define STR(X)  __STRING(X)
 
 #define OPENLMI_KEYRING_DEFAULT "openlmi"
-#define LMI_VERSION "0.1.1"
 
 namespace PowerStateValues
 {
@@ -89,7 +87,6 @@ class Kernel : public QObject
 private:
     bool m_refreshEnabled;
     connection_map m_connections;
-    HelpDialog help;
     MainWindow m_main_window;
     plugin_map m_loaded_plugins;
     ProgressBar *m_bar;

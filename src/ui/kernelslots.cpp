@@ -579,13 +579,27 @@ void Engine::Kernel::setPowerState(QAction *action)
 
 void Engine::Kernel::showAboutDialog()
 {
-    std::string text = "LMI Command Center\n"
-                       "Version: " + std::string(LMI_VERSION) + "\n\n"
-                       "Authors: Martin Hatina\n"
-                       "Email: mhatina@redhat.com";
+    std::string name = STR(DOC_PATH);
+    name += "/about.txt";
+
+    QFile file(name.c_str());
+    if (!file.exists()) {
+        Logger::getInstance()->error("Cannot show about dialog");
+        return;
+    }
+
+    file.open(QIODevice::ReadOnly);
+    QString text;
+    char line[256];
+    while (!file.atEnd()) {
+        file.readLine(line, 255);
+        text += line;
+    }
+    file.close();
+
     QMessageBox box;
     box.setObjectName("about_dialog");
-    box.about(&m_main_window, "About", text.c_str());
+    box.about(&m_main_window, "About", text);
 }
 
 void Engine::Kernel::showCodeDialog()
@@ -619,7 +633,12 @@ void Engine::Kernel::showFilter()
 
 void Engine::Kernel::showHelp()
 {
-    help.showHelp("index.html");
+    QString url = STR(DOC_PATH);
+    url.append("/index.html");
+
+    if (!QDesktopServices::openUrl(QUrl(url))) {
+        Logger::getInstance()->error("Cannot open : " + url.toStdString());
+    }
 }
 
 void Engine::Kernel::showSettings()
@@ -643,7 +662,7 @@ void Engine::Kernel::startLMIShell()
     TreeWidgetItem *item = (TreeWidgetItem *) list[0];
     std::string connect = "'c = connect(\"" + item->getId() + "\")'";
     // TODO certificate
-    command += " -e \"lmishell -c "+ connect +"\"";
+    command += " -e \"lmishell -c " + connect + "\"";
 
     QProcess shell(this);
     shell.startDetached(command.c_str());

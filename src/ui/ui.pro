@@ -41,10 +41,14 @@ isEmpty(PREFIX) {
 isEmpty(LIB_PATH) {
     LIB_PATH    =       /lib
 }
+isEmpty(DOC) {
+    DOC         =       /usr/share/doc/lmicc
+}
 
 include($$QT_SINGLE_APP)
 
 CONFIG(debug, debug|release) {
+    DEFINES     +=      "DOC_PATH=../../doc"
     DEFINES     +=      "PLUGIN_PATH=../plugin/libs"
     LIBS        +=      -L../logger -llmicclogger
 } else {    
@@ -52,10 +56,11 @@ CONFIG(debug, debug|release) {
     manual_install {
         DEFINES +=      "PLUGIN_PATH=$$PREFIX$$LIB_PATH/lmicc"
         LIBS    +=      -L$$PREFIX$$LIB_PATH -llmicclogger
-    } else {
+    } else {        
         DEFINES +=      "PLUGIN_PATH=/usr/$$LIB_PATH/lmicc"
         LIBS    +=      -llmicclogger        
     }
+    DEFINES     +=      "DOC_PATH=$$DOC"
 }
 INSTALLS        +=      target
 
@@ -78,7 +83,6 @@ SOURCES         +=      main.cpp \
                         widgets/progressbar.cpp \
                         cimclient.cpp \
                         cimvalue.cpp \
-                        dialogs/helpdialog.cpp \
                         dialogs/addtreeitemdialog.cpp \
                         dialogs/authenticationdialog.cpp \
                         dialogs/codedialog.cpp \
@@ -107,7 +111,6 @@ HEADERS         +=      kernel.h \
                         widgets/progressbar.h \
                         cimclient.h \
                         cimvalue.h \
-                        dialogs/helpdialog.h \
                         cimaddress.h \
                         dialogs/addtreeitemdialog.h \
                         dialogs/authenticationdialog.h \
