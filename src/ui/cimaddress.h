@@ -19,7 +19,7 @@
 #ifndef WBEM_CLIENT_ADDRESS_H
 #define WBEM_CLIENT_ADDRESS_H
 
-#include <string>
+#include "lmi_string.h"
 
 /**
  * @brief The Address class
@@ -32,13 +32,13 @@ public:
      * @brief Constructor
      * @param url -- text representation of url
      */
-    Address(std::string url);
+    Address(String url);
 
     /**
      * @brief Getter
      * @return hostname
      */
-    std::string hostname() const
+    String hostname() const
     {
         return m_hostname;
     }
@@ -71,7 +71,7 @@ public:
     }
 
 private:
-    std::string m_hostname;
+    String m_hostname;
     unsigned int m_port;
     bool m_is_https;
     bool m_is_valid;

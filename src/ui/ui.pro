@@ -48,7 +48,7 @@ isEmpty(DOC) {
 include($$QT_SINGLE_APP)
 
 CONFIG(debug, debug|release) {
-    DEFINES     +=      "DOC_PATH=../../doc"
+    DEFINES     +=      "DOC_PATH=../../docs/build/html"
     DEFINES     +=      "PLUGIN_PATH=../plugin/libs"
     LIBS        +=      -L../logger -llmicclogger
 } else {    
@@ -92,7 +92,8 @@ SOURCES         +=      main.cpp \
                         dialogs/settingsdialog.cpp \
                         dialogs/systemdetailsdialog.cpp \
                         cimaddress.cpp \
-                        widgets/treewidgetitem.cpp
+                        widgets/treewidgetitem.cpp \
+    lmi_string.cpp
 
 HEADERS         +=      kernel.h \
                         plugin.h \
@@ -120,7 +121,8 @@ HEADERS         +=      kernel.h \
                         dialogs/mainwindow.h \
                         dialogs/settingsdialog.h \
                         dialogs/systemdetailsdialog.h \
-                        widgets/treewidgetitem.h
+                        widgets/treewidgetitem.h \
+    lmi_string.h
 
 FORMS           +=      widgets/providerwidget.ui \
                         widgets/pctreewidget.ui \

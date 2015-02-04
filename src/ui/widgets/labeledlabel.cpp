@@ -22,23 +22,12 @@
 #include "labeledlabel.h"
 #include "ui_labeledlabel.h"
 
-LabeledLabel::LabeledLabel(std::string label, std::string text) :
+LabeledLabel::LabeledLabel(String label, String text) :
     QWidget(),
     m_ui(new Ui::LabeledLabel)
 {
     m_ui->setupUi(this);
-    m_ui->label->setText(label.c_str());
-    m_ui->text->setText(text.c_str());
-    m_ui->text->setWordWrap(true);
-    setObjectName("labeledLabel");
-}
-
-LabeledLabel::LabeledLabel(std::string label, QString text) :
-    QWidget(),
-    m_ui(new Ui::LabeledLabel)
-{
-    m_ui->setupUi(this);
-    m_ui->label->setText(label.c_str());
+    m_ui->label->setText(label);
     m_ui->text->setText(text);
     m_ui->text->setWordWrap(true);
     setObjectName("labeledLabel");

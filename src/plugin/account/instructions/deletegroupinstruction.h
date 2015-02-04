@@ -37,9 +37,9 @@ public:
      * @param client -- see CIMClient
      * @param name -- name of group
      */
-    DeleteGroupInstruction(CIMClient *client, std::string name);
+    DeleteGroupInstruction(CIMClient *client, String name);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

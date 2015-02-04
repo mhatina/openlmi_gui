@@ -34,51 +34,51 @@ TreeWidgetItem::TreeWidgetItem(QTreeWidget *view) :
 {
 }
 
-std::string TreeWidgetItem::getIpv4() const
+String TreeWidgetItem::getIpv4() const
 {
     return m_ipv4;
 }
 
-void TreeWidgetItem::setIpv4(const std::string &value)
+void TreeWidgetItem::setIpv4(const String &value)
 {
     m_ipv4 = value;
 }
 
-std::string TreeWidgetItem::getIpv6() const
+String TreeWidgetItem::getIpv6() const
 {
     return m_ipv6;
 }
 
-void TreeWidgetItem::setIpv6(const std::string &value)
+void TreeWidgetItem::setIpv6(const String &value)
 {
     m_ipv6 = value;
 }
 
-std::string TreeWidgetItem::getName() const
+String TreeWidgetItem::getName() const
 {
     return m_name;
 }
 
-void TreeWidgetItem::setName(const std::string &value)
+void TreeWidgetItem::setName(const String &value)
 {
     m_name = value;
 }
 
-std::string TreeWidgetItem::getMac() const
+String TreeWidgetItem::getMac() const
 {
     return m_mac;
 }
 
-void TreeWidgetItem::setMac(const std::string &mac)
+void TreeWidgetItem::setMac(const String &mac)
 {
     m_mac = mac;
 }
-std::string TreeWidgetItem::getId() const
+String TreeWidgetItem::getId() const
 {
     return m_id;
 }
 
-void TreeWidgetItem::setId(const std::string &id)
+void TreeWidgetItem::setId(const String &id)
 {
     m_id = id;
 }

@@ -21,16 +21,16 @@
 
 #include "groupinstruction.h"
 
-GroupInstruction::GroupInstruction(CIMClient *client, std::string instruction,
-                                   std::string name, Pegasus::CIMValue value) :
+GroupInstruction::GroupInstruction(CIMClient *client, String instruction,
+                                   String name, Pegasus::CIMValue value) :
     IInstruction(instruction, value),
     m_client(client),
     m_name(name)
 {
 }
 
-GroupInstruction::GroupInstruction(CIMClient *client, std::string instruction,
-                                   std::string name) :
+GroupInstruction::GroupInstruction(CIMClient *client, String instruction,
+                                   String name) :
     IInstruction(instruction),
     m_client(client),
     m_name(name)
@@ -47,19 +47,19 @@ Pegasus::CIMInstance GroupInstruction::getGroup()
     groups = m_client->execQuery(
                  Pegasus::CIMNamespaceName("root/cimv2"),
                  Pegasus::String("WQL"),
-                 Pegasus::String(std::string("SELECT * FROM LMI_Group WHERE Name = \"" + m_name +
-                                 "\"").c_str())
+                 String("SELECT * FROM LMI_Group WHERE Name = \"" + m_name +
+                                 "\"")
              );
 
     if (groups.size() != 1) {
-        throw Pegasus::Exception(std::string("No group with name: " + m_name +
+        throw Pegasus::Exception(String("No group with name: " + m_name +
                                              "\n").c_str());
     }
 
     return Pegasus::CIMInstance(groups[0]);
 }
 
-std::string GroupInstruction::getGroupName()
+String GroupInstruction::getGroupName()
 {
     return m_name;
 }

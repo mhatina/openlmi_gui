@@ -26,7 +26,7 @@
 #include <sstream>
 
 AddUserToGroupInstruction::AddUserToGroupInstruction(CIMClient *client,
-        std::string name, Pegasus::CIMValue user_id) :
+        String name, Pegasus::CIMValue user_id) :
     GroupInstruction(client, "add_user_to_group", name, user_id)
 {
 }
@@ -36,7 +36,7 @@ IInstruction::Subject AddUserToGroupInstruction::getSubject()
     return IInstruction::GROUP;
 }
 
-std::string AddUserToGroupInstruction::toString()
+String AddUserToGroupInstruction::toString()
 {
     std::stringstream ss;
     ss << "identity = acc.first_associator(ResultClass=\"LMI_Identity\")\n"
@@ -58,9 +58,8 @@ void AddUserToGroupInstruction::run()
         Pegasus::Array<Pegasus::CIMObject> identity = m_client->execQuery(
                     Pegasus::CIMNamespaceName("root/cimv2"),
                     Pegasus::String("WQL"),
-                    Pegasus::String(
-                        std::string("SELECT * FROM LMI_Identity WHERE InstanceID = \"LMI:UID:" +
-                                    CIMValue::to_std_string(m_value) + "\"").c_str())
+                    String("SELECT * FROM LMI_Identity WHERE InstanceID = \"LMI:UID:" +
+                                    CIMValue::to_string(m_value) + "\"")
                 );
         member.addProperty(Pegasus::CIMProperty(
                                Pegasus::CIMName("Member"),
@@ -73,6 +72,6 @@ void AddUserToGroupInstruction::run()
             member
         );
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

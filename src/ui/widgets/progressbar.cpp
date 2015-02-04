@@ -31,9 +31,9 @@ bool ProgressBar::empty()
     return m_process_info.empty();
 }
 
-void ProgressBar::hide(std::string process)
+void ProgressBar::hide(String process)
 {
-    std::string tool = "";
+    String tool = "";
     for (unsigned int i = 0; i < m_process_info.size(); i++) {
         if (m_process_info[i].find(process) != std::string::npos) {
             m_process_info.erase(m_process_info.begin() + i);
@@ -53,10 +53,10 @@ void ProgressBar::hide(std::string process)
 
     if (tool[tool.length() - 1] == '\n')
         tool.erase(tool.length() - 1);
-    setToolTip(tool.c_str());
+    setToolTip(tool);
 }
 
-void ProgressBar::show(std::string process)
+void ProgressBar::show(String process)
 {
     for (unsigned int i = 0; i < m_process_info.size(); i++) {
         if (m_process_info[i].find(process) != std::string::npos) {
@@ -64,11 +64,11 @@ void ProgressBar::show(std::string process)
         }
     }
     m_process_info.push_back(process);
-    std::string tool = toolTip().toStdString();
+    String tool = toolTip();
     if (!tool.empty()) {
         tool += "\n";
     }
     tool += process;
-    setToolTip(tool.c_str());
+    setToolTip(tool);
     QProgressBar::show();
 }

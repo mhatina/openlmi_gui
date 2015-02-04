@@ -18,6 +18,7 @@
 #ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
+#include "lmi_string.h"
 #include "settings/isettings.h"
 
 #include <sstream>
@@ -51,7 +52,7 @@ private:
         return false;
     }
 
-    QString text(QWidget *line)
+    String text(QWidget *line)
     {
         if (qobject_cast<QLineEdit *>(line)) {
             return ((QLineEdit *) line)->text();
@@ -68,29 +69,29 @@ public:
 
     void addItem(ISettings *item);
     void deleteItem(ISettings *item);
-    ISettings *findItem(std::string title);
+    ISettings *findItem(String title);
 
     void load();
     void save();
 
     template<typename T, typename W>
-    T value(std::string value_name)
+    T value(String value_name)
     {
         T ret;
 
         for (unsigned int i = 0; i < m_settings.size(); i++) {
-            W widget = m_settings[i]->findChild<W>(value_name.c_str());
+            W widget = m_settings[i]->findChild<W>(value_name);
             if (widget == NULL) {
                 continue;
             }
 
-            std::string type = widget->metaObject()->className();
+            String type = widget->metaObject()->className();
             std::stringstream ss;
 
             if (type == "QCheckBox") {
                 ss << checkState(widget);
             } else if (type == "QLineEdit") {
-                ss << text(widget).toStdString();
+                ss << text(widget);
             }
             ss >> ret;
         }

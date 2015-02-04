@@ -37,6 +37,8 @@
 
 #define OPENLMI_KEYRING_DEFAULT "openlmi"
 
+#define LMICC_VERSION "0.1.1"
+
 namespace PowerStateValues
 {
 typedef enum {
@@ -81,8 +83,8 @@ class Kernel : public QObject
 {
     Q_OBJECT
 
-    typedef std::map<std::string, CIMClient *> connection_map;
-    typedef std::map<std::string, IPlugin *> plugin_map;
+    typedef std::map<String, CIMClient *> connection_map;
+    typedef std::map<String, IPlugin *> plugin_map;
 
 private:
     bool m_refreshEnabled;
@@ -94,11 +96,11 @@ private:
     QTreeWidgetItem *m_last_system;
     SettingsDialog *m_settings;
     CodeDialog m_code_dialog;
-    std::string m_save_script_path;
+    String m_save_script_path;
     std::vector<QPluginLoader *> m_loaders;
 
-    int  getIndexOfTab(std::string name);
-    std::string getPowerStateMessage(PowerStateValues::POWER_VALUES state);
+    int  getIndexOfTab(String name);
+    String getPowerStateMessage(PowerStateValues::POWER_VALUES state);
     void changeRefreshConnection(bool refresh);
     void createKeyring();
     void initConnections();
@@ -142,22 +144,22 @@ public:
     void showMainWindow();
 
     template<typename T>
-    T widget(std::string object_name)
+    T widget(String object_name)
     {
         return m_main_window.findChild<T>(object_name.c_str());
     }
 
 private slots:
-    int  getSilentConnection(std::string ip, bool silent = true);    
+    int  getSilentConnection(String ip, bool silent = true);
     void changeButtonConnection(bool control);
     void deletePasswd();
-    void deletePasswd(std::string id);
+    void deletePasswd(String id);
     void enableSpecialButtons(bool state);
     void handleAuthentication(PowerStateValues::POWER_VALUES state);
     void handleConnecting(CIMClient *client, PowerStateValues::POWER_VALUES state);
-    void handleInstructionText(std::string text);
+    void handleInstructionText(String text);
     void handleProgressState(int state, IPlugin *plugin = NULL);
-    void handleProgressState(int state, std::string process, IPlugin *plugin = NULL);
+    void handleProgressState(int state, String process, IPlugin *plugin = NULL);
     void refresh();
     void reloadPlugins();
     void reportBug();

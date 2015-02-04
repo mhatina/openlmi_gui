@@ -24,13 +24,14 @@
 
 #include "instructions/softwareinstruction.h"
 #include "cimclient.h"
+#include "lmi_string.h"
 
 class VerifyPackageInstruction : public SoftwareInstruction
 {
 public:
     VerifyPackageInstruction(CIMClient *client, Pegasus::CIMInstance package);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

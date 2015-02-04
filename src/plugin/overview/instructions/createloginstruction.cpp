@@ -5,7 +5,7 @@
 #include <sstream>
 
 CreateLogInstruction::CreateLogInstruction(CIMClient *client,
-        std::string message, Pegasus::Uint16 severity) :
+        String message, Pegasus::Uint16 severity) :
     IInstruction("create_log_instruction"),
     m_client(client),
     m_severity(severity),
@@ -18,7 +18,7 @@ IInstruction::Subject CreateLogInstruction::getSubject()
     return IInstruction::OVERVIEW;
 }
 
-std::string CreateLogInstruction::toString()
+String CreateLogInstruction::toString()
 {
     std::stringstream ss;
     ss << "c.root.cimv2.LMI_JournalLogRecord.create_instance({\"CreationClassName\": \"LMI_JournalLogRecord\",\n"
@@ -52,9 +52,7 @@ void CreateLogInstruction::run()
         Pegasus::CIMProperty data_format(
             Pegasus::CIMName("DataFormat"),
             Pegasus::CIMValue(
-                Pegasus::String(
-                    m_message.c_str()
-                )
+                m_message.asPegasusString()
             ));
         instance.addProperty(data_format);
 
@@ -75,6 +73,6 @@ void CreateLogInstruction::run()
             Pegasus::CIMNamespaceName("root/cimv2"),
             instance);
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

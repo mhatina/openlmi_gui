@@ -111,14 +111,14 @@
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="logical_file_line">
+       <widget class="QLabel" name="file_browser_line">
         <property name="text">
-         <string>Logical File</string>
+         <string>File browser</string>
         </property>
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QCheckBox" name="logical_file">
+       <widget class="QCheckBox" name="file_browser">
         <property name="text">
          <string/>
         </property>

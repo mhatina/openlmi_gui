@@ -41,7 +41,7 @@ public:
      */
     PushInstruction(IInstruction::Subject s);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

@@ -102,7 +102,7 @@ void SettingsDialog::deleteItem(ISettings *item)
     }
 }
 
-ISettings *SettingsDialog::findItem(std::string title)
+ISettings *SettingsDialog::findItem(String title)
 {
     for (unsigned int i = 0; i < m_settings.size(); i++) {
         if (m_settings[i]->title() == title) {
@@ -116,8 +116,8 @@ ISettings *SettingsDialog::findItem(std::string title)
 void SettingsDialog::load()
 {
     Logger::getInstance()->debug("SettingsDialog::load()");
-    std::string file_path = QDir::homePath().toStdString() + "/.config/lmicc_settings.xml";
-    QFile file(file_path.c_str());
+    String file_path = QDir::homePath().toStdString() + "/.config/lmicc_settings.xml";
+    QFile file(file_path);
     if (!file.exists()) {
         for (unsigned int i = 0; i < m_settings.size(); i++) {
             ISettings *settings = m_settings[i];
@@ -126,10 +126,9 @@ void SettingsDialog::load()
         return;
     }
 
-    std::string path = file_path.c_str();
     if (!file.open(QIODevice::ReadOnly)) {
-        Logger::getInstance()->error("Failed to read from " + path +
-                                     ", error: " + file.errorString().toStdString(), false);
+        Logger::getInstance()->error("Failed to read from " + file_path +
+                                     ", error: " + file.errorString(), false);
         return;
     }
 
@@ -146,8 +145,8 @@ void SettingsDialog::save()
 {
     Logger::getInstance()->debug("SettingsDialog::save()");
 
-    std::string path = QDir::homePath().toStdString() + "/.config/lmicc_settings.xml";
-    QFile file(path.c_str());
+    String path = QDir::homePath() + "/.config/lmicc_settings.xml";
+    QFile file(path);
     if (!file.open(QIODevice::WriteOnly)) {
         Logger::getInstance()->error("Failed to write to " + path +
                                      ", error: " + file.errorString().toStdString(), false);
@@ -162,7 +161,7 @@ void SettingsDialog::save()
     out.writeStartElement("settings");
     for (unsigned int i = 0; i < m_settings.size(); i++) {
         ISettings *settings = m_settings[i];
-        std::string title = settings->title();
+        String title = settings->title();
         title.erase(remove_if(title.begin(), title.end(), isspace), title.end());
         out.writeStartElement(title.c_str());
         settings->save(out);
@@ -186,7 +185,7 @@ void SettingsDialog::change()
     }
 
     m_ui->settings_box->setTitle(list[0]->text());
-    ISettings *settings = findItem(list[0]->text().toStdString());
+    ISettings *settings = findItem(list[0]->text());
     settings->show();
 }
 
@@ -194,10 +193,10 @@ void SettingsDialog::updateList(QString text)
 {
     m_ui->list->clear();
     for (unsigned int i = 0; i < m_settings.size(); i++) {
-        std::string tmp = m_settings[i]->title();
+        String tmp = m_settings[i]->title();
         std::transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
-        if (tmp.find(text.toLower().toStdString()) != std::string::npos) {
-            m_ui->list->addItem(m_settings[i]->title().c_str());
+        if (tmp.find(String(text.toLower())) != String::npos) {
+            m_ui->list->addItem(m_settings[i]->title());
         }
     }
 }

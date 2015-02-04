@@ -22,25 +22,26 @@
 #include "network.h"
 #include "networkpagewidget.h"
 #include "cimvalue.h"
+#include "lmi_string.h"
 #include "ui_network.h"
 
 #include <sstream>
 #include <QTableWidgetItem>
 
-QTableWidgetItem *createItem(std::string text)
+QTableWidgetItem *createItem(String text)
 {
-    QTableWidgetItem *item = new QTableWidgetItem(text.c_str());
-    item->setToolTip(text.c_str());
+    QTableWidgetItem *item = new QTableWidgetItem(text);
+    item->setToolTip(text);
     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     return item;
 }
 
-NetworkPageWidget *NetworkPlugin::findWidget(std::string text)
+NetworkPageWidget *NetworkPlugin::findWidget(String text)
 {
     int cnt = m_ui->network_widgets->count();
     for (int i = 0; i < cnt; i++) {
         NetworkPageWidget *w = (NetworkPageWidget *) m_ui->network_widgets->widget(i);
-        if (text.find(w->getTitle()) != std::string::npos) {
+        if (text.find(w->getTitle()) != String::npos) {
             return w;
         }
     }
@@ -69,7 +70,7 @@ NetworkPlugin::~NetworkPlugin()
     delete m_ui;
 }
 
-std::string NetworkPlugin::getInstructionText()
+String NetworkPlugin::getInstructionText()
 {
     std::stringstream ss;
     for (unsigned int i = 0; i < m_instructions.size(); i++) {
@@ -78,12 +79,12 @@ std::string NetworkPlugin::getInstructionText()
     return ss.str();
 }
 
-std::string NetworkPlugin::getLabel()
+String NetworkPlugin::getLabel()
 {
     return "Network";
 }
 
-std::string NetworkPlugin::getRefreshInfo()
+String NetworkPlugin::getRefreshInfo()
 {
     std::stringstream ss;
     ss << getLabel() << ": " << m_ui->scroll_bar->maximum() + 1 << " interfaces shown";
@@ -165,7 +166,7 @@ void NetworkPlugin::getData(std::vector<void *> *data)
             data->push_back(new Pegasus::CIMInstance(dns[i]));
         }
     } catch (Pegasus::Exception &ex) {
-        emit doneFetchingData(NULL, false, CIMValue::to_std_string(ex.getMessage()));
+        emit doneFetchingData(NULL, false, CIMValue::to_string(ex.getMessage()));
         return;
     }
 
@@ -208,7 +209,7 @@ void NetworkPlugin::fillTab(std::vector<void *> *data)
                 if (m_ui->scroll_bar->maximum() < page_count) {
                     m_ui->scroll_bar->setMaximum(m_ui->scroll_bar->maximum() + 1);
                 }
-            } else if (CIMValue::get_property_value(instance, "InstanceID").find("LMI_EthernetPortStatistics") != std::string::npos) {
+            } else if (CIMValue::get_property_value(instance, "InstanceID").find("LMI_EthernetPortStatistics") != String::npos) {
                 NetworkPageWidget *w = findWidget(CIMValue::get_property_value(instance, "ElementName"));
                 w->setEthernetStatistics(instance);
             } else if (CIMValue::get_property_value(instance, "CreationClassName") == "LMI_IPNetworkConnection") {
@@ -230,7 +231,7 @@ void NetworkPlugin::fillTab(std::vector<void *> *data)
         }
 
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
         return;
     }
 

@@ -49,6 +49,9 @@
        <height>16777215</height>
       </size>
      </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
      <property name="expandsOnDoubleClick">
       <bool>true</bool>
      </property>

@@ -26,7 +26,7 @@
 #include <sstream>
 
 ChangeGroupPropertyInstruction::ChangeGroupPropertyInstruction(
-    CIMClient *client, std::string property, std::string name,
+    CIMClient *client, String property, String name,
     Pegasus::CIMValue value) :
     GroupInstruction(client, property, name, value)
 {
@@ -49,10 +49,10 @@ IInstruction::Subject ChangeGroupPropertyInstruction::getSubject()
     return IInstruction::GROUP;
 }
 
-std::string ChangeGroupPropertyInstruction::toString()
+String ChangeGroupPropertyInstruction::toString()
 {
     std::stringstream ss;
-    ss << "gr." << m_instruction << " = \"" << CIMValue::to_std_string(
+    ss << "gr." << m_instruction << " = \"" << CIMValue::to_string(
            m_value) << "\"\n";
     return ss.str();
 }
@@ -71,6 +71,6 @@ void ChangeGroupPropertyInstruction::run()
             false
         );
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

@@ -18,6 +18,7 @@
 #ifndef AUTHENTICATIONDIALOG_H
 #define AUTHENTICATIONDIALOG_H
 
+#include "lmi_string.h"
 #include "ui_authenticationdialog.h"
 
 #include <QDialog>
@@ -41,7 +42,7 @@ public:
      * @brief Contructor
      * @param id -- id of host (ip or domain name)
      */
-    AuthenticationDialog(std::string id, QWidget *parent = 0);
+    AuthenticationDialog(String id, QWidget *parent = 0);
 
     /**
      * @brief Destructor
@@ -52,13 +53,13 @@ public:
      * @brief Getter
      * @return password
      */
-    std::string getPasswd();
+    String getPasswd();
 
     /**
      * @brief Getter
      * @return username
      */
-    std::string getUsername();
+    String getUsername();
 
 private:
     Ui::AuthenticationDialog *m_ui;

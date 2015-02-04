@@ -23,6 +23,7 @@
 #include <gnome-keyring-1/gnome-keyring.h>
 #include <Pegasus/Common/Array.h>
 
+#include <QAction>
 #include <QStatusBar>
 #include <QToolBar>
 #include <QToolButton>
@@ -65,11 +66,10 @@ Engine::Kernel::Kernel() :
     }
 
     struct passwd *pw = getpwuid(uid);
-    std::string path = pw->pw_dir;
+    String path = pw->pw_dir;
     path += "/.config";
-    if (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0 && errno != EEXIST) {
-        Logger::getInstance()->error("Cannot create ~/.config dir: " +
-                                     std::string(strerror(errno)));
+    if (mkdir(path, S_IRWXU | S_IRWXG | S_IRWXO) != 0 && errno != EEXIST) {
+        Logger::getInstance()->error("Cannot create ~/.config dir: " + String(strerror(errno)));
     }
 
     initConnections();
@@ -100,12 +100,12 @@ Engine::Kernel::~Kernel()
     Logger::removeInstance();
 }
 
-int Engine::Kernel::getIndexOfTab(std::string name)
+int Engine::Kernel::getIndexOfTab(String name)
 {
-    Logger::getInstance()->debug("Engine::Kernel::getIndexOfTab(std::string name)");
+    Logger::getInstance()->debug("Engine::Kernel::getIndexOfTab(String name)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     for (int i = 0; i < tab->count(); i++) {
-        if (tab->tabText(i).contains(name.c_str())) {
+        if (tab->tabText(i).contains(name)) {
             return i;
         }
     }
@@ -113,11 +113,11 @@ int Engine::Kernel::getIndexOfTab(std::string name)
     return -1;
 }
 
-std::string Engine::Kernel::getPowerStateMessage(PowerStateValues::POWER_VALUES state)
+String Engine::Kernel::getPowerStateMessage(PowerStateValues::POWER_VALUES state)
 {
     QTreeWidgetItem *item =
         m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
-    std::string message = "";
+    String message = "";
     switch (state) {
     case PowerStateValues::PowerCycleOffSoft:
         message = "Rebooting system: ";
@@ -138,7 +138,7 @@ std::string Engine::Kernel::getPowerStateMessage(PowerStateValues::POWER_VALUES 
         return "Not possible!";
     }
 
-    message += item->text(0).toStdString();
+    message += item->text(0);
     return message;
 }
 
@@ -180,7 +180,7 @@ void Engine::Kernel::createKeyring()
     if (res != GNOME_KEYRING_RESULT_OK &&
         res != GNOME_KEYRING_RESULT_KEYRING_ALREADY_EXISTS) {
 
-        Logger::getInstance()->error("Cannot create " + std::string(
+        Logger::getInstance()->error("Cannot create " + String(
                                          OPENLMI_KEYRING_DEFAULT) + " keyring: " + gnome_keyring_result_to_message(res));
         exit(EXIT_FAILURE);
     }
@@ -222,9 +222,9 @@ void Engine::Kernel::initConnections()
         SLOT(saveScripts()));   
     connect(
         m_main_window.getPcTreeWidget(),
-        SIGNAL(removed(std::string)),
+        SIGNAL(removed(String)),
         this,
-        SLOT(deletePasswd(std::string)));
+        SLOT(deletePasswd(String)));
     connect(
         m_main_window.getProviderWidget()->getTabWidget(),
         SIGNAL(currentChanged(int)),
@@ -247,69 +247,69 @@ void Engine::Kernel::initConnections()
         this,
         SLOT(handleAuthentication(PowerStateValues::POWER_VALUES)));
     connect(
-        m_main_window.getResetPasswdStorageAction(),
+        (QObject *) m_main_window.getResetPasswdStorageAction(),
         SIGNAL(triggered()),
         this,
         SLOT(resetKeyring()));
     QAction *action = widget<QAction *>("action_reload_plugins");
     connect(
-        action,
+        (QObject *) action,
         SIGNAL(triggered()),
         this,
         SLOT(reloadPlugins()));
     action = widget<QAction *>("action_options");
     connect(
-        action,
+        (QObject *) action,
         SIGNAL(triggered()),
         this,
         SLOT(showSettings()));
     action = widget<QAction *>("action_about");
     connect(
-        action,
+        (QObject *) action,
         SIGNAL(triggered()),
         this,
         SLOT(showAboutDialog()));
     action = widget<QAction *>("action_report_bug");
     connect(
-        action,
+        (QObject *) action,
         SIGNAL(triggered()),
         this,
         SLOT(reportBug()));
     action = widget<QAction *>("delete_passwd_action");
     connect(
-        action,
+        (QObject *) action,
         SIGNAL(triggered()),
         this,
         SLOT(deletePasswd()));
     action = widget<QAction *>("refresh_action");
     connect(
-        action,
+        (QObject *) action,
         SIGNAL(triggered()),
         this,
         SLOT(selectionChanged()));
     action = widget<QAction *>("start_ssh_action");
     connect(
-        action,
+        (QObject *) action,
         SIGNAL(triggered()),
         this,
         SLOT(startSsh()));
     action = widget<QAction *>("start_lmishell_action");
     connect(
-        action,
+        (QObject *) action,
         SIGNAL(triggered()),
         this,
         SLOT(startLMIShell()));
     action = widget<QAction *>("action_help");
     connect(
-        action,
+        (QObject *) action,
         SIGNAL(triggered()),
         this,
         SLOT(showHelp()));
     connect(
         m_main_window.getPcTreeWidget(),
-        SIGNAL(refreshProgress(int, std::string)),
+        SIGNAL(refreshProgress(int, String)),
         this,
-        SLOT(handleProgressState(int, std::string)));
+        SLOT(handleProgressState(int, String)));
     connect(
         &m_main_window,
         SIGNAL(changeButtonConnection(bool)),
@@ -340,8 +340,7 @@ void Engine::Kernel::setMac(CIMClient *client)
 {
     Logger::getInstance()->debug("Engine::Kernel::setMac(CIMClient *client)");
     QTreeWidget *tree = m_main_window.getPcTreeWidget()->getTree();
-    QList<QTreeWidgetItem *> list = tree->findItems(client->hostname().c_str(),
-                                    Qt::MatchExactly | Qt::MatchRecursive);
+    QList<QTreeWidgetItem *> list = tree->selectedItems();
     if (list.empty()) {
         return;
     }
@@ -364,11 +363,11 @@ void Engine::Kernel::setMac(CIMClient *client)
         }
         Pegasus::CIMObject endpoint = lan[0];
 
-        std::string mac = CIMValue::get_property_value(Pegasus::CIMInstance(endpoint),
+        String mac = CIMValue::get_property_value(Pegasus::CIMInstance(endpoint),
                           "MACAddress");
         item->setMac(mac);
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()), false);
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()), false);
     }
 }
 
@@ -384,7 +383,7 @@ void Engine::Kernel::setPowerState(CIMClient *client,
                               Pegasus::CIMName("LMI_PowerManagementService")
                           )[0];
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 
     Pegasus::Array<Pegasus::CIMParamValue> in_param;
@@ -407,7 +406,7 @@ void Engine::Kernel::setPowerState(CIMClient *client,
         m_connections.erase(m_connections.find(client->hostname()));
         client->disconnect();
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }
 
@@ -420,7 +419,7 @@ void Engine::Kernel::wakeOnLan()
 
     TreeWidgetItem *item = ((TreeWidgetItem *)
                             m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0]);
-    std::string mac_str = item->getMac();
+    String mac_str = item->getMac();
     if (mac_str.empty()) {
         Logger::getInstance()->error("Unknown MAC address");
         return;
@@ -469,10 +468,10 @@ void Engine::Kernel::wakeOnLan()
     // set server end point (the broadcast addres)
     udp_server.sin_family = AF_INET;
 
-    std::string ip = item->getIpv4();
+    String ip = item->getIpv4();
     ip = ip.substr(0, ip.rfind(".") + 1);
     ip += "255";
-    udp_server.sin_addr.s_addr = inet_addr(ip.c_str());
+    udp_server.sin_addr.s_addr = inet_addr(ip);
     udp_server.sin_port = htons(9);
 
     // send the packet
@@ -517,7 +516,7 @@ void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
     Logger::getInstance()->debug("Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)");
     TreeWidgetItem *item = (TreeWidgetItem *)
                            m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
-    std::string ip = item->getId();
+    String ip = item->getId();
 
     switch (getSilentConnection(ip, false)) {
     case 0:
@@ -545,9 +544,9 @@ void Engine::Kernel::loadPlugin()
         IPlugin *plugin = qobject_cast<IPlugin *>(plugin_loader->instance());
         m_loaders.push_back(plugin_loader);
         if (plugin && plugin != NULL) {
-            if (m_loaded_plugins.find(file_name.toStdString()) == m_loaded_plugins.end()) {
+            if (m_loaded_plugins.find(file_name) == m_loaded_plugins.end()) {
                 Logger::getInstance()->debug("Loaded: " + plugin->getLabel(), true);
-                m_loaded_plugins[file_name.toStdString()] = plugin;
+                m_loaded_plugins[file_name] = plugin;
 
                 plugin->setMutex(m_mutex);
                 connect(plugin, SIGNAL(deletePasswd()), this,
@@ -558,23 +557,23 @@ void Engine::Kernel::loadPlugin()
                         SLOT(setPluginNoChanges(IPlugin *)));
                 connect(plugin, SIGNAL(refreshProgress(int, IPlugin *)), this,
                         SLOT(handleProgressState(int, IPlugin *)));
-                connect(plugin, SIGNAL(refreshProgress(int, std::string, IPlugin *)), this,
-                        SLOT(handleProgressState(int, std::string, IPlugin *)));
-                connect(plugin, SIGNAL(newInstructionText(std::string)), this,
-                        SLOT(handleInstructionText(std::string)));
+                connect(plugin, SIGNAL(refreshProgress(int, String, IPlugin *)), this,
+                        SLOT(handleProgressState(int, String, IPlugin *)));
+                connect(plugin, SIGNAL(newInstructionText(String)), this,
+                        SLOT(handleInstructionText(String)));
                 connect(widget<QPushButton *>("apply_button"), SIGNAL(clicked()), plugin,
                         SLOT(apply()));
 
                 if (plugin->getLabel() == "Overview") {
                     m_main_window.getProviderWidget()->getTabWidget()->insertTab(0, plugin,
-                            plugin->getLabel().c_str());
+                            plugin->getLabel());
                 } else {
                     m_main_window.getProviderWidget()->getTabWidget()->addTab(plugin,
-                            plugin->getLabel().c_str());
+                            plugin->getLabel());
                 }
             }
         } else {
-            Logger::getInstance()->critical(plugin_loader->errorString().toStdString(), false);
+            Logger::getInstance()->critical(plugin_loader->errorString(), false);
         }
     }
     setActivePlugin(0);

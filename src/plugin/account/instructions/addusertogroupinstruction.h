@@ -23,6 +23,7 @@
 #define ADDUSERTOGROUPINSTRUCTION_H
 
 #include "groupinstruction.h"
+#include "lmi_string.h"
 
 /**
  * @brief The AddUserToGroupInstruction class
@@ -38,10 +39,10 @@ public:
      * @param name -- group name
      * @param user_id -- user's id
      */
-    AddUserToGroupInstruction(CIMClient *client, std::string name,
+    AddUserToGroupInstruction(CIMClient *client, String name,
                               Pegasus::CIMValue user_id);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

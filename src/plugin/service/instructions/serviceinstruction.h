@@ -24,6 +24,7 @@
 
 #include "instructions/instruction.h"
 #include "cimclient.h"
+#include "lmi_string.h"
 
 /**
  * @brief The ServiceInstruction class
@@ -32,10 +33,10 @@ class ServiceInstruction : public IInstruction
 {
 protected:
     CIMClient *m_client;
-    std::string m_name;
+    String m_name;
 
     Pegasus::CIMInstance getService();
-    Pegasus::CIMValue invokeMethod(std::string method);
+    Pegasus::CIMValue invokeMethod(String method);
 
 public:
     /**
@@ -44,8 +45,8 @@ public:
      * @param instruction -- name of instruction
      * @param name -- name of service
      */
-    ServiceInstruction(CIMClient *client, std::string instruction,
-                       std::string name);
+    ServiceInstruction(CIMClient *client, String instruction,
+                       String name);
     /**
      * @brief Destructor
      */

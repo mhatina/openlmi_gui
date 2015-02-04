@@ -19,48 +19,29 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef LABELEDLINEEDIT_H
-#define LABELEDLINEEDIT_H
+#include "filetree.h"
 
-#include "lmi_string.h"
-
-#include <string>
-#include <QLineEdit>
-#include <QWidget>
-
-namespace Ui
+FileTree::FileTree() :
+    m_root(NULL)
 {
-class LabeledLineEdit;
 }
 
-class LabeledLineEdit : public QWidget
+FileTree::Item *FileTree::findItem(String path, Item *root_item)
 {
-    Q_OBJECT
+    Item *root = root_item == NULL ? &m_root : root_item;
 
-private:
-    String m_text;
-    Ui::LabeledLineEdit *m_ui;
+    if (path == root->getFullName())
+        return root;
 
-public:
-    explicit LabeledLineEdit(String objectName, String label,
-                             String text, bool key = false);
-    ~LabeledLineEdit();
+    int cnt = root->count();
+    for (int i = 0; i < cnt; i++) {
+        Item *item = &root->getDescendant(i);
+        if (item->getFullName() == path) {
+            return item;
+        } else if (path.find(item->getFullName() + "/") == 0) {
+            return findItem(path, item);
+        }
+    }
 
-    int getLabelWidth();
-    String getLabelText();
-    String getObjectName();
-    String getText();
-    void setAlignment(int alignment);
-    void setLabelText(String text);
-    void setReadOnly(bool state);
-    void setText(String text);
-
-public slots:
-    void itemChanged();
-    void textChanged();
-
-signals:
-    void itemChanged(LabeledLineEdit *item);
-};
-
-#endif // LABELEDLINEEDIT_H
+    return NULL;
+}

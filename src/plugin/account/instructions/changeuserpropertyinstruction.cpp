@@ -27,7 +27,7 @@
 #include <sstream>
 
 ChangeUserPropertyInstruction::ChangeUserPropertyInstruction(CIMClient *client,
-        std::string property, std::string name, Pegasus::CIMValue value) :
+        String property, String name, Pegasus::CIMValue value) :
     AccountInstruction(client, property, name, value)
 {
 }
@@ -49,10 +49,10 @@ IInstruction::Subject ChangeUserPropertyInstruction::getSubject()
     return IInstruction::ACCOUNT;
 }
 
-std::string ChangeUserPropertyInstruction::toString()
+String ChangeUserPropertyInstruction::toString()
 {
     std::stringstream ss;
-    ss << "acc." << m_instruction << " = \"" << CIMValue::to_std_string(
+    ss << "acc." << m_instruction << " = \"" << CIMValue::to_string(
            m_value) << "\"\n";
     return ss.str();
 }
@@ -71,6 +71,6 @@ void ChangeUserPropertyInstruction::run()
             false
         );
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

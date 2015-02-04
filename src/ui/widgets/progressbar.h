@@ -18,6 +18,8 @@
 #ifndef PROGRESSBAR_H
 #define PROGRESSBAR_H
 
+#include "lmi_string.h"
+
 #include <QProgressBar>
 
 class ProgressBar : public QProgressBar
@@ -29,8 +31,8 @@ public:
     ProgressBar();
     ~ProgressBar() {}
     bool empty();
-    void show(std::string process);
-    void hide(std::string process);
+    void show(String process);
+    void hide(String process);
 };
 
 #endif // PROGRESSBAR_H

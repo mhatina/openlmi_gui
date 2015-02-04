@@ -38,16 +38,16 @@ void toLower(char *text)
     }
 }
 
-QTreeWidgetItem *LogDialog::createItem(std::string name, QTreeWidgetItem *parent)
+QTreeWidgetItem *LogDialog::createItem(String name, QTreeWidgetItem *parent)
 {
-    Logger::getInstance()->debug("LogDialog::createItem(std::string name, QTreeWidgetItem *parent)");
+    Logger::getInstance()->debug("LogDialog::createItem(String name, QTreeWidgetItem *parent)");
     QTreeWidgetItem *item;
     if (parent == NULL) {
         item = new QTreeWidgetItem(m_ui->logs);
     } else {
         item = new QTreeWidgetItem(parent);
     }
-    item->setText(0, name.c_str());
+    item->setText(0, name);
     item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
     m_ui->logs->sortByColumn(
         0,
@@ -57,10 +57,10 @@ QTreeWidgetItem *LogDialog::createItem(std::string name, QTreeWidgetItem *parent
     return item;
 }
 
-QTreeWidgetItem *LogDialog::findItem(std::string item_name, QTreeWidgetItem *parent)
+QTreeWidgetItem *LogDialog::findItem(String item_name, QTreeWidgetItem *parent)
 {
-    Logger::getInstance()->debug("LogDialog::topLevelNode(std::string item_name)");
-    QList<QTreeWidgetItem *> list = m_ui->logs->findItems(item_name.c_str(), Qt::MatchExactly | Qt::MatchRecursive);
+    Logger::getInstance()->debug("LogDialog::topLevelNode(String item_name)");
+    QList<QTreeWidgetItem *> list = m_ui->logs->findItems(item_name, Qt::MatchExactly | Qt::MatchRecursive);
     if (list.empty()) {
         return createItem(item_name, parent);
     } else {
@@ -133,25 +133,25 @@ void LogDialog::initShowButton()
 
 void LogDialog::archive()
 {
-    QFile file(Logger::getInstance()->getLogPath().c_str());
+    QFile file(Logger::getInstance()->getLogPath());
     std::stringstream ss;
     ss << QDateTime().currentDateTime().date().day()
        << QDateTime().currentDateTime().date().month()
        << QDateTime().currentDateTime().date().year();
 
-    std::string path = SettingsDialog::getInstance()->value<std::string, QLineEdit *>("log_archive");
+    String path = SettingsDialog::getInstance()->value<String, QLineEdit *>("log_archive");
     if (path.empty()) {
         QFileDialog dialog;
         dialog.setFileMode(QFileDialog::Directory);
-        path = dialog.getExistingDirectory().toStdString();
-        SettingsDialog::getInstance()->findChild<QLineEdit *>("log_archive")->setText(path.c_str());
+        path = dialog.getExistingDirectory();
+        SettingsDialog::getInstance()->findChild<QLineEdit *>("log_archive")->setText(path);
     }
     path += "/lmicc_log_archive_" + ss.str();
 
-    if (file.copy(path.c_str())) {
+    if (file.copy(path)) {
         Logger::getInstance()->info("Saved to " + path);
     } else {
-        Logger::getInstance()->error(file.errorString().toStdString());
+        Logger::getInstance()->error(file.errorString());
     }
 }
 
@@ -166,10 +166,10 @@ void LogDialog::changeShowOnly(QAction *action)
 
     if (action->text() != "All") {
         cnt = m_shown.size();
-        std::string show_only = "[" + action->text().toLower().toStdString() + "]";
+        String show_only = "[" + action->text().toLower() + "]";
         for (int i = cnt - 1; i >= 0; i--) {
-            std::string actual = m_shown[i]->text(0).toLower().toStdString();
-            if (actual.find(show_only) == std::string::npos) {
+            String actual = m_shown[i]->text(0).toLower();
+            if (actual.find(show_only) == String::npos) {
                 m_shown[i]->setHidden(true);
                 m_hidden.push_back(m_shown[i]);
                 m_shown.erase(m_shown.begin() + i);
@@ -177,7 +177,7 @@ void LogDialog::changeShowOnly(QAction *action)
         }
     }
 
-    filterChanged(QString(m_last_filter_text.c_str()));
+    filterChanged(m_last_filter_text);
     m_ui->show_button->setText(action->text());
 }
 
@@ -195,7 +195,7 @@ void LogDialog::copy()
     qApp->clipboard()->setText(ss.str().c_str());
 }
 
-std::string LogDialog::copy(QTreeWidgetItem *child)
+String LogDialog::copy(QTreeWidgetItem *child)
 {
     int cnt = child->childCount();
 
@@ -208,12 +208,12 @@ std::string LogDialog::copy(QTreeWidgetItem *child)
         }
         return ss.str();
     } else if (!child->isHidden()
-               && (child->text(0).toStdString().find("[Info]") != std::string::npos
-               || child->text(0).toStdString().find("[Debug]") != std::string::npos
-               || child->text(0).toStdString().find("[Error]") != std::string::npos
-               || child->text(0).toStdString().find("[Critical]") != std::string::npos)) {
-        std::string text = child->text(0).toStdString().substr(1);
-        text = "[" + child->parent()->text(0).toStdString() + " " + text;
+               && (child->text(0).toStdString().find("[Info]") != String::npos
+               || child->text(0).toStdString().find("[Debug]") != String::npos
+               || child->text(0).toStdString().find("[Error]") != String::npos
+               || child->text(0).toStdString().find("[Critical]") != String::npos)) {
+        String text = child->text(0).toStdString().substr(1);
+        text +=  "[" + child->parent()->text(0) + " " + text;
         return text;
     }
 
@@ -223,12 +223,12 @@ std::string LogDialog::copy(QTreeWidgetItem *child)
 void LogDialog::filterChanged(QString text)
 {
     unsigned int cnt;
-    std::string filter = text.toLower().toStdString();
+    String filter = text.toLower();
     if (((unsigned int) text.length()) >= m_last_filter_text.length()) {
         cnt = m_shown.size();
         for (int i = cnt - 1; i >= 0; i--) {
-            std::string actual = m_shown[i]->text(0).toLower().toStdString();
-            if (actual.find(filter) == std::string::npos) {
+            String actual = m_shown[i]->text(0).toLower();
+            if (actual.find(filter) == String::npos) {
                 m_shown[i]->setHidden(true);
                 m_hidden.push_back(m_shown[i]);
                 m_shown.erase(m_shown.begin() + i);
@@ -236,14 +236,14 @@ void LogDialog::filterChanged(QString text)
         }
     } else {
         cnt = m_hidden.size();
-        std::string show_only = m_ui->show_button->text().toStdString();
+        String show_only = m_ui->show_button->text();
         if (show_only == "All") {
             show_only = "";
         }
         for (int i = cnt - 1; i >= 0; i--) {
-            std::string actual = m_hidden[i]->text(0).toLower().toStdString();
-            if (actual.find(filter) != std::string::npos
-                && actual.find(show_only) != std::string::npos) {
+            String actual = m_hidden[i]->text(0).toLower();
+            if (actual.find(filter) != String::npos
+                && actual.find(show_only) != String::npos) {
                 m_hidden[i]->setHidden(false);
                 m_shown.push_back(m_hidden[i]);
                 m_hidden.erase(m_hidden.begin() + i);
@@ -306,7 +306,7 @@ void LogDialog::setLogs()
 {
     m_ui->logs->clear();
 
-    QFile file(Logger::getInstance()->getLogPath().c_str());
+    QFile file(Logger::getInstance()->getLogPath());
     file.open(QIODevice::ReadOnly | QIODevice::Text);
 
     QTreeWidgetItem *year_item = NULL;
@@ -319,36 +319,36 @@ void LogDialog::setLogs()
         int length = strlen(line);
         line[length - 1] = '\0'; // remove '\n'
 
-        std::string str_line(line);
+        String str_line(line);
 
         int pos1 = 1;
         int pos2 = str_line.find(" ", pos1);
-        std::string day = str_line.substr(pos1, pos2 - pos1);
+        String day = str_line.substr(pos1, pos2 - pos1);
 
         pos1 = pos2 + 1;
         pos2 = str_line.find(" ", pos1);
-        std::string month = str_line.substr(pos1, pos2 - pos1);
+        String month = str_line.substr(pos1, pos2 - pos1);
         day += " " + month;
 
         pos1 = pos2 + 1;
         pos2 = str_line.find(" ", pos1);
-        std::string year = str_line.substr(pos1, pos2 - pos1);
+        String year = str_line.substr(pos1, pos2 - pos1);
         month += " " + year;
         day += " " + year;
 
-        if (year_item == NULL || year_item->text(0).toStdString().find(year) == std::string::npos) {
+        if (year_item == NULL || year_item->text(0).toStdString().find(year) == String::npos) {
             year_item = findItem(year);
         }
-        if (month_item == NULL || month_item->text(0).toStdString().find(month) == std::string::npos) {
+        if (month_item == NULL || month_item->text(0).toStdString().find(month) == String::npos) {
             month_item = findItem(month, year_item);
         }
-        if (day_item == NULL || day_item->text(0).toStdString().find(day) == std::string::npos) {
+        if (day_item == NULL || day_item->text(0).toStdString().find(day) == String::npos) {
             day_item = findItem(day, month_item);
         }
 
         QTreeWidgetItem *log_entry = new QTreeWidgetItem(day_item);
         str_line = "[" + str_line.substr(pos2 + 1);
-        log_entry->setText(0, str_line.c_str());
+        log_entry->setText(0, str_line);
         log_entry->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         day_item->addChild(log_entry);
         m_shown.push_back(log_entry);

@@ -38,9 +38,9 @@ NewGroupDialog::~NewGroupDialog()
     delete m_ui;
 }
 
-std::string NewGroupDialog::getName()
+String NewGroupDialog::getName()
 {
-    return m_ui->name_line->text().toStdString();
+    return m_ui->name_line->text();
 }
 
 bool NewGroupDialog::isSystemGroup()

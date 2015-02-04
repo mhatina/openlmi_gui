@@ -23,6 +23,7 @@
 #define STARTSERVICEINSTRUCTION_H
 
 #include "instructions/serviceinstruction.h"
+#include "lmi_string.h"
 
 /**
  * @brief The StartServiceInstruction class
@@ -37,9 +38,9 @@ public:
      * @param client -- see CIMClient
      * @param name -- name of service
      */
-    StartServiceInstruction(CIMClient *client, std::string name);
+    StartServiceInstruction(CIMClient *client, String name);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

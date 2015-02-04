@@ -32,7 +32,7 @@ IInstruction::Subject PushInstruction::getSubject()
     return m_subject;
 }
 
-std::string PushInstruction::toString()
+String PushInstruction::toString()
 {
     switch (m_subject) {
     case ACCOUNT:

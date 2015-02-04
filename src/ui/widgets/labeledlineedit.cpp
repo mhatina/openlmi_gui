@@ -23,13 +23,13 @@
 #include "logger.h"
 #include "ui_labeledlineedit.h"
 
-LabeledLineEdit::LabeledLineEdit(std::string objectName, std::string label,
-                                 std::string text, bool key) :
+LabeledLineEdit::LabeledLineEdit(String objectName, String label,
+                                 String text, bool key) :
     QWidget(0),
     m_text(text),
     m_ui(new Ui::LabeledLineEdit)
 {
-    Logger::getInstance()->debug("LabeledLineEdit::LabeledLineEdit(std::string objectName, std::string label, std::string text, bool key)");
+    Logger::getInstance()->debug("LabeledLineEdit::LabeledLineEdit(String objectName, String label, String text, bool key)");
     m_ui->setupUi(this);
     setLabelText(label);
     setText(text);
@@ -65,22 +65,22 @@ int LabeledLineEdit::getLabelWidth()
     return m_ui->label->fontMetrics().boundingRect(m_ui->label->text()).width();
 }
 
-std::string LabeledLineEdit::getLabelText()
+String LabeledLineEdit::getLabelText()
 {
     Logger::getInstance()->debug("LabeledLineEdit::getLabelText()");
-    return m_ui->label->text().toStdString();
+    return m_ui->label->text();
 }
 
-std::string LabeledLineEdit::getObjectName()
+String LabeledLineEdit::getObjectName()
 {
     Logger::getInstance()->debug("LabeledLineEdit::getObjectName()");
-    return objectName().toStdString();
+    return objectName();
 }
 
-std::string LabeledLineEdit::getText()
+String LabeledLineEdit::getText()
 {
     Logger::getInstance()->debug("LabeledLineEdit::getText()");
-    return m_ui->lineEdit->text().toStdString();
+    return m_ui->lineEdit->text();
 }
 
 void LabeledLineEdit::setAlignment(int alignment)
@@ -92,10 +92,10 @@ void LabeledLineEdit::setAlignment(int alignment)
     }
 }
 
-void LabeledLineEdit::setLabelText(std::string text)
+void LabeledLineEdit::setLabelText(String text)
 {
-    Logger::getInstance()->debug("LabeledLineEdit::setLabelText(std::string text)");
-    m_ui->label->setText(text.c_str());
+    Logger::getInstance()->debug("LabeledLineEdit::setLabelText(String text)");
+    m_ui->label->setText(text);
 }
 
 void LabeledLineEdit::setReadOnly(bool state)
@@ -104,9 +104,9 @@ void LabeledLineEdit::setReadOnly(bool state)
     m_ui->lineEdit->setReadOnly(state);
 }
 
-void LabeledLineEdit::setText(std::string text)
+void LabeledLineEdit::setText(String text)
 {
-    Logger::getInstance()->debug("LabeledLineEdit::setText(std::string text)");
+    Logger::getInstance()->debug("LabeledLineEdit::setText(String text)");
     m_text = text;
     m_ui->lineEdit->setText(text.c_str());
 }
@@ -114,7 +114,7 @@ void LabeledLineEdit::setText(std::string text)
 void LabeledLineEdit::itemChanged()
 {
     Logger::getInstance()->debug("LabeledLineEdit::itemChanged()");
-    if (m_ui->lineEdit->text().toStdString() != m_text) {
+    if (String(m_ui->lineEdit->text()) != m_text) {
         emit itemChanged(this);
     }
 }

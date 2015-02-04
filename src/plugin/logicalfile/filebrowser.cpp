@@ -19,47 +19,39 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include "actionbox.h"
-#include "service.h"
-#include "ui_actionbox.h"
+#include "filebrowser.h"
+#include "filetree.h"
 
-ActionBox::ActionBox(String name) :
-    QWidget(),
-    m_name(name),
-    m_ui(new Ui::ActionBox)
+#include <QKeyEvent>
+
+FileBrowser::FileBrowser(QWidget *parent) :
+    QTreeWidget(parent)
 {
-    m_ui->setupUi(this);
-    int action_cnt = sizeof(action_list) / sizeof(action_list[0]);
-    for (int i = 0; i < action_cnt; i++) {
-        m_ui->action_box->addItem(action_list[i]);
-    }
-
     connect(
-        m_ui->action_box,
-        SIGNAL(currentIndexChanged(int)),
         this,
-        SLOT(currentChanged(int)));
+        SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
+        this,
+        SLOT(isDirEntered(QTreeWidgetItem *, int)));
 }
 
-ActionBox::~ActionBox()
+void FileBrowser::keyPressEvent(QKeyEvent *event)
 {
-    delete m_ui;
-}
-
-void ActionBox::changeAction(String action)
-{
-    int index = m_ui->action_box->findText(action);
-    if (index == -1)
-        return;
-
-    m_ui->action_box->setCurrentIndex(index);
-}
-
-void ActionBox::currentChanged(int i)
-{
-    if (m_ui->action_box->currentText().toStdString() == action_list[0]) {
-        return;
+    if ((event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
+        && !selectedItems().empty()) {
+        isDirEntered(selectedItems()[0], 0);
+    } else {
+        QTreeWidget::keyPressEvent(event);
     }
+}
 
-    emit performAction(m_name, (e_action) i);
+void FileBrowser::isDirEntered(QTreeWidgetItem *item, int column)
+{
+    Q_UNUSED(column)
+    Pegasus::CIMInstance dir = ((FileTree::Item *) item)->getCIMData();
+
+    if (CIMValue::get_property_value(dir, "CreationClassName") == "LMI_UnixDirectory") {
+        emit enterDir(item);
+    } else if (CIMValue::get_property_value(dir, "CreationClassName") == "LMI_SymbolicLink") {
+        emit enterSymlink(item);
+    }
 }

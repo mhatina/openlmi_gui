@@ -22,6 +22,7 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
+#include "lmi_string.h"
 #include "networkpagewidget.h"
 #include "plugin.h"
 
@@ -41,14 +42,14 @@ private:
     bool m_changes_enabled;
     Ui::NetworkPlugin *m_ui;
 
-    NetworkPageWidget *findWidget(std::string text);
+    NetworkPageWidget *findWidget(String text);
 
 public:
     explicit NetworkPlugin();
     ~NetworkPlugin();
-    virtual std::string getInstructionText();
-    virtual std::string getLabel();
-    virtual std::string getRefreshInfo();
+    virtual String getInstructionText();
+    virtual String getLabel();
+    virtual String getRefreshInfo();
     virtual void clear();
     virtual void fillTab(std::vector<void *> *data);
     virtual void getData(std::vector<void *> *data);

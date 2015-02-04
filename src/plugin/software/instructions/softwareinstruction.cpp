@@ -23,7 +23,7 @@
 #include "softwareinstruction.h"
 
 SoftwareInstruction::SoftwareInstruction(CIMClient *client,
-        std::string instruction, Pegasus::CIMInstance instance) :
+        String instruction, Pegasus::CIMInstance instance) :
     IInstruction(instruction),
     m_client(client),
     m_instance(instance)
@@ -32,7 +32,7 @@ SoftwareInstruction::SoftwareInstruction(CIMClient *client,
     if (prop_ind != Pegasus::PEG_NOT_FOUND) {
         Pegasus::CIMProperty property = instance.getProperty(prop_ind);
 
-        std::string name =  CIMValue::to_std_string(property.getValue());
+        String name =  CIMValue::to_string(property.getValue());
 
         int ch = name.rfind(":", name.rfind(":") - 1);
         name = name.substr(ch + 1, name.length() - ch - 2);
@@ -41,7 +41,7 @@ SoftwareInstruction::SoftwareInstruction(CIMClient *client,
         prop_ind = instance.findProperty("Caption");
         Pegasus::CIMProperty property = instance.getProperty(prop_ind);
 
-        m_name = CIMValue::to_std_string(property.getValue());
+        m_name = CIMValue::to_string(property.getValue());
     }
 }
 
@@ -104,7 +104,7 @@ Pegasus::CIMValue SoftwareInstruction::invokeInstallMethod(
                out_param);
 }
 
-std::string SoftwareInstruction::getName()
+String SoftwareInstruction::getName()
 {
     return m_name;
 }

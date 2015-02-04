@@ -40,12 +40,12 @@ int LogSeverityDialog::getSeverity()
     return m_ui->log_severity->currentIndex();
 }
 
-std::string LogSeverityDialog::getMessage()
+String LogSeverityDialog::getMessage()
 {
-    return m_ui->message->text().toStdString();
+    return m_ui->message->text();
 }
 
-void LogSeverityDialog::setMessage(std::string message)
+void LogSeverityDialog::setMessage(String message)
 {
-    m_ui->message->setText(message.c_str());
+    m_ui->message->setText(message);
 }

@@ -37,14 +37,13 @@
 #include <sstream>
 
 Pegasus::CIMInstance SoftwarePlugin::findInstalledPackage(
-    std::string package_name)
+    String package_name)
 {
     Pegasus::CIMInstance instance;
     for (unsigned int i = 0; i < m_installed.size(); i++) {
         Pegasus::Uint32 prop_ind = m_installed[i].findProperty("InstalledSoftware");
-        std::string prop = (std::string) m_installed[i].getProperty(
-                               prop_ind).getValue().toString().getCString();
-        if (prop.find(package_name) != std::string::npos) {
+        String prop = m_installed[i].getProperty(prop_ind).getValue().toString();
+        if (prop.find(package_name) != String::npos) {
             instance = m_installed[i];
             break;
         }
@@ -53,14 +52,13 @@ Pegasus::CIMInstance SoftwarePlugin::findInstalledPackage(
     return instance;
 }
 
-Pegasus::CIMInstance SoftwarePlugin::findRepo(std::string repo_name)
+Pegasus::CIMInstance SoftwarePlugin::findRepo(String repo_name)
 {
     Pegasus::CIMInstance instance;
     for (unsigned int i = 0; i < m_repos.size(); i++) {
         Pegasus::Uint32 prop_ind = m_repos[i].findProperty("Caption");
-        std::string prop = (std::string) m_repos[i].getProperty(
-                               prop_ind).getValue().toString().getCString();
-        if (prop.find(repo_name) != std::string::npos) {
+        String prop = m_repos[i].getProperty(prop_ind).getValue().toString();
+        if (prop.find(repo_name) != String::npos) {
             instance = m_repos[i];
             break;
         }
@@ -69,12 +67,12 @@ Pegasus::CIMInstance SoftwarePlugin::findRepo(std::string repo_name)
     return instance;
 }
 
-std::string SoftwarePlugin::getPackageName(Pegasus::CIMInstance package)
+String SoftwarePlugin::getPackageName(Pegasus::CIMInstance package)
 {
     Pegasus::Uint32 prop_ind = package.findProperty("InstalledSoftware");
     Pegasus::CIMProperty property = package.getProperty(prop_ind);
 
-    std::string name;
+    String name;
     if (property.getValue().isNull()) {
         return "";
     }
@@ -323,7 +321,7 @@ SoftwarePlugin::~SoftwarePlugin()
     delete m_ui;
 }
 
-std::string SoftwarePlugin::getInstructionText()
+String SoftwarePlugin::getInstructionText()
 {
     std::stringstream ss;
     for (unsigned int i = 0; i < m_instructions.size(); i++) {
@@ -332,12 +330,12 @@ std::string SoftwarePlugin::getInstructionText()
     return ss.str();
 }
 
-std::string SoftwarePlugin::getLabel()
+String SoftwarePlugin::getLabel()
 {
     return "Software";
 }
 
-std::string SoftwarePlugin::getRefreshInfo()
+String SoftwarePlugin::getRefreshInfo()
 {
     std::stringstream ss;
     ss << getLabel() << ": " << m_installed.size() << " installed package(s), "
@@ -347,7 +345,7 @@ std::string SoftwarePlugin::getRefreshInfo()
 
 void SoftwarePlugin::getData(std::vector<void *> *data)
 {
-    std::string filter = m_ui->filter_line->text().toStdString();
+    String filter = m_ui->filter_line->text();
 
     try {
         Pegasus::Array<Pegasus::CIMInstance> installed;
@@ -385,14 +383,14 @@ void SoftwarePlugin::getData(std::vector<void *> *data)
             Pegasus::Uint32 prop_ind = installed[i].findProperty("InstalledSoftware");
             Pegasus::CIMProperty property = installed[i].getProperty(prop_ind);
 
-            std::string name;
+            String name;
             if (!property.getValue().isNull()) {
-                name = CIMValue::to_std_string(property.getValue());
+                name = CIMValue::to_string(property.getValue());
             }
 
             if (filter.empty()) {
                 tmp->push_back(new Pegasus::CIMInstance(installed[i]));
-            } else if (name.find(filter) != std::string::npos) {
+            } else if (name.find(filter) != String::npos) {
                 tmp->push_back(new Pegasus::CIMInstance(installed[i]));
             }
         }
@@ -414,7 +412,7 @@ void SoftwarePlugin::getData(std::vector<void *> *data)
             }
         }
     } catch (Pegasus::Exception &ex) {
-        emit doneFetchingData(NULL, false, CIMValue::to_std_string(ex.getMessage()));
+        emit doneFetchingData(NULL, false, CIMValue::to_string(ex.getMessage()));
         return;
     }
 
@@ -445,17 +443,17 @@ void SoftwarePlugin::fillTab(std::vector<void *> *data)
                 instance->getProperty(prop_ind).getValue().toString().find("LMI:LMI_SoftwareIdentity") != Pegasus::PEG_NOT_FOUND) {
 
                 Pegasus::CIMProperty property = instance->getProperty(prop_ind);
-                std::string name = (std::string) property.getValue().toString().getCString();
+                String name = property.getValue().toString();
 
                 int ch = name.rfind(":", name.rfind(":") - 1);
                 name = name.substr(ch + 1, name.length() - ch - 2);
 
-                m_ui->installed->addItem(new QListWidgetItem(name.c_str()));
+                m_ui->installed->addItem(new QListWidgetItem(name));
 
                 m_installed.push_back(*instance);
             } else if (CIMValue::get_property_value(*instance, "CreationClassName") == "LMI_SoftwareIdentityResource") {
                 QListWidgetItem *item = new QListWidgetItem(
-                    CIMValue::get_property_value(*instance, "Caption").c_str());
+                    CIMValue::get_property_value(*instance, "Caption"));
                 item->setIcon(QIcon(CIMValue::get_property_value(*instance,
                                     "EnabledState") == "2" ? ":/enabled.png" : ":/disabled.png"));
                 m_ui->repos->addItem(item);
@@ -466,7 +464,7 @@ void SoftwarePlugin::fillTab(std::vector<void *> *data)
             }
         }
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
         return;
     }
 
@@ -502,7 +500,7 @@ void SoftwarePlugin::disableRepo()
         addInstruction(
             new DisableRepoInstruction(
                 m_client,
-                findRepo(item->text().toStdString())
+                findRepo(item->text())
             )
         );
     }
@@ -529,7 +527,7 @@ void SoftwarePlugin::enableRepo()
         addInstruction(
             new EnableRepoInstruction(
                 m_client,
-                findRepo(item->text().toStdString())
+                findRepo(item->text())
             )
         );
     }
@@ -548,7 +546,7 @@ void SoftwarePlugin::getPackageDetail()
 void SoftwarePlugin::getPackageDetail(QListWidgetItem *item)
 {
     if (item != NULL) {
-        std::string id = item->text().toStdString();
+        String id = item->text();
         emit refreshProgress(Engine::NOT_REFRESHED, "Downloading package data: " + id, this);
 
         unsigned int cnt = m_installed.size();
@@ -591,7 +589,7 @@ void SoftwarePlugin::showPackageContextMenu(QPoint pos)
 
 void SoftwarePlugin::showPackageDetail(Pegasus::CIMInstance item)
 {
-    std::string name = CIMValue::get_property_value(item, "ElementName");
+    String name = CIMValue::get_property_value(item, "ElementName");
     emit refreshProgress(Engine::REFRESHED, "Downloading package data: " + name, this);
 
     DetailsDialog dialog("Package details", this);
@@ -613,7 +611,7 @@ void SoftwarePlugin::installPackage()
                     false));
             m_ui->installed->addItem(new QListWidgetItem(
                                          QIcon(":/enabled.png"),
-                                         CIMValue::get_property_value(packages[i], "ElementName").c_str())
+                                         CIMValue::get_property_value(packages[i], "ElementName"))
                                     );
         }
     }
@@ -640,8 +638,7 @@ void SoftwarePlugin::showRepoDetail(QListWidgetItem *item)
 {
     Pegasus::CIMInstance repo;
     for (unsigned int i = 0; i < m_repos.size(); i++) {
-        if (item->text().toStdString() == CIMValue::get_property_value(m_repos[i],
-                "Caption")) {
+        if (item->text() == CIMValue::get_property_value(m_repos[i], "Caption").asQString()) {
             repo = m_repos[i];
             break;
         }
@@ -659,7 +656,7 @@ void SoftwarePlugin::uninstallPackage()
 
     for (int i = 0; i < list.size(); i++) {
         list[i]->setIcon(QIcon(":/disabled.png"));
-        std::string name = list[i]->text().toStdString();
+        String name = list[i]->text();
 
         addInstruction(
             new UninstallPackageInstruction(
@@ -673,14 +670,14 @@ void SoftwarePlugin::uninstallPackage()
 
 void SoftwarePlugin::updateList()
 {
-    std::string filter = m_ui->filter_line->text().toStdString();
+    String filter = m_ui->filter_line->text();
 
     m_ui->installed->clear();
     for (unsigned int i = 0; i < m_installed.size(); i++) {
-        std::string name, tmp = name = getPackageName(m_installed[i]);
+        String name, tmp = name = getPackageName(m_installed[i]);
         std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-        QListWidgetItem *item = new QListWidgetItem(tmp.c_str());
-        if (name.find(filter) != std::string::npos) {
+        QListWidgetItem *item = new QListWidgetItem(tmp);
+        if (name.find(filter) != String::npos) {
             m_ui->installed->addItem(item);
         }
     }
@@ -691,7 +688,7 @@ void SoftwarePlugin::updateList()
 
         QList<QListWidgetItem *> list =
             m_ui->installed->findItems(
-                ((SoftwareInstruction *) m_instructions[pos])->getName().c_str(),
+                ((SoftwareInstruction *) m_instructions[pos])->getName(),
                 Qt::MatchExactly);
         if (list.empty()) {
             pos++;
@@ -718,7 +715,7 @@ void SoftwarePlugin::updatePackage()
         addInstruction(
             new UpdatePackageInstruction(
                 m_client,
-                findInstalledPackage(list[i]->text().toStdString())
+                findInstalledPackage(list[i]->text())
             )
         );
     }
@@ -730,7 +727,7 @@ void SoftwarePlugin::verifyPackage()
 
     for (int i = 0; i < list.size(); i++) {
 //        list[i]->setIcon(QIcon(":/state_changed.png"));
-        std::string name = list[i]->text().toStdString();
+        String name = list[i]->text();
 
         addInstruction(
             new VerifyPackageInstruction(

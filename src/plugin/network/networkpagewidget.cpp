@@ -51,39 +51,39 @@ NetworkPageWidget::~NetworkPageWidget()
     delete m_ui;
 }
 
-std::string NetworkPageWidget::getTitle()
+String NetworkPageWidget::getTitle()
 {
-    return m_ui->network_box->title().toStdString();
+    return m_ui->network_box->title();
 }
 
 void NetworkPageWidget::setEthernetPort(Pegasus::CIMInstance instance)
 {
-    m_ui->network_box->setTitle(CIMValue::get_property_value(instance, "DeviceID").c_str());
-    std::string max_speed = CIMValue::get_property_value(instance, "MaxSpeed");
+    m_ui->network_box->setTitle(CIMValue::get_property_value(instance, "DeviceID"));
+    String max_speed = CIMValue::get_property_value(instance, "MaxSpeed");
     if (!max_speed.empty()) {
         m_ui->max_speed->show();
         m_ui->max_speed_label->show();
 
         max_speed = CIMValue::convert_values(max_speed, "b/s");
-        m_ui->max_speed->setText(max_speed.c_str());
+        m_ui->max_speed->setText(max_speed);
     } else {
         m_ui->max_speed->hide();
         m_ui->max_speed_label->hide();
     }
 
-    std::string address = CIMValue::get_property_value(instance, "PermanentAddress");
-    m_ui->mac_address->setText(address.empty() ? "N/A" : address.c_str());
+    String address = CIMValue::get_property_value(instance, "PermanentAddress");
+    m_ui->mac_address->setText(address.empty() ? "N/A" : address);
 }
 
 void NetworkPageWidget::setEthernetStatistics(Pegasus::CIMInstance instance)
 {
-    m_ui->sent->setText(CIMValue::convert_values(CIMValue::get_property_value(instance, "BytesTransmitted"), "B").c_str());
-    m_ui->received->setText(CIMValue::convert_values(CIMValue::get_property_value(instance, "BytesReceived"), "B").c_str());
+    m_ui->sent->setText(CIMValue::convert_values(CIMValue::get_property_value(instance, "BytesTransmitted"), "B"));
+    m_ui->received->setText(CIMValue::convert_values(CIMValue::get_property_value(instance, "BytesReceived"), "B"));
 }
 
 void NetworkPageWidget::setIPNetworkConnection(Pegasus::CIMInstance instance)
 {
-    m_ui->status->setText(CIMValue::get_property_value(instance, "OperatingStatus").c_str());
+    m_ui->status->setText(CIMValue::get_property_value(instance, "OperatingStatus"));
 }
 
 void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
@@ -105,9 +105,9 @@ void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
     }
 
     bool v4 = false;
-    std::string version;
+    String version;
     item = new QTableWidgetItem((version = CIMValue::get_property_value(instance,
-                                           "ProtocolIFType")).c_str());
+                                           "ProtocolIFType")));
     item->setFlags(flags);
     item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     item->setToolTip(item->text());
@@ -117,7 +117,7 @@ void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
         item);
     v4 = version == "IPv4";
 
-    item = new QTableWidgetItem(CIMValue::get_property_value(instance, v4 ? "IPv4Address" : "IPv6Address").c_str());
+    item = new QTableWidgetItem(CIMValue::get_property_value(instance, v4 ? "IPv4Address" : "IPv6Address"));
     item->setFlags(flags);
     item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     item->setToolTip(item->text());
@@ -127,7 +127,7 @@ void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
         item);
 
     item = new QTableWidgetItem(CIMValue::get_property_value(instance,
-                                v4 ? "SubnetMask" : "IPv6SubnetPrefixLength").c_str());
+                                v4 ? "SubnetMask" : "IPv6SubnetPrefixLength"));
     item->setFlags(flags);
     item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     item->setToolTip(item->text());
@@ -136,7 +136,7 @@ void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
         v4 ? 1 : 2,
         item);
 
-    item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AddressOrigin").c_str());
+    item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AddressOrigin"));
     item->setFlags(flags);
     item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     item->setToolTip(item->text());
@@ -152,7 +152,7 @@ void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
 void NetworkPageWidget::setLanEndPoint(Pegasus::CIMInstance instance)
 {
     if (m_ui->mac_address->text() == "N/A") {
-        m_ui->mac_address->setText(CIMValue::get_property_value(instance, "MACAddress").c_str());
+        m_ui->mac_address->setText(CIMValue::get_property_value(instance, "MACAddress"));
     }
 }
 
@@ -174,7 +174,7 @@ void NetworkPageWidget::setNetworkRemoteService(Pegasus::CIMInstance instance)
         m_ui->ip_address_details_table->insertRow(row_cnt);
     }
 
-    item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AccessContext").c_str());
+    item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AccessContext"));
     item->setFlags(flags);
     item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     item->setToolTip(item->text());
@@ -183,7 +183,7 @@ void NetworkPageWidget::setNetworkRemoteService(Pegasus::CIMInstance instance)
         5,
         item);
 
-    item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AccessInfo").c_str());
+    item = new QTableWidgetItem(CIMValue::get_property_value(instance, "AccessInfo"));
     item->setFlags(flags);
     item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     item->setToolTip(item->text());
@@ -195,6 +195,5 @@ void NetworkPageWidget::setNetworkRemoteService(Pegasus::CIMInstance instance)
 
 void NetworkPageWidget::setDNSSettingData(Pegasus::CIMInstance instance)
 {
-    // TODO complete after lmi class is completed
     Q_UNUSED(instance)
 }

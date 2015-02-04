@@ -20,13 +20,13 @@
 
 #include <sstream>
 
-ConnectInstruction::ConnectInstruction(const std::string &hostname,
-                                       const std::string &username) :
+ConnectInstruction::ConnectInstruction(const String &hostname,
+                                       const String &username) :
     IInstruction("connect"),
     m_hostname(hostname),
     m_username(username)
 {
-    Logger::getInstance()->debug("ConnectInstruction::ConnectInstruction(const std::string &hostname, const std::string &username)");
+    Logger::getInstance()->debug("ConnectInstruction::ConnectInstruction(const String &hostname, const String &username)");
 }
 
 IInstruction::Subject ConnectInstruction::getSubject()
@@ -35,7 +35,7 @@ IInstruction::Subject ConnectInstruction::getSubject()
     return IInstruction::CONNECT;
 }
 
-std::string ConnectInstruction::toString()
+String ConnectInstruction::toString()
 {
     Logger::getInstance()->debug("ConnectInstruction::toString()");
     std::stringstream ss;

@@ -43,7 +43,7 @@ public:
      */
     NewUserInstruction(CIMClient *client, NewUserDialog *dialog);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

@@ -26,7 +26,7 @@
 #include <sstream>
 
 RemoveUserFromGroupInstruction::RemoveUserFromGroupInstruction(
-    CIMClient *client, std::string name, Pegasus::CIMValue user_id) :
+    CIMClient *client, String name, Pegasus::CIMValue user_id) :
     GroupInstruction(client, "remove_user_from_group", name, user_id)
 {
 }
@@ -36,7 +36,7 @@ IInstruction::Subject RemoveUserFromGroupInstruction::getSubject()
     return IInstruction::GROUP;
 }
 
-std::string RemoveUserFromGroupInstruction::toString()
+String RemoveUserFromGroupInstruction::toString()
 {
     std::stringstream ss;
     ss << "identity = acc.associators(ResultClass=\"LMI_Identity\")[0]\n"
@@ -66,9 +66,9 @@ void RemoveUserFromGroupInstruction::run()
             Pegasus::CIMProperty member_prop = members[i].getProperty(ind);
             ind  = members[i].findProperty("Collection");
             Pegasus::CIMProperty collection_prop = members[i].getProperty(ind);
-            std::string member_property(CIMValue::to_std_string(member_prop.getValue()));
-            std::string collection_property = CIMValue::to_std_string(collection_prop.getValue());
-            if (member_property.find("LMI:UID:" + CIMValue::to_std_string(
+            String member_property(CIMValue::to_string(member_prop.getValue()));
+            String collection_property = CIMValue::to_string(collection_prop.getValue());
+            if (member_property.find("LMI:UID:" + CIMValue::to_string(
                                          m_value)) != std::string::npos
                 && collection_property.find(m_name) != std::string::npos) {
                 member = members[i].getPath();
@@ -81,6 +81,6 @@ void RemoveUserFromGroupInstruction::run()
             member
         );
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

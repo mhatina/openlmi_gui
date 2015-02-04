@@ -24,7 +24,7 @@
 #include "logger.h"
 
 EnableServiceInstruction::EnableServiceInstruction(CIMClient *client,
-        std::string name) :
+        String name) :
     ServiceInstruction(client, "enable_service", name)
 {
 }
@@ -34,7 +34,7 @@ IInstruction::Subject EnableServiceInstruction::getSubject()
     return IInstruction::SERVICE;
 }
 
-std::string EnableServiceInstruction::toString()
+String EnableServiceInstruction::toString()
 {
     return "srv.TurnServiceOn()\n";
 }
@@ -48,6 +48,6 @@ void EnableServiceInstruction::run()
             Logger::getInstance()->info("Unable to enable service.");
         }
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

@@ -22,6 +22,7 @@
 #ifndef SERVICE_H
 #define SERVICE_H
 
+#include "lmi_string.h"
 #include "plugin.h"
 
 #include <QTableWidget>
@@ -97,16 +98,16 @@ public:
      * @brief Destructor
      */
     ~ServicePlugin();
-    virtual std::string getInstructionText();
-    virtual std::string getLabel();
-    virtual std::string getRefreshInfo();
+    virtual String getInstructionText();
+    virtual String getLabel();
+    virtual String getRefreshInfo();
     virtual void clear();
     virtual void fillTab(std::vector<void *> *data);
     virtual void getData(std::vector<void *> *data);
 
 private slots:
     void actionHandle(QAction *action);
-    void actionHandle(std::string name, e_action action);
+    void actionHandle(String name, e_action action);
     void showContextMenu(QPoint pos);
     void showDetails();
 };

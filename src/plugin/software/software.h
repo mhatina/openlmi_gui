@@ -22,6 +22,7 @@
 #ifndef SOFTWARE_H
 #define SOFTWARE_H
 
+#include "lmi_string.h"
 #include "plugin.h"
 
 #include <QListWidgetItem>
@@ -44,21 +45,21 @@ private:
     QMenu *m_repo_context_menu;
     std::vector<Pegasus::CIMInstance> m_installed;
     std::vector<Pegasus::CIMInstance> m_repos;
-    std::vector<std::string> m_verify;    
+    std::vector<String> m_verify;
     Ui::SoftwarePlugin *m_ui;
 
-    Pegasus::CIMInstance findInstalledPackage(std::string package_name);
-    Pegasus::CIMInstance findRepo(std::string repo_name);
-    std::string getPackageName(Pegasus::CIMInstance package);
+    Pegasus::CIMInstance findInstalledPackage(String package_name);
+    Pegasus::CIMInstance findRepo(String repo_name);
+    String getPackageName(Pegasus::CIMInstance package);
     void fetchPackageInfo(Pegasus::CIMInstance instance);
     void initContextMenu();
 
 public:
     explicit SoftwarePlugin();
     ~SoftwarePlugin();
-    virtual std::string getInstructionText();
-    virtual std::string getLabel();
-    virtual std::string getRefreshInfo();
+    virtual String getInstructionText();
+    virtual String getLabel();
+    virtual String getRefreshInfo();
     virtual void clear();
     virtual void fillTab(std::vector<void *> *data);
     virtual void getData(std::vector<void *> *data);

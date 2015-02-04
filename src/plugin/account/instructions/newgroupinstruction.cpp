@@ -37,7 +37,7 @@ IInstruction::Subject NewGroupInstruction::getSubject()
     return IInstruction::GROUP;
 }
 
-std::string NewGroupInstruction::toString()
+String NewGroupInstruction::toString()
 {
     std::stringstream ss;
     ss << "cs = c.root.cimv2.PG_ComputerSystem.first_instance()\n"
@@ -93,6 +93,6 @@ void NewGroupInstruction::run()
             out_param
         );
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

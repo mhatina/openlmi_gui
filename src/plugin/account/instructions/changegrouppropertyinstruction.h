@@ -39,8 +39,8 @@ public:
      * @param name -- name of group
      * @param value -- value of change
      */
-    ChangeGroupPropertyInstruction(CIMClient *client, std::string property,
-                                   std::string name, Pegasus::CIMValue value);
+    ChangeGroupPropertyInstruction(CIMClient *client, String property,
+                                   String name, Pegasus::CIMValue value);
     /**
      * @brief Compare two instructions
      * @param instruction -- another instruction
@@ -48,7 +48,7 @@ public:
      */
     bool equals(ChangeGroupPropertyInstruction *instruction);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

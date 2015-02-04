@@ -83,16 +83,16 @@ private:
     QMenu *m_context_menu;
     QTableWidget *m_group_table;
     QTableWidget *m_user_table;
-    std::string m_last_group_name;
-    std::string m_last_user_name;
+    String m_last_group_name;
+    String m_last_user_name;
     std::vector<Pegasus::CIMInstance> m_group_instances;
     std::vector<Pegasus::CIMInstance> m_user_instances;
-    std::vector<std::string> m_users;
+    std::vector<String> m_users;
     Ui::AccountPlugin *m_ui;
 
     bool isKeyProperty(const char *property);
-    int findGroupIndex(std::string name);
-    std::string convertNameToID(std::string name);
+    int findGroupIndex(String name);
+    String convertNameToID(String name);
     void initContextMenu();
     void setSelectedLineColor(QList<QTableWidgetItem *> selectedItems,
                               QColor color);
@@ -100,19 +100,19 @@ private:
 public:
     explicit AccountPlugin();
     ~AccountPlugin();
-    virtual std::string getInstructionText();
-    virtual std::string getLabel();
-    virtual std::string getRefreshInfo();
+    virtual String getInstructionText();
+    virtual String getLabel();
+    virtual String getRefreshInfo();
     virtual void clear();
     virtual void fillTab(std::vector<void *> *data);
     virtual void getData(std::vector<void *> *data);
 
 private slots:
     void add();
-    void addUserToGroup(std::string group);
+    void addUserToGroup(String group);
     void currentTabChanged(int i);
     void remove();
-    void removeUserFromGroup(std::string group);
+    void removeUserFromGroup(String group);
     void showButtons();
     void showContextMenu(QPoint pos);
     void showDetails();

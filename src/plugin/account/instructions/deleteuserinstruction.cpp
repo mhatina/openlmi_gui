@@ -24,7 +24,7 @@
 #include "logger.h"
 
 DeleteUserInstruction::DeleteUserInstruction(CIMClient *client,
-        std::string name) :
+        String name) :
     AccountInstruction(client, "delete_user", name)
 {
 }
@@ -34,7 +34,7 @@ IInstruction::Subject DeleteUserInstruction::getSubject()
     return IInstruction::ACCOUNT;
 }
 
-std::string DeleteUserInstruction::toString()
+String DeleteUserInstruction::toString()
 {
     return "acc.DeleteUser()\n";
 }
@@ -81,6 +81,6 @@ void DeleteUserInstruction::run()
                   );
         }
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

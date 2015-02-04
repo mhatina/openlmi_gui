@@ -24,11 +24,11 @@
 #include <QGroupBox>
 #include <QToolBar>
 
-bool Engine::IPlugin::isFileEmpty(std::string filename)
+bool Engine::IPlugin::isFileEmpty(String filename)
 {
-    Logger::getInstance()->debug("Engine::IPlugin::isFileEmpty(std::string filename)");
+    Logger::getInstance()->debug("Engine::IPlugin::isFileEmpty(String filename)");
     std::ifstream file;
-    file.open(filename.c_str());
+    file.open(filename);
 
     bool empty = file.peek() == std::ifstream::traits_type::eof();
 
@@ -56,8 +56,8 @@ void Engine::IPlugin::addInstruction(IInstruction *instruction)
     }
 
     if (m_instructions.empty()) {
-        std::string hostname = m_client->hostname();
-        std::string username = m_client->username();
+        String hostname = m_client->hostname();
+        String username = m_client->username();
         m_instructions.push_back(new ConnectInstruction(
                                      hostname,
                                      username
@@ -85,16 +85,16 @@ void Engine::IPlugin::insertInstruction(IInstruction *instruction, int pos)
         1,
         instruction
     );
-    connect(instruction, SIGNAL(error(std::string)), this,
-            SLOT(handleError(std::string)));
+    connect(instruction, SIGNAL(error(String)), this,
+            SLOT(handleError(String)));
     emit unsavedChanges(this);
     emit newInstructionText(getInstructionText());
 }
 
 int Engine::IPlugin::findInstruction(IInstruction::Subject subject,
-                                     std::string instructionName, int pos)
+                                     String instructionName, int pos)
 {
-    Logger::getInstance()->debug("Engine::IPlugin::findInstruction(IInstruction::Subject subject, std::string instructionName, int pos)");
+    Logger::getInstance()->debug("Engine::IPlugin::findInstruction(IInstruction::Subject subject, String instructionName, int pos)");
     std::vector<IInstruction *>::iterator it;
     unsigned int i = pos;
     if (i > m_instructions.size()) {
@@ -129,12 +129,12 @@ Engine::IPlugin::IPlugin() :
     m_system_id("")
 {
     Logger::getInstance()->debug("Engine::IPlugin::IPlugin()");
-    qRegisterMetaType<std::string>("std::string");
+    qRegisterMetaType<String>("String");
     connect(
         this,
-        SIGNAL(doneFetchingData(std::vector<void *> *, bool, std::string)),
+        SIGNAL(doneFetchingData(std::vector<void *> *, bool, String)),
         this,
-        SLOT(handleDataFetching(std::vector<void *> *, bool, std::string)));
+        SLOT(handleDataFetching(std::vector<void *> *, bool, String)));
     connect(
         this,
         SIGNAL(doneApplying()),
@@ -272,7 +272,7 @@ bool Engine::IPlugin::showFilter(bool show)
     return show;
 }
 
-std::string Engine::IPlugin::getSystemId()
+String Engine::IPlugin::getSystemId()
 {
     Logger::getInstance()->debug("Engine::IPlugin::getSystemId()");
     return m_system_id;
@@ -319,15 +319,15 @@ void Engine::IPlugin::refresh(CIMClient *client)
     m_refresh_thread = boost::thread(boost::bind(&Engine::IPlugin::getData, this, m_data));
 }
 
-void Engine::IPlugin::saveScript(std::string filename)
+void Engine::IPlugin::saveScript(String filename)
 {
-    Logger::getInstance()->debug("Engine::IPlugin::saveScript(std::string filename)");
+    Logger::getInstance()->debug("Engine::IPlugin::saveScript(String filename)");
     if (m_instructions.empty()) {
         return;
     }
 
     std::ofstream out_file;
-    out_file.open(filename.c_str(), std::fstream::out | std::fstream::app);
+    out_file.open(filename, std::fstream::out | std::fstream::app);
 
     unsigned int i;
     bool empty = isFileEmpty(filename);
@@ -396,15 +396,15 @@ void Engine::IPlugin::cancel()
 }
 
 void Engine::IPlugin::handleDataFetching(std::vector<void *> *data, bool still_refreshing,
-        std::string error_message)
+        String error_message)
 {
-    Logger::getInstance()->debug("Engine::IPlugin::handleDataFetching(std::vector<void *> *data, std::string error_message)");
+    Logger::getInstance()->debug("Engine::IPlugin::handleDataFetching(std::vector<void *> *data, String error_message)");
     if (!still_refreshing) {
         m_refresh_thread.join();
     }
 
     if (!error_message.empty()) {
-        if (error_message.find("Unauthorized") != std::string::npos) {
+        if (error_message.find("Unauthorized") != String::npos) {
             Logger::getInstance()->error("Wrong username or password!");
             emit deletePasswd();
         } else {

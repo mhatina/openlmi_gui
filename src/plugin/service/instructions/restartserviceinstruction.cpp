@@ -24,7 +24,7 @@
 #include "restartserviceinstruction.h"
 
 RestartServiceInstruction::RestartServiceInstruction(CIMClient *client,
-        std::string name) :
+        String name) :
     ServiceInstruction(client, "restart_service", name)
 {
 }
@@ -34,7 +34,7 @@ IInstruction::Subject RestartServiceInstruction::getSubject()
     return IInstruction::SERVICE;
 }
 
-std::string RestartServiceInstruction::toString()
+String RestartServiceInstruction::toString()
 {
     return "srv.RestartService()\n";
 }
@@ -48,6 +48,6 @@ void RestartServiceInstruction::run()
             Logger::getInstance()->info("Unable to restart service.");
         }
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

@@ -19,29 +19,30 @@
 #ifndef LMIWBEM_VALUE_H
 #define LMIWBEM_VALUE_H
 
-#include <string>
+#include "lmi_string.h"
+
 #include <Pegasus/Common/CIMValue.h>
 
 /**
  * @brief The CIMValue class
  *
- * Convert CIMValue to better std::string
+ * Convert CIMValue to better String
  */
 class CIMValue
 {
 
 public:
-    static std::string decode_values(Pegasus::CIMProperty property);
+    static String decode_values(Pegasus::CIMProperty property);
     /**
      * @brief Convert CIMValue
      * @param value -- value to convert
-     * @return std::string representation of value
+     * @return String representation of value
      */
-    static std::string to_std_string(const Pegasus::CIMValue &value);
-    static std::string get_property_value(Pegasus::CIMInstance instance,
-                                          std::string propertyName, Pegasus::CIMProperty *property = NULL);
-    static std::string convert_values(std::string value, std::string unit);
-    static Pegasus::CIMValue to_cim_value(Pegasus::CIMType type, std::string value,
+    static String to_string(const Pegasus::CIMValue &value);
+    static String get_property_value(Pegasus::CIMInstance instance,
+                                          String propertyName, Pegasus::CIMProperty *property = NULL);
+    static String convert_values(String value, String unit);
+    static Pegasus::CIMValue to_cim_value(Pegasus::CIMType type, String value,
                                           bool isArray = false);
 
 };

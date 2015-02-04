@@ -36,7 +36,7 @@ IInstruction::Subject VerifyPackageInstruction::getSubject()
     return IInstruction::SOFTWARE;
 }
 
-std::string VerifyPackageInstruction::toString()
+String VerifyPackageInstruction::toString()
 {
     std::stringstream ss;
     ss << "service = c.root.cimv2.LMI_SoftwareInstallationService.first_instance()\n"
@@ -124,7 +124,7 @@ void VerifyPackageInstruction::run()
             in_param,
             out_param);
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }
 

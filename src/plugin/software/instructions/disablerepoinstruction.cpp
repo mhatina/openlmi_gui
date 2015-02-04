@@ -36,7 +36,7 @@ IInstruction::Subject DisableRepoInstruction::getSubject()
     return IInstruction::SOFTWARE;
 }
 
-std::string DisableRepoInstruction::toString()
+String DisableRepoInstruction::toString()
 {
     std::stringstream ss;
     ss << "repo = c.root.cimv2.LMI_SoftwareIdentityResource.first_instance_name(\n"
@@ -67,6 +67,6 @@ void DisableRepoInstruction::run()
             in_param,
             out_param);
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

@@ -21,7 +21,7 @@
 
 #include "getinstruction.h"
 
-GetInstruction::GetInstruction(std::string name) :
+GetInstruction::GetInstruction(String name) :
     IInstruction("get_service"),
     m_name(name)
 {
@@ -32,7 +32,7 @@ IInstruction::Subject GetInstruction::getSubject()
     return IInstruction::SERVICE;
 }
 
-std::string GetInstruction::toString()
+String GetInstruction::toString()
 {
     return "srv = c.root.cimv2.LMI_Service.first_instance({\"Name\" : \"" + m_name +
            "\"})\n";

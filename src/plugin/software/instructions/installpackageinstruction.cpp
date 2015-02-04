@@ -37,7 +37,7 @@ IInstruction::Subject InstallPackageInstruction::getSubject()
     return IInstruction::SOFTWARE;
 }
 
-std::string InstallPackageInstruction::toString()
+String InstallPackageInstruction::toString()
 {
     std::stringstream ss;
     if (m_synchronous) {
@@ -100,7 +100,7 @@ void InstallPackageInstruction::run()
             invokeInstallMethod(4); // Install
         }
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }
 

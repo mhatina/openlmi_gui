@@ -23,6 +23,7 @@
 #define OVERVIEW_H
 
 #include "widgets/labeledlabel.h"
+#include "lmi_string.h"
 #include "plugin.h"
 
 #include <QtPlugin>
@@ -80,27 +81,27 @@ private:
     QMutex *m_log_mutex;
     Ui::OverviewPlugin *m_ui;
 
-    std::string decode(Pegasus::CIMProperty property);
-    std::string getTime();
-    void fillLogBox(std::string filter);
+    String decode(Pegasus::CIMProperty property);
+    String getTime();
+    void fillLogBox(String filter);
 
 private slots:
-    void addLogEntry(std::string label, std::string text);
+    void addLogEntry(String label, String text);
     void filterChanged(QString text);
     void showLogSeverity();
 
 public:
     explicit OverviewPlugin();
     ~OverviewPlugin();
-    virtual std::string getInstructionText();
-    virtual std::string getLabel();
-    virtual std::string getRefreshInfo();
+    virtual String getInstructionText();
+    virtual String getLabel();
+    virtual String getRefreshInfo();
     virtual void clear();
     virtual void fillTab(std::vector<void *> *data);
     virtual void getData(std::vector<void *> *data);
 
 signals:
-    void addLog(std::string label, std::string text);
+    void addLog(String label, String text);
 };
 
 #endif // OVERVIEW_H

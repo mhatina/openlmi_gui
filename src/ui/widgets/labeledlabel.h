@@ -22,6 +22,8 @@
 #ifndef LABELEDLABEL_H
 #define LABELEDLABEL_H
 
+#include "lmi_string.h"
+
 #include <QWidget>
 
 namespace Ui
@@ -37,8 +39,7 @@ private:
     Ui::LabeledLabel *m_ui;
 
 public:
-    LabeledLabel(std::string label, std::string text);
-    LabeledLabel(std::string label, QString text);
+    LabeledLabel(String label, String text);
     ~LabeledLabel();
 
     int getLabelWidth();

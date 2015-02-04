@@ -20,6 +20,7 @@
 
 #include "discoverworker.h"
 #include "dialogs/systemdetailsdialog.h"
+#include "lmi_string.h"
 #include "treewidgetitem.h"
 
 #include <QPlainTextEdit>
@@ -62,16 +63,16 @@ private:
     TreeWidgetItem *m_item_to_show;
     Ui::PCTreeWidget *m_ui;
 
-    bool parentContainsItem(QTreeWidgetItem *parent, std::string text, QTreeWidgetItem *item = NULL);
-    int topLevelNodeCount(std::string item_name = "");
-    std::string getHostName(std::string &ip, int &ai_family);
-    TreeWidgetItem *addPcToTree(std::string parent, std::string text);
-    TreeWidgetItem *findTopLevelNode(std::string item_name);
+    bool parentContainsItem(QTreeWidgetItem *parent, String text, QTreeWidgetItem *item = NULL);
+    int topLevelNodeCount(String item_name = "");
+    String getHostName(String &ip, int &ai_family);
+    TreeWidgetItem *addPcToTree(String parent, String text);
+    TreeWidgetItem *findTopLevelNode(String item_name);
     void changeDisplayedName(TreeWidgetItem *item);
-    void getIp(std::string &name, std::string &ipv4, std::string &ipv6);
+    void getIp(String &name, String &ipv4, String &ipv6);
     void initContextMenu();
-    void loadPcs(std::string filename);
-    void saveAllPcs(std::string filename);
+    void loadPcs(String filename);
+    void saveAllPcs(String filename);
 
 private slots:
     void addDiscoveredPcsToTree(std::list<std::string> *pc);
@@ -89,12 +90,12 @@ private slots:
     void validate(QTreeWidgetItem *, int column);
 
 signals:
-    void refreshProgress(int progress, std::string message = "");
+    void refreshProgress(int progress, String message = "");
     /**
      * @brief Emitted when host is removed from list
      * @param id -- ip or domain name of host
      */
-    void removed(std::string id);
+    void removed(String id);
     void selectionChanged();
 
 public:
@@ -118,7 +119,7 @@ public:
      * @param item_name -- parent node name
      * @return parent node
      */
-    QTreeWidgetItem *topLevelNode(std::string item_name);
+    QTreeWidgetItem *topLevelNode(String item_name);
     /**
      * @brief Connect buttons' signals with handlers
      * @param toolbar -- contains buttons

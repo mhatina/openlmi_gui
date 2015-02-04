@@ -22,6 +22,7 @@
 #ifndef ACTIONBOX_H
 #define ACTIONBOX_H
 
+#include "lmi_string.h"
 #include "service.h"
 
 #include <QWidget>
@@ -45,15 +46,15 @@ public:
      * @brief Constructor
      * @param serv_name -- name of service
      */
-    ActionBox(std::string serv_name);
+    ActionBox(String serv_name);
     /**
      * @brief Destructor
      */
     ~ActionBox();
-    void changeAction(std::string action);
+    void changeAction(String action);
 
 private:
-    std::string m_name;
+    String m_name;
     Ui::ActionBox *m_ui;
 
 private slots:
@@ -65,7 +66,7 @@ signals:
      * @param name -- name of service
      * @param action -- selected action
      */
-    void performAction(std::string name, e_action action);
+    void performAction(String name, e_action action);
 };
 
 #endif // ACTIONBOX_H

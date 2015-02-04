@@ -19,6 +19,7 @@
 #define GENERALSETTINGS_H
 
 #include "isettings.h"
+#include "lmi_string.h"
 
 namespace Ui
 {
@@ -36,7 +37,7 @@ public:
     explicit GeneralSettings(QWidget *parent = 0);
     ~GeneralSettings();
 
-    virtual std::string title();
+    virtual String title();
     virtual void init();
     virtual void load(QFile &file);
     virtual void save(QXmlStreamWriter &writer);

@@ -18,14 +18,14 @@
 #include "authenticationdialog.h"
 #include "logger.h"
 
-AuthenticationDialog::AuthenticationDialog(std::string id, QWidget *parent) :
+AuthenticationDialog::AuthenticationDialog(String id, QWidget *parent) :
     QDialog(parent),
     m_ui(new Ui::AuthenticationDialog)
 {
     Logger::getInstance()->debug("AuthenticationDialog::AuthenticationDialog(std::string id)");
     m_ui->setupUi(this);
     setWindowFlags(Qt::Popup);
-    m_ui->id_label->setText(id.c_str());
+    m_ui->id_label->setText(id);
     m_ui->passwd_line->setEchoMode(QLineEdit::Password);        
     m_ui->username_line->setFocus(Qt::PopupFocusReason);
 
@@ -38,14 +38,14 @@ AuthenticationDialog::~AuthenticationDialog()
     Logger::getInstance()->debug("AuthenticationDialog::~AuthenticationDialog()");
 }
 
-std::string AuthenticationDialog::getPasswd()
+String AuthenticationDialog::getPasswd()
 {
     Logger::getInstance()->debug("AuthenticationDialog::getPasswd()");
-    return m_ui->passwd_line->text().toStdString();
+    return m_ui->passwd_line->text();
 }
 
-std::string AuthenticationDialog::getUsername()
+String AuthenticationDialog::getUsername()
 {
     Logger::getInstance()->debug("AuthenticationDialog::getUsername()");
-    return m_ui->username_line->text().toStdString();
+    return m_ui->username_line->text();
 }

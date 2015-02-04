@@ -18,11 +18,12 @@
 #ifndef DISCOVERWORKER_H
 #define DISCOVERWORKER_H
 
+#include "lmi_string.h"
+
 #include <iostream>
 #include <list>
 #include <QObject>
 #include <slp.h>
-#include <string>
 
 /**
  * @brief The DiscoverWorker class
@@ -34,7 +35,7 @@ class DiscoverWorker : public QObject
     Q_OBJECT
 
 private:
-    std::string m_pc_lang;
+    String m_pc_lang;
     bool m_async;
     SLPHandle m_hslp;
     SLPError m_errcode;
@@ -64,7 +65,7 @@ signals:
      * @brief Represent end of discovering
      * @param pc -- all discovered hosts
      */
-    void finished(std::list<std::string> *pc);
+    void finished(std::list<String> *pc);
 
 };
 

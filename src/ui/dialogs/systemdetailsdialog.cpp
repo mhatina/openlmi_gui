@@ -34,24 +34,24 @@ SystemDetailsDialog::~SystemDetailsDialog()
     delete m_ui;
 }
 
-void SystemDetailsDialog::setDomain(std::string domain)
+void SystemDetailsDialog::setDomain(String domain)
 {
-    m_ui->domain->setText(domain.c_str());
+    m_ui->domain->setText(domain);
 }
 
-void SystemDetailsDialog::setIpv4(std::string ipv4)
+void SystemDetailsDialog::setIpv4(String ipv4)
 {
-    m_ui->ipv4->setText(ipv4.c_str());
+    m_ui->ipv4->setText(ipv4);
 }
 
-void SystemDetailsDialog::setIpv6(std::string ipv6)
+void SystemDetailsDialog::setIpv6(String ipv6)
 {
-    m_ui->ipv6->setText(ipv6.c_str());
+    m_ui->ipv6->setText(ipv6);
 }
 
-void SystemDetailsDialog::setMac(std::string mac)
+void SystemDetailsDialog::setMac(String mac)
 {
-    m_ui->mac->setText(mac.c_str());
+    m_ui->mac->setText(mac);
 }
 
 void SystemDetailsDialog::reset()

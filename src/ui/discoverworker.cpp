@@ -48,7 +48,7 @@ SLPBoolean get_srvs_list (
         SLPSrvURL *url;
         SLPParseSrvURL(srvurl, &url);
 
-        ((std::list<std::string> *)cookie)->push_back(url->s_pcHost);
+        ((std::list<String> *)cookie)->push_back(url->s_pcHost);
         SLPFree(url);
     }
 
@@ -79,7 +79,7 @@ void DiscoverWorker::discover()
 {
     Logger::getInstance()->debug("DiscoverWorker::discover()");
     open();
-    std::list<std::string> *pc = new std::list<std::string>();
+    std::list<String> *pc = new std::list<String>();
 
     m_errcode = SLPFindSrvs(
                     m_hslp,

@@ -26,14 +26,13 @@
 
 #include <boost/thread.hpp>
 
-Pegasus::CIMInstance InstallDialog::findPackage(std::string package_name)
+Pegasus::CIMInstance InstallDialog::findPackage(String package_name)
 {
     Pegasus::CIMInstance instance;
     for (unsigned int i = 0; i < m_packages.size(); i++) {
         Pegasus::Uint32 prop_ind = m_packages[i].findProperty("InstalledSoftware");
-        std::string prop = (std::string) m_packages[i].getProperty(
-                               prop_ind).getValue().toString().getCString();
-        if (prop.find(package_name) != std::string::npos) {
+        String prop = m_packages[i].getProperty(prop_ind).getValue().toString();
+        if (prop.find(package_name) != String::npos) {
             instance = m_packages[i];
             break;
         }
@@ -75,7 +74,7 @@ std::vector<Pegasus::CIMInstance> InstallDialog::getPackages()
     QList<QListWidgetItem *> list = m_ui->list_widget->selectedItems();
     std::vector<Pegasus::CIMInstance> vector;
     for (int i = 0; i < list.size(); i++) {
-        vector.push_back(findPackage(list[i]->text().toStdString()));
+        vector.push_back(findPackage(list[i]->text()));
     }
 
     return vector;
@@ -102,7 +101,7 @@ void InstallDialog::fetchPackages()
                          false       // include class origin
                      );
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 
     emit haveData();
@@ -112,9 +111,10 @@ void InstallDialog::displayData()
 {
     int cnt = m_packages.size();
     for (int i = 0; i < cnt; i++) {
-        std::string name = CIMValue::get_property_value(m_packages[i], "ElementName");
-        if (name.find(m_ui->search_line->text().toStdString()) != std::string::npos) {
-            m_ui->list_widget->addItem(new QListWidgetItem(name.c_str()));
+        String name = CIMValue::get_property_value(m_packages[i], "ElementName");
+        String search = m_ui->search_line->text();
+        if (name.find(search) != String::npos) {
+            m_ui->list_widget->addItem(new QListWidgetItem(name));
         }
     }
 

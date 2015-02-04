@@ -24,6 +24,7 @@
 
 #include "instructions/softwareinstruction.h"
 #include "cimclient.h"
+#include "lmi_string.h"
 
 class InstallPackageInstruction : public SoftwareInstruction
 {
@@ -34,7 +35,7 @@ public:
     InstallPackageInstruction(CIMClient *client, Pegasus::CIMInstance package,
                               bool synchronous);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

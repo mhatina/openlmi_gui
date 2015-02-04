@@ -24,7 +24,7 @@
 #include "logger.h"
 
 DeleteGroupInstruction::DeleteGroupInstruction(CIMClient *client,
-        std::string name) :
+        String name) :
     GroupInstruction(client, "delete_group", name)
 {
 }
@@ -34,7 +34,7 @@ IInstruction::Subject DeleteGroupInstruction::getSubject()
     return IInstruction::GROUP;
 }
 
-std::string DeleteGroupInstruction::toString()
+String DeleteGroupInstruction::toString()
 {
     return "gr.DeleteGroup()\n";
 }
@@ -58,6 +58,6 @@ void DeleteGroupInstruction::run()
                                         ". Group is primary group of a user.");
         }
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

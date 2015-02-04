@@ -18,6 +18,8 @@
 #ifndef ADDTREEITEMDIALOG_H
 #define ADDTREEITEMDIALOG_H
 
+#include "lmi_string.h"
+
 #include <QDialog>
 
 namespace Ui {
@@ -38,7 +40,7 @@ public:
     explicit AddTreeItemDialog(QWidget *parent = 0);
     ~AddTreeItemDialog();
 
-    std::string getName();
+    String getName();
 
 
 };

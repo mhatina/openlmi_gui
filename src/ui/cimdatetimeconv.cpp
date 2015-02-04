@@ -22,11 +22,11 @@
 #include <sstream>
 
 // HH:MM:SS DD.MM.YYYY
-std::string CIMDateTimeConv::as_time_value(
+String CIMDateTimeConv::as_time_value(
     const Pegasus::CIMDateTime &dt)
 {
     Logger::getInstance()->debug("CIMDateTimeConv::as_time_value(const Pegasus::CIMDateTime &dt)");
-    std::string timestr(dt.toString().getCString());
+    String timestr(dt.toString().getCString());
 
     std::stringstream ss;
     ss << timestr.substr(8, 2) << ":" << timestr.substr(10, 2) << ":" <<
@@ -37,9 +37,9 @@ std::string CIMDateTimeConv::as_time_value(
 }
 
 //yyyymmddhhmmss.mmmmmmsutc
-Pegasus::CIMDateTime CIMDateTimeConv::as_cim_date_time(const std::string &dt)
+Pegasus::CIMDateTime CIMDateTimeConv::as_cim_date_time(const String &dt)
 {
-    Logger::getInstance()->debug("CIMDateTimeConv::as_cim_date_time(const std::string &dt)");
+    Logger::getInstance()->debug("CIMDateTimeConv::as_cim_date_time(const String &dt)");
     if (dt.size() < 19) {
         return Pegasus::CIMDateTime();
     }
@@ -49,7 +49,7 @@ Pegasus::CIMDateTime CIMDateTimeConv::as_cim_date_time(const std::string &dt)
        dt.substr(0, 2) << dt.substr(3, 2) << dt.substr(6, 2) <<
        ".000000000";
 
-    Pegasus::String str_time(ss.str().c_str());
+    String str_time(ss.str());
 
     return Pegasus::CIMDateTime(str_time);
 }

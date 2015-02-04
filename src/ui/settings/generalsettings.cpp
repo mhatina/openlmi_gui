@@ -36,7 +36,7 @@ GeneralSettings::~GeneralSettings()
     delete m_ui;
 }
 
-std::string GeneralSettings::title()
+String GeneralSettings::title()
 {
     return "General";
 }
@@ -56,24 +56,24 @@ void GeneralSettings::load(QFile &file)
     bool found = false;
     QXmlStreamReader in(&file);
     if (in.hasError()) {
-        Logger::getInstance()->error(in.errorString().toStdString(), false);
+        Logger::getInstance()->error(in.errorString(), false);
         return;
     }
 
-    std::string t = title();
+    String t = title();
     t.erase(remove_if(t.begin(), t.end(), isspace), t.end());
 
     while (!in.atEnd()) {
         QXmlStreamReader::TokenType token = in.readNext();
 
-        if (in.name().toString().toStdString().empty() ||
+        if (in.name().toString().size() == 0 ||
             in.isEndElement()) {
             continue;
         }
 
         if (token == QXmlStreamReader::StartDocument) {
             continue;
-        } else if (in.name().toString().toStdString() == t) {
+        } else if (String(in.name().toString()) == t) {
             found = true;
         } else if (in.name() == "terminalEmulator") {
             while (!in.isCharacters()) {
@@ -83,15 +83,15 @@ void GeneralSettings::load(QFile &file)
             m_ui->terminal_emulator->setText(emulator);
         } else if (in.name() == "certificate") {
             QXmlStreamAttributes attr = in.attributes();
-            bool enabled = (attr.value("enabled").toString().toStdString() == "true");
+            bool enabled = (attr.value("enabled").toString() == "true");
             m_ui->use_certificate_checkbox->setChecked(enabled);
             m_ui->certificate->setEnabled(enabled);
 
             while (!in.isCharacters()) {
                 in.readNext();
             }
-            std::string cert = in.text().toString().toStdString();
-            m_ui->certificate->setText(cert.c_str());
+            String cert = in.text().toString();
+            m_ui->certificate->setText(cert);
         } else if (in.name() == "logArchive") {
             while (!in.isCharacters()) {
                 in.readNext();
@@ -100,13 +100,13 @@ void GeneralSettings::load(QFile &file)
             m_ui->log_archive->setText(archive);
         } else if (in.name() == "simpleAddition") {
             QXmlStreamAttributes attr = in.attributes();
-            bool enabled = (attr.value("enabled").toString().toStdString() == "true");
+            bool enabled = (attr.value("enabled").toString() == "true");
             m_ui->simple_addition->setChecked(enabled);
         }
     }
 
     if (in.hasError()) {
-        Logger::getInstance()->error(in.errorString().toStdString(), false);
+        Logger::getInstance()->error(in.errorString(), false);
         return;
     }
 

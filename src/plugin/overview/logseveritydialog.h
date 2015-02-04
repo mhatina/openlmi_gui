@@ -23,6 +23,7 @@
 #define LOGSEVERITYDIALOG_H
 
 #include <QDialog>
+#include "lmi_string.h"
 
 const char *const log_severity[] = {
     "Unknown", "Other",
@@ -58,8 +59,8 @@ public:
     ~LogSeverityDialog();
 
     int getSeverity();
-    std::string getMessage();
-    void setMessage(std::string message);
+    String getMessage();
+    void setMessage(String message);
 
 };
 

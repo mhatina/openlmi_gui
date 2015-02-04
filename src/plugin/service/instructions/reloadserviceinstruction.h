@@ -23,6 +23,7 @@
 #define RELOADSERVICEINSTRUCTION_H
 
 #include "serviceinstruction.h"
+#include "lmi_string.h"
 
 /**
  * @brief The ReloadServiceInstruction class
@@ -37,9 +38,9 @@ public:
      * @param client -- see CIMClient
      * @param name -- name of service
      */
-    ReloadServiceInstruction(CIMClient *client, std::string name);
+    ReloadServiceInstruction(CIMClient *client, String name);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

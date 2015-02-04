@@ -19,48 +19,27 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef LABELEDLINEEDIT_H
-#define LABELEDLINEEDIT_H
+#ifndef FILEBROWSER_H
+#define FILEBROWSER_H
 
-#include "lmi_string.h"
+#include <QTreeWidget>
 
-#include <string>
-#include <QLineEdit>
-#include <QWidget>
-
-namespace Ui
-{
-class LabeledLineEdit;
-}
-
-class LabeledLineEdit : public QWidget
+class FileBrowser : public QTreeWidget
 {
     Q_OBJECT
 
-private:
-    String m_text;
-    Ui::LabeledLineEdit *m_ui;
+protected:
+    void keyPressEvent(QKeyEvent *event);
 
 public:
-    explicit LabeledLineEdit(String objectName, String label,
-                             String text, bool key = false);
-    ~LabeledLineEdit();
+    explicit FileBrowser(QWidget *parent = 0);
 
-    int getLabelWidth();
-    String getLabelText();
-    String getObjectName();
-    String getText();
-    void setAlignment(int alignment);
-    void setLabelText(String text);
-    void setReadOnly(bool state);
-    void setText(String text);
+private slots:
+    void isDirEntered(QTreeWidgetItem *item, int column);
 
-public slots:
-    void itemChanged();
-    void textChanged();
-
-signals:
-    void itemChanged(LabeledLineEdit *item);
+signals:    
+    void enterDir(QTreeWidgetItem *item);
+    void enterSymlink(QTreeWidgetItem *item);
 };
 
-#endif // LABELEDLINEEDIT_H
+#endif // FILEBROWSER_H

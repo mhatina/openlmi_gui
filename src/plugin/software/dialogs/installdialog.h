@@ -23,6 +23,7 @@
 #define INSTALLDIALOG_H
 
 #include "cimclient.h"
+#include "lmi_string.h"
 
 #include <Pegasus/Common/CIMInstance.h>
 #include <QDialog>
@@ -41,7 +42,7 @@ private:
     Pegasus::Array<Pegasus::CIMInstance> m_packages;
     Ui::InstallDialog *m_ui;
 
-    Pegasus::CIMInstance findPackage(std::string package_name);
+    Pegasus::CIMInstance findPackage(String package_name);
 
 
 public:

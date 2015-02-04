@@ -18,6 +18,8 @@
 #ifndef SYSTEMDETAILSDIALOG_H
 #define SYSTEMDETAILSDIALOG_H
 
+#include "lmi_string.h"
+
 #include <QDialog>
 
 #define DEFAULT_TEXT "N/A"
@@ -35,10 +37,10 @@ public:
     explicit SystemDetailsDialog(QWidget *parent = 0);
     ~SystemDetailsDialog();
 
-    void setDomain(std::string domain);
-    void setIpv4(std::string ipv4);
-    void setIpv6(std::string ipv6);
-    void setMac(std::string mac);
+    void setDomain(String domain);
+    void setIpv4(String ipv4);
+    void setIpv6(String ipv6);
+    void setMac(String mac);
     void reset();
 
 protected:

@@ -37,7 +37,7 @@ IInstruction::Subject UninstallPackageInstruction::getSubject()
     return IInstruction::SOFTWARE;
 }
 
-std::string UninstallPackageInstruction::toString()
+String UninstallPackageInstruction::toString()
 {
     std::stringstream ss;
 
@@ -79,7 +79,7 @@ void UninstallPackageInstruction::run()
         }
 
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }
 

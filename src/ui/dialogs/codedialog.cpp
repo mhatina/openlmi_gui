@@ -97,11 +97,11 @@ CodeDialog::~CodeDialog()
     delete m_ui;
 }
 
-void CodeDialog::setText(std::string text)
+void CodeDialog::setText(String text)
 {
     Logger::getInstance()->debug("CodeDialog::setText(std::string text)");
     text = "#!/usr/bin/lmishell\n\n" + text;
-    m_ui->code_editor->setText(text.c_str());
+    m_ui->code_editor->setText(text);
     int last_line = m_ui->code_editor->lines();
     m_ui->code_editor->setCursorPosition(last_line, 0);
 }

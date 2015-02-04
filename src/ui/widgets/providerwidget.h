@@ -18,6 +18,7 @@
 #ifndef PROVIDERWIDGET_H
 #define PROVIDERWIDGET_H
 
+#include "lmi_string.h"
 #include "logger.h"
 
 #include <QComboBox>
@@ -58,7 +59,7 @@ public:
      * @return Tab widget (provider display its data here)
      */
     QTabWidget *getTabWidget();
-    void setTitle(std::string title);
+    void setTitle(String title);
 };
 
 #endif // PROVIDERWIDGET_H

@@ -18,6 +18,8 @@
 #ifndef TREEWIDGETITEM_H
 #define TREEWIDGETITEM_H
 
+#include "lmi_string.h"
+
 #include <QTreeWidgetItem>
 
 typedef enum {
@@ -30,31 +32,31 @@ typedef enum {
 class TreeWidgetItem : public QTreeWidgetItem
 {
 private:    
-    std::string m_id;
-    std::string m_ipv4;
-    std::string m_ipv6;
-    std::string m_name;
-    std::string m_mac;
+    String m_id;
+    String m_ipv4;
+    String m_ipv6;
+    String m_name;
+    String m_mac;
     validity m_valid;
 
 public:
     explicit TreeWidgetItem(QTreeWidgetItem *parent = 0);
     TreeWidgetItem(QTreeWidget *view);
 
-    std::string getIpv4() const;
-    void setIpv4(const std::string &value);
+    String getIpv4() const;
+    void setIpv4(const String &value);
 
-    std::string getIpv6() const;
-    void setIpv6(const std::string &value);
+    String getIpv6() const;
+    void setIpv6(const String &value);
 
-    std::string getName() const;
-    void setName(const std::string &value);
+    String getName() const;
+    void setName(const String &value);
 
-    std::string getMac() const;
-    void setMac(const std::string &mac);
+    String getMac() const;
+    void setMac(const String &mac);
 
-    std::string getId() const;
-    void setId(const std::string &id);
+    String getId() const;
+    void setId(const String &id);
 
     validity getValid() const;
     void setValid(const validity &valid);

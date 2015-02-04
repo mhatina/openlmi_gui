@@ -36,7 +36,7 @@ IInstruction::Subject UpdatePackageInstruction::getSubject()
     return IInstruction::SOFTWARE;
 }
 
-std::string UpdatePackageInstruction::toString()
+String UpdatePackageInstruction::toString()
 {
     std::stringstream ss;
     ss << "service = c.root.cimv2.LMI_SoftwareInstallationService.first_instance()\n"
@@ -59,7 +59,7 @@ void UpdatePackageInstruction::run()
     try {
         invokeInstallMethod(5); // Update
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }
 

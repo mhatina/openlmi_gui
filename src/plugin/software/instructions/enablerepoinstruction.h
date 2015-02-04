@@ -24,13 +24,14 @@
 
 #include "instructions/softwareinstruction.h"
 #include "cimclient.h"
+#include "lmi_string.h"
 
 class EnableRepoInstruction : public SoftwareInstruction
 {
 public:
     EnableRepoInstruction(CIMClient *client, Pegasus::CIMInstance repo);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

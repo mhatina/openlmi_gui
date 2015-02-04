@@ -24,7 +24,7 @@
 #include "reloadserviceinstruction.h"
 
 ReloadServiceInstruction::ReloadServiceInstruction(CIMClient *client,
-        std::string name) :
+        String name) :
     ServiceInstruction(client, "reload_service", name)
 {
 }
@@ -34,7 +34,7 @@ IInstruction::Subject ReloadServiceInstruction::getSubject()
     return IInstruction::SERVICE;
 }
 
-std::string ReloadServiceInstruction::toString()
+String ReloadServiceInstruction::toString()
 {
     return "srv.ReloadService()\n";
 }
@@ -48,6 +48,6 @@ void ReloadServiceInstruction::run()
             Logger::getInstance()->info("Unable to reload service.");
         }
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

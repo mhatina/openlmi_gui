@@ -33,12 +33,13 @@
 #define DEBUGGING false
 #endif
 
-#include "logger_global.h"
-
 #include <QObject>
 #include <QMutex>
-#include <string>
 #include <fstream>
+
+#include "logger_global.h"
+#include "lmi_string.h"
+
 
 /**
  *  @brief Enum of log modes
@@ -64,14 +65,14 @@ signals:
      * @brief Signal for informing main gui that message should be displayed for user.
      * @param message -- text that should be displayed
      */
-    void showMessage(std::string message);
+    void showMessage(String message);
     void showMessage(QString message);
-    void showDialog(std::string title, std::string text);
+    void showDialog(String title, String text);
 
 private:
     bool m_show_debug_message;
     std::ofstream m_log_file;
-    std::string m_log_path;
+    String m_log_path;
     static QMutex m_log_mutex;
     static Logger *m_instance;
 
@@ -83,14 +84,14 @@ private:
      * @param show_message -- whether @ref showMessage() should be emitted
      * @return true if successful; otherwise false
      */
-    bool log(std::string message, log_mode mode, bool show_message);    
+    bool log(String message, log_mode mode, bool show_message);
 
     /**
      * @brief getLogModeInfo
      * @param mode -- log mode
      * @return text representation of mode
      */
-    std::string getLogModeInfo(log_mode mode);
+    String getLogModeInfo(log_mode mode);
 
 public:
     /**
@@ -118,13 +119,13 @@ public:
      * @brief Getter
      * @return path to log file
      */
-    const std::string getLogPath() const;
+    const String getLogPath() const;
 
     /**
      * @brief Setter
      * @param file_path -- path to new log file
      */
-    void setLogPath(std::string file_path);
+    void setLogPath(String file_path);
 
     /**
      * @brief Info log
@@ -132,7 +133,7 @@ public:
      * @param show_message -- whether @ref showMessage() should be emitted
      * @return true if successful; otherwise false
      */
-    bool info(std::string message, bool show_message = true);
+    bool info(String message, bool show_message = true);
 
     /**
      * @brief Debug log
@@ -140,7 +141,7 @@ public:
      * @param show_message -- whether @ref showMessage() should be emitted
      * @return true if successful; otherwise false
      */
-    bool debug(std::string message, bool show_message = true);
+    bool debug(String message, bool show_message = true);
 
     /**
      * @brief Error log
@@ -148,7 +149,7 @@ public:
      * @param show_message -- whether @ref showMessage() should be emitted
      * @return true if successful; otherwise false
      */
-    bool error(std::string message, bool show_message = true);
+    bool error(String message, bool show_message = true);
 
     /**
      * @brief Critical log
@@ -156,19 +157,19 @@ public:
      * @param show_message -- whether @ref showMessage() should be emitted
      * @return true if successful; otherwise false
      */
-    bool critical(std::string message, bool show_message = true);
+    bool critical(String message, bool show_message = true);
 
     /**
      * @brief getTime
      * @return current time
      */
-    std::string getTime();
+    String getTime();
 
     void setShowDebug(bool value);
 
     private
 slots:
-    void displayDialog(std::string title, std::string text);
+    void displayDialog(String title, String text);
 };
 
 #endif // LOGGER_H

@@ -48,7 +48,7 @@ AddTreeItemDialog::~AddTreeItemDialog()
     delete m_ui;    
 }
 
-std::string AddTreeItemDialog::getName()
+String AddTreeItemDialog::getName()
 {
     return m_ui->name->text().toStdString();
 }

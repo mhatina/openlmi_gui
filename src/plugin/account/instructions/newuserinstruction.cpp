@@ -37,7 +37,7 @@ IInstruction::Subject NewUserInstruction::getSubject()
     return IInstruction::ACCOUNT;
 }
 
-std::string NewUserInstruction::toString()
+String NewUserInstruction::toString()
 {
     std::stringstream ss;
     ss << "cs = c.root.cimv2.PG_ComputerSystem.first_instance()\n"
@@ -121,6 +121,6 @@ void NewUserInstruction::run()
             out_param
         );
     } catch (const Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

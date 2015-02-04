@@ -31,7 +31,7 @@ GeneralPluginSettings::~GeneralPluginSettings()
     delete m_ui;
 }
 
-std::string GeneralPluginSettings::title()
+String GeneralPluginSettings::title()
 {
     return "General plugin";
 }
@@ -51,58 +51,58 @@ void GeneralPluginSettings::load(QFile &file)
     bool found = false;
     QXmlStreamReader in(&file);
     if (in.hasError()) {
-        Logger::getInstance()->error(in.errorString().toStdString(), false);
+        Logger::getInstance()->error(in.errorString(), false);
         return;
     }
 
-    std::string t = title();
+    String t = title();
     t.erase(remove_if(t.begin(), t.end(), isspace), t.end());
 
     while (!in.atEnd()) {
         QXmlStreamReader::TokenType token = in.readNext();
 
-        if (in.name().toString().toStdString().empty() ||
+        if (in.name().toString().size() == 0 ||
             in.isEndElement()) {
             continue;
         }
 
         if (token == QXmlStreamReader::StartDocument) {
             continue;
-        } else if (in.name().toString().toStdString() == t) {
+        } else if (String(in.name().toString()) == t) {
             found = true;
         } else if (in.name() == "overviewAutoRefresh") {
             QXmlStreamAttributes attr = in.attributes();
-            bool enabled = (attr.value("enabled").toString().toStdString() == "true");
+            bool enabled = (attr.value("enabled").toString() == "true");
             m_ui->overview->setChecked(enabled);
         } else if (in.name() == "accountAutoRefresh") {
             QXmlStreamAttributes attr = in.attributes();
-            bool enabled = (attr.value("enabled").toString().toStdString() == "true");
+            bool enabled = (attr.value("enabled").toString() == "true");
             m_ui->account->setChecked(enabled);
         } else if (in.name() == "hardwareAutoRefresh") {
             QXmlStreamAttributes attr = in.attributes();
-            bool enabled = (attr.value("enabled").toString().toStdString() == "true");
+            bool enabled = (attr.value("enabled").toString() == "true");
             m_ui->hardware->setChecked(enabled);
-        } else if (in.name() == "logicalFileAutoRefresh") {
+        } else if (in.name() == "fileAutoRefresh") {
             QXmlStreamAttributes attr = in.attributes();
-            bool enabled = (attr.value("enabled").toString().toStdString() == "true");
-            m_ui->logical_file->setChecked(enabled);
+            bool enabled = (attr.value("enabled").toString() == "true");
+            m_ui->file_browser->setChecked(enabled);
         } else if (in.name() == "networkAutoRefresh") {
             QXmlStreamAttributes attr = in.attributes();
-            bool enabled = (attr.value("enabled").toString().toStdString() == "true");
+            bool enabled = (attr.value("enabled").toString() == "true");
             m_ui->network->setChecked(enabled);
         } else if (in.name() == "serviceAutoRefresh") {
             QXmlStreamAttributes attr = in.attributes();
-            bool enabled = (attr.value("enabled").toString().toStdString() == "true");
+            bool enabled = (attr.value("enabled").toString() == "true");
             m_ui->service->setChecked(enabled);
         } else if (in.name() == "softwareAutoRefresh") {
             QXmlStreamAttributes attr = in.attributes();
-            bool enabled = (attr.value("enabled").toString().toStdString() == "true");
+            bool enabled = (attr.value("enabled").toString() == "true");
             m_ui->software->setChecked(enabled);
         }
     }
 
     if (in.hasError()) {
-        Logger::getInstance()->error(in.errorString().toStdString(), false);
+        Logger::getInstance()->error(in.errorString(), false);
         return;
     }
 
@@ -128,9 +128,9 @@ void GeneralPluginSettings::save(QXmlStreamWriter &writer)
                           m_ui->hardware->checkState() == Qt::Checked ? "true" : "false");
     writer.writeEndElement();
 
-    writer.writeStartElement("logicalFileAutoRefresh");
+    writer.writeStartElement("fileAutoRefresh");
     writer.writeAttribute("enabled",
-                          m_ui->logical_file->checkState() == Qt::Checked ? "true" : "false");
+                          m_ui->file_browser->checkState() == Qt::Checked ? "true" : "false");
     writer.writeEndElement();
 
     writer.writeStartElement("networkAutoRefresh");

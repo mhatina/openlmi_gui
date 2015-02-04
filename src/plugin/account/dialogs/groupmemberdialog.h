@@ -22,6 +22,8 @@
 #ifndef GROUPMEMBERDIALOG_H
 #define GROUPMEMBERDIALOG_H
 
+#include "lmi_string.h"
+
 #include <QDialog>
 
 namespace Ui
@@ -53,8 +55,8 @@ public:
      *
      * Show dialog with available users.
      */
-    static void getUsers(std::vector<std::string> &available_users,
-                         std::vector<std::string> &selected);
+    static void getUsers(std::vector<String> &available_users,
+                         std::vector<String> &selected);
 
 private:
     Ui::GroupMemberDialog *m_ui;

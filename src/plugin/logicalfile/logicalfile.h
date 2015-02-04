@@ -22,7 +22,9 @@
 #ifndef LOGICALFILE_H
 #define LOGICALFILE_H
 
+#include "filetree.h"
 #include "plugin.h"
+#include "lmi_string.h"
 
 #include <QtPlugin>
 
@@ -37,30 +39,38 @@ class LogicalFilePlugin : public Engine::IPlugin
     Q_INTERFACES(Engine::IPlugin)
 
 private:
-    bool m_changes_enabled;
+    FileTree m_tree;
     int m_file_cnt;
-    std::vector<Pegasus::CIMInstance> m_dirs;
     Ui::LogicalFilePlugin *m_ui;
 
-    void getInfo(std::vector<Pegasus::CIMInstance> *data, std::string name, bool dir = true);
-    void writeInfo(std::vector<Pegasus::CIMInstance> *data, std::string name);
+    FileTree::Item *emitFound(std::vector<void *> *data, FileTree::Item *parent);
+    void getInfo(std::vector<void *> *data, FileTree::Item *parent);
+    void getSymlinkInfo(std::vector<void *> *data, FileTree::Item *parent);
+    Pegasus::CIMInstance *findDir(String name);
+
+    QTreeWidget *getNotSelectedTree(QTreeWidgetItem *item);
+    QTreeWidget *getSelectedTree();
+
+    void populateTree(QTreeWidget *tree, std::vector<void *> *data, FileTree::Item *parent);
 
 public:
     explicit LogicalFilePlugin();
     ~LogicalFilePlugin();
-    virtual std::string getInstructionText();
-    virtual std::string getLabel();
-    virtual std::string getRefreshInfo();
+    virtual String getInstructionText();
+    virtual String getLabel();
+    virtual String getRefreshInfo();
     virtual void clear();
     virtual void fillTab(std::vector<void *> *data);
     virtual void getData(std::vector<void *> *data);
 
 private slots:
-    void dirClicked(QTreeWidgetItem *item);
-    void dirExpanded(QTreeWidgetItem *item);
+    void changeCursor(QTreeWidgetItem *item, int column);
+    void dirEntered(QTreeWidgetItem *item);
+    void symlinkEntered(QTreeWidgetItem *item);
+    void writeInfo(std::vector<void *> *data, FileTree::Item *parent);
 
 signals:
-    void writeData(std::vector<Pegasus::CIMInstance> *data);
+    void writeData(std::vector<void *> *data, FileTree::Item *parent);
 
 };
 

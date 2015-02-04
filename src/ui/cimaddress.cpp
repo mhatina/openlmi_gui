@@ -22,22 +22,22 @@
 #include "cimaddress.h"
 #include "logger.h"
 
-Address::Address(std::string url)
+Address::Address(String url)
     : m_hostname("unknown")
     , m_port(5989)
     , m_is_https(true)
     , m_is_valid(true)
 {
-    Logger::getInstance()->debug("Address::Address(std::string url)");
-    if (url.find("http://") != std::string::npos) {
+    Logger::getInstance()->debug("Address::Address(String url)");
+    if (url.find("http://") != String ::npos) {
         url.erase(0, 7);
         m_is_https = false;
-    } else if (url.find("https://") != std::string::npos) {
+    } else if (url.find("https://") != String ::npos) {
         url.erase(0, 8);
     }
 
     size_t pos = url.rfind(':');
-    if (pos != std::string::npos) {
+    if (pos != String ::npos) {
         m_hostname = url.substr(0, pos);
         long int port = strtol(url.substr(pos + 1,
                                           url.size() - pos - 1).c_str(), NULL, 10);

@@ -22,6 +22,7 @@
 #ifndef NETWORKPAGEWIDGET_H
 #define NETWORKPAGEWIDGET_H
 
+#include "lmi_string.h"
 #include "plugin.h"
 
 #include <Pegasus/Common/CIMInstance.h>
@@ -53,7 +54,7 @@ public:
     explicit NetworkPageWidget(QWidget *parent = 0);
     ~NetworkPageWidget();
 
-    std::string getTitle();
+    String getTitle();
     void setEthernetPort(Pegasus::CIMInstance instance);
     void setEthernetStatistics(Pegasus::CIMInstance instance);
     void setIPNetworkConnection(Pegasus::CIMInstance instance);

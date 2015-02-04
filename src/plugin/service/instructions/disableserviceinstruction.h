@@ -23,6 +23,7 @@
 #define DISABLESERVICEINSTRUCTION_H
 
 #include "instructions/serviceinstruction.h"
+#include "lmi_string.h"
 
 /**
  * @brief The DisableServiceInstruction class
@@ -37,9 +38,9 @@ public:
      * @param client -- see CIMClient
      * @param name -- name of service
      */
-    DisableServiceInstruction(CIMClient *client, std::string name);
+    DisableServiceInstruction(CIMClient *client, String name);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

@@ -18,6 +18,8 @@
 #ifndef ISETTINGS_H
 #define ISETTINGS_H
 
+#include "lmi_string.h"
+
 #include <map>
 #include <QFile>
 #include <QWidget>
@@ -29,7 +31,7 @@ class ISettings : public QWidget
 
 public:
     explicit ISettings(QWidget *parent = 0);
-    virtual std::string title() = 0;
+    virtual String title() = 0;
     virtual void init() = 0;
     virtual void load(QFile &file) = 0;
     virtual void save(QXmlStreamWriter &writer) = 0;

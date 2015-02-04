@@ -18,18 +18,18 @@
 #include "instruction.h"
 #include "logger.h"
 
-IInstruction::IInstruction(std::string instruction, Pegasus::CIMValue value) :
+IInstruction::IInstruction(String instruction, Pegasus::CIMValue value) :
     m_value(value),
     m_instruction(instruction)
 {
-    Logger::getInstance()->debug("IInstruction::IInstruction(std::string instruction, Pegasus::CIMValue value)");
+    Logger::getInstance()->debug("IInstruction::IInstruction(String instruction, Pegasus::CIMValue value)");
 }
 
-IInstruction::IInstruction(std::string instruction) :
+IInstruction::IInstruction(String instruction) :
     m_value(),
     m_instruction(instruction)
 {
-    Logger::getInstance()->debug("IInstruction::IInstruction(std::string instruction)");
+    Logger::getInstance()->debug("IInstruction::IInstruction(String instruction)");
 }
 
 IInstruction::~IInstruction()
@@ -43,7 +43,7 @@ Pegasus::CIMValue IInstruction::getValue()
     return m_value;
 }
 
-std::string IInstruction::getInstructionName()
+String IInstruction::getInstructionName()
 {
     Logger::getInstance()->debug("IInstruction::getInstructionName()");
     return m_instruction;

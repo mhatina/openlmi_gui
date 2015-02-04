@@ -73,10 +73,10 @@ MainWindow::MainWindow(QWidget *parent) :
             continue;
         }
 
-        std::string path = buttons[i].icon_path;
+        String path = buttons[i].icon_path;
         QPushButton *button;
         if (!path.empty()) {
-            button = new QPushButton(QIcon(QPixmap(path.c_str())), "");
+            button = new QPushButton(QIcon(QPixmap(path)), "");
         } else {
             button = new QPushButton(buttons[i].tooltip);
         }

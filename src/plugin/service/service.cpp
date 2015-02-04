@@ -48,9 +48,9 @@ void ServicePlugin::initContextMenu()
     int cnt = sizeof(action_list) / sizeof(action_list[0]);
     for (int i = 0; i < cnt; i++) {
         action = m_context_menu->addAction(action_list[i]);
-        std::string object_name = action_list[i];
+        String object_name = action_list[i];
         object_name += "_action";
-        action->setObjectName(object_name.c_str());
+        action->setObjectName(object_name);
     }
     connect(
         m_context_menu,
@@ -109,7 +109,7 @@ ServicePlugin::~ServicePlugin()
     delete m_ui;
 }
 
-std::string ServicePlugin::getInstructionText()
+String ServicePlugin::getInstructionText()
 {
     std::stringstream ss;
     for (unsigned int i = 0; i < m_instructions.size(); i++) {
@@ -118,12 +118,12 @@ std::string ServicePlugin::getInstructionText()
     return ss.str();
 }
 
-std::string ServicePlugin::getLabel()
+String ServicePlugin::getLabel()
 {
     return "Service";
 }
 
-std::string ServicePlugin::getRefreshInfo()
+String ServicePlugin::getRefreshInfo()
 {
     std::stringstream ss;
     ss << getLabel() << ": " << m_service_instances.size() << " service(s) shown";
@@ -133,7 +133,7 @@ std::string ServicePlugin::getRefreshInfo()
 void ServicePlugin::getData(std::vector<void *> *data)
 {
     Pegasus::Array<Pegasus::CIMInstance> services;
-    std::string filter = m_ui->filter_line->text().toStdString();
+    String filter = m_ui->filter_line->text();
 
     try {
         services = enumerateInstances(
@@ -145,7 +145,7 @@ void ServicePlugin::getData(std::vector<void *> *data)
                        false       // include class origin
                    );
     } catch (Pegasus::Exception &ex) {
-        emit doneFetchingData(NULL, false, CIMValue::to_std_string(ex.getMessage()));
+        emit doneFetchingData(NULL, false, CIMValue::to_string(ex.getMessage()));
         return;
     }
 
@@ -155,7 +155,7 @@ void ServicePlugin::getData(std::vector<void *> *data)
         if (!filter.empty()) {
             instance = services[i];
             if (CIMValue::get_property_value(instance,
-                                             "Name").find(filter) == std::string::npos) {
+                                             "Name").find(filter) == String::npos) {
                 continue;
             }
         } else {
@@ -188,28 +188,28 @@ void ServicePlugin::fillTab(std::vector<void *> *data)
             m_services_table->insertRow(row_count);
 
             int prop_cnt = sizeof(serviceProperties) / sizeof(serviceProperties[0]);
-            std::string serv_name;
+            String serv_name;
             for (int j = 0; j < prop_cnt; j++) {
                 Pegasus::CIMInstance *instance = ((Pegasus::CIMInstance *) (*data)[i]);
                 Pegasus::Uint32 propIndex = instance->findProperty(Pegasus::CIMName(
                                                 serviceProperties[j].property));
                 if (propIndex == Pegasus::PEG_NOT_FOUND) {
-                    Logger::getInstance()->error("property " + std::string(
+                    Logger::getInstance()->error("property " + String(
                                                      serviceProperties[j].property) + " not found");
                     continue;
                 }
 
                 Pegasus::CIMProperty property = instance->getProperty(propIndex);
-                std::string str_value = CIMValue::get_property_value(*instance, CIMValue::to_std_string(property.getName().getString()));
+                String str_value = CIMValue::get_property_value(*instance, CIMValue::to_string(property.getName().getString()));
 
                 if (property.getName().equal(Pegasus::CIMName("Name"))) {
                     serv_name = str_value;
                 }
 
                 QTableWidgetItem *item =
-                    new QTableWidgetItem(str_value.c_str());
+                    new QTableWidgetItem(str_value);
                 item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-                item->setToolTip(str_value.c_str());
+                item->setToolTip(str_value);
                 m_services_table->setItem(
                     row_count,
                     j,
@@ -224,9 +224,9 @@ void ServicePlugin::fillTab(std::vector<void *> *data)
             ActionBox *box = new ActionBox(serv_name);
             connect(
                 box,
-                SIGNAL(performAction(std::string, e_action)),
+                SIGNAL(performAction(String, e_action)),
                 this,
-                SLOT(actionHandle(std::string, e_action)));
+                SLOT(actionHandle(String, e_action)));
             m_services_table->setCellWidget(
                 row_count,
                 prop_cnt,
@@ -235,7 +235,7 @@ void ServicePlugin::fillTab(std::vector<void *> *data)
 
         m_services_table->sortByColumn(0, Qt::AscendingOrder);
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 
     for (unsigned int i = 0; i < data->size(); i++) {
@@ -254,10 +254,10 @@ void ServicePlugin::actionHandle(QAction *action)
     int row = list[0]->row();
 
     ActionBox *box = (ActionBox *) m_ui->services_table->cellWidget(row, 4);
-    box->changeAction(action->text().toStdString());
+    box->changeAction(action->text());
 }
 
-void ServicePlugin::actionHandle(std::string name, e_action action)
+void ServicePlugin::actionHandle(String name, e_action action)
 {
     addInstruction(new GetInstruction(name));
 
@@ -299,7 +299,7 @@ void ServicePlugin::showDetails()
     if (list.empty())
         return;
 
-    std::string name_expected = list[0]->text().toStdString();
+    String name_expected = list[0]->text();
     int cnt = m_service_instances.size();
     for (int i = 0; i < cnt; i++) {
         if (name_expected == CIMValue::get_property_value(m_service_instances[i],
@@ -308,11 +308,11 @@ void ServicePlugin::showDetails()
         }
     }
 
-    std::map<std::string, std::string> values;
+    std::map<String, String> values;
     cnt = service.getPropertyCount();
     for (int i = 0; i < cnt; i++) {
-        std::string object_name = CIMValue::to_std_string(service.getProperty(i).getName().getString());
-        std::string str_value = CIMValue::get_property_value(service, object_name);
+        String object_name = CIMValue::to_string(service.getProperty(i).getName().getString());
+        String str_value = CIMValue::get_property_value(service, object_name);
         values[object_name] = str_value;
     }
 

@@ -19,16 +19,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include "logger.h"
-
 #include <sstream>
 #include <fstream>
-#include <string>
 #include <QDateTime>
 #include <QMutex>
 #include <Qt/qmessagebox.h>
 
 #include <iostream>
+
+#include "logger.h"
 
 Logger *Logger::m_instance = NULL;
 QMutex Logger::m_log_mutex;
@@ -39,9 +38,9 @@ Logger::Logger() :
     setLogPath(DEFAULT_LOG_PATH);
     connect(
         this,
-        SIGNAL(showDialog(std::string, std::string)),
+        SIGNAL(showDialog(String, String)),
         this,
-        SLOT(displayDialog(std::string, std::string)));
+        SLOT(displayDialog(String, String)));
 }
 
 Logger::~Logger()
@@ -68,17 +67,17 @@ void Logger::removeInstance()
     m_log_mutex.unlock();
 }
 
-const std::string Logger::getLogPath() const
+const String Logger::getLogPath() const
 {
     return m_log_path;
 }
 
-void Logger::setLogPath(std::string file_path)
+void Logger::setLogPath(String file_path)
 {
     m_log_path = file_path;
 }
 
-bool Logger::info(std::string message, bool show_message)
+bool Logger::info(String message, bool show_message)
 {
     return log(
                message,
@@ -87,7 +86,7 @@ bool Logger::info(std::string message, bool show_message)
            );
 }
 
-bool Logger::debug(std::string message, bool show_message)
+bool Logger::debug(String message, bool show_message)
 {
     if (m_show_debug_message) {
         return log(
@@ -100,7 +99,7 @@ bool Logger::debug(std::string message, bool show_message)
     }
 }
 
-bool Logger::error(std::string message, bool show_message)
+bool Logger::error(String message, bool show_message)
 {
     if (show_message) {
         log(message,
@@ -119,9 +118,9 @@ bool Logger::error(std::string message, bool show_message)
               );
 }
 
-bool Logger::critical(std::string message, bool show_message)
+bool Logger::critical(String message, bool show_message)
 {
-    if (message.find("connection timed out") != std::string::npos) {
+    if (message.find("connection timed out") != String::npos) {
         return error(message, show_message);
     }
 
@@ -150,17 +149,17 @@ void Logger::setShowDebug(bool value)
 
 // private
 
-bool Logger::log(std::string message, log_mode mode, bool show_message)
+bool Logger::log(String message, log_mode mode, bool show_message)
 {
     m_log_mutex.lock();
     m_log_file.open(
-        m_log_path.c_str(),
+        m_log_path,
         std::ios_base::out | std::ios_base::app
     );
     if (!m_log_file.is_open()) {
         setLogPath(DEFAULT_LOG_PATH);
         m_log_mutex.unlock();
-        std::string err =
+        String err =
             "Log file '" + m_log_path + "' cannot be opened!";
         if (message != err) {
             error(err);
@@ -170,10 +169,10 @@ bool Logger::log(std::string message, log_mode mode, bool show_message)
 
     if (show_message) {
         emit showMessage(message);
-        emit showMessage(QString(message.c_str()));
+        emit showMessage(message.asQString());
     }
 
-    m_log_file << "[" << getTime().c_str() << "] [" << getLogModeInfo(mode) << "] "
+    m_log_file << "[" << getTime() << "] [" << getLogModeInfo(mode) << "] "
                << message << (message.at(message.size() - 1) == '\n' ? "" : "\n");
     m_log_file.close();
     m_log_mutex.unlock();
@@ -181,7 +180,7 @@ bool Logger::log(std::string message, log_mode mode, bool show_message)
     return true;
 }
 
-std::string Logger::getTime()
+String Logger::getTime()
 {
     time_t rawtime;
     struct tm *timeinfo;
@@ -195,9 +194,9 @@ std::string Logger::getTime()
     return buffer;
 }
 
-std::string Logger::getLogModeInfo(log_mode mode)
+String Logger::getLogModeInfo(log_mode mode)
 {
-    std::string info[] = {
+    String info[] = {
         "Info",
         "Debug",
         "Error",
@@ -206,14 +205,14 @@ std::string Logger::getLogModeInfo(log_mode mode)
     return info[mode];
 }
 
-void Logger::displayDialog(std::string title, std::string text)
+void Logger::displayDialog(String title, String text)
 {
     QMessageBox box;
     if (title == "Warning") {
         box.setObjectName("error_dialog");
-        box.warning((QWidget *) parent(), title.c_str(), text.c_str());
+        box.warning((QWidget *) parent(), title, text);
     } else {
         box.setObjectName("critical_dialog");
-        box.critical((QWidget *) parent(), title.c_str(), text.c_str());
+        box.critical((QWidget *) parent(), title, text);
     }
 }

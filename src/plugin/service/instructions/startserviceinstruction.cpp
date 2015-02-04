@@ -24,7 +24,7 @@
 #include "startserviceinstruction.h"
 
 StartServiceInstruction::StartServiceInstruction(CIMClient *client,
-        std::string name) :
+        String name) :
     ServiceInstruction(client, "start_service", name)
 {
 }
@@ -34,7 +34,7 @@ IInstruction::Subject StartServiceInstruction::getSubject()
     return IInstruction::SERVICE;
 }
 
-std::string StartServiceInstruction::toString()
+String StartServiceInstruction::toString()
 {
     return "srv.StartService()\n";
 }
@@ -48,6 +48,6 @@ void StartServiceInstruction::run()
             Logger::getInstance()->info("Unable to start service.");
         }
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 }

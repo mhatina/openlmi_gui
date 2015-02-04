@@ -33,7 +33,7 @@ class GetInstruction : public IInstruction
 {
 private:
     IInstruction::Subject m_subject;
-    std::string m_name;
+    String m_name;
     IInstruction::Subject m_save_to;
 
 public:
@@ -43,16 +43,16 @@ public:
      * @param name -- name of account/group
      * @param save_to -- save to account/group file
      */
-    GetInstruction(IInstruction::Subject s, std::string name,
+    GetInstruction(IInstruction::Subject s, String name,
                    IInstruction::Subject save_to);
     /**
      * @brief Constructor
      * @param s -- subject
      * @param name -- name of account/group
      */
-    GetInstruction(IInstruction::Subject s, std::string name);
+    GetInstruction(IInstruction::Subject s, String name);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

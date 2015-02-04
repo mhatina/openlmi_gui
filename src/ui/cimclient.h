@@ -19,7 +19,8 @@
 #ifndef LMIWBEM_CLIENT_H
 #define LMIWBEM_CLIENT_H
 
-#include <string>
+#include "lmi_string.h"
+
 #include <Pegasus/Client/CIMClient.h>
 #include <Pegasus/Common/CIMType.h>
 #include <Pegasus/Common/SSLContext.h>
@@ -55,10 +56,10 @@ public:
      * @param trust_store
      */
     void connect(
-        const std::string &uri,
-        const std::string &username,
-        const std::string &password,
-        const std::string &trust_store = "/etc/pki/tls/certs");
+        const String &uri,
+        const String &username,
+        const String &password,
+        const String &trust_store = "/etc/pki/tls/certs");
 
     /**
      * @brief Connect to host
@@ -70,12 +71,12 @@ public:
      * @param trust_store
      */
     void connect(
-        const std::string &hostname,
+        const String &hostname,
         unsigned int port,
         bool is_https,
-        const std::string &username,
-        const std::string &password,
-        const std::string &trust_store = "/etc/pki/tls/certs");
+        const String &username,
+        const String &password,
+        const String &trust_store = "/etc/pki/tls/certs");
 
     /**
      * @brief Disconnect from host
@@ -113,7 +114,7 @@ public:
      * @brief Getter
      * @return hostname
      */
-    std::string hostname() const
+    String hostname() const
     {
         return m_hostname;
     }
@@ -122,7 +123,7 @@ public:
      * @brief Getter
      * @return username
      */
-    std::string username() const
+    String username() const
     {
         return m_username;
     }
@@ -134,8 +135,8 @@ private:
     static Pegasus::Boolean dontVerifyCertificate(Pegasus::SSLCertificateInfo &ci);
     static Pegasus::Boolean verifyCertificate(Pegasus::SSLCertificateInfo &ci);
 
-    std::string m_hostname;
-    std::string m_username;
+    String m_hostname;
+    String m_username;
     bool m_is_connected;
     bool m_verify_cert;
 };

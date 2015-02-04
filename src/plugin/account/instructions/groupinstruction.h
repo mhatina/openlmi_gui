@@ -32,7 +32,7 @@ class GroupInstruction : public IInstruction
 {
 protected:
     CIMClient *m_client; /**< @brief see CIMClient */
-    std::string m_name; /**< @brief Name of group */
+    String m_name; /**< @brief Name of group */
 
     /**
      * @brief Getter
@@ -48,7 +48,7 @@ public:
      * @param name -- name of group
      * @param value -- new property value
      */
-    GroupInstruction(CIMClient *client, std::string instruction, std::string name,
+    GroupInstruction(CIMClient *client, String instruction, String name,
                      Pegasus::CIMValue value);
     /**
      * @brief Constructor
@@ -56,12 +56,12 @@ public:
      * @param instruction -- name of instruction
      * @param name -- name of group
      */
-    GroupInstruction(CIMClient *client, std::string instruction, std::string name);
+    GroupInstruction(CIMClient *client, String instruction, String name);
     /**
      * @brief Destructor
      */
     ~GroupInstruction();
-    std::string getGroupName();
+    String getGroupName();
 };
 
 #endif // GROUPINSTRUCTION_H

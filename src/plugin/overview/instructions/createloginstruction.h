@@ -3,20 +3,21 @@
 
 #include "instructions/instruction.h"
 #include "cimclient.h"
+#include "lmi_string.h"
 
 class CreateLogInstruction : public IInstruction
 {
 private:
     CIMClient *m_client;
     Pegasus::Uint16 m_severity;
-    std::string m_message;
+    String m_message;
 
 public:
-    CreateLogInstruction(CIMClient *client, std::string message,
+    CreateLogInstruction(CIMClient *client, String message,
                          Pegasus::Uint16 severity);
 
     virtual Subject getSubject();
-    virtual std::string toString();
+    virtual String toString();
     virtual void run();
 };
 

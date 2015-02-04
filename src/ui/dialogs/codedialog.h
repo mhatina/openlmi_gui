@@ -18,6 +18,8 @@
 #ifndef CODEDIALOG_H
 #define CODEDIALOG_H
 
+#include "lmi_string.h"
+
 #include <QDialog>
 
 namespace Ui
@@ -58,7 +60,7 @@ public:
      * @param text
      * @param move_to_end -- whether to move cursor to end
      */
-    void setText(std::string text);
+    void setText(String text);
 };
 
 #endif // CODEDIALOG_H

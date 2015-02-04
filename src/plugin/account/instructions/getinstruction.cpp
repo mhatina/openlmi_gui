@@ -24,7 +24,7 @@
 
 #include <sstream>
 
-GetInstruction::GetInstruction(Subject s, std::string name, Subject save_to) :
+GetInstruction::GetInstruction(Subject s, String name, Subject save_to) :
     IInstruction("get"),
     m_subject(s),
     m_name(name),
@@ -32,7 +32,7 @@ GetInstruction::GetInstruction(Subject s, std::string name, Subject save_to) :
 {
 }
 
-GetInstruction::GetInstruction(IInstruction::Subject s, std::string name) :
+GetInstruction::GetInstruction(IInstruction::Subject s, String name) :
     IInstruction("get"),
     m_subject(s),
     m_name(name),
@@ -45,7 +45,7 @@ IInstruction::Subject GetInstruction::getSubject()
     return m_save_to;
 }
 
-std::string GetInstruction::toString()
+String GetInstruction::toString()
 {
     std::stringstream ss;
     switch (m_subject) {

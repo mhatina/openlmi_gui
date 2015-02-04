@@ -20,6 +20,7 @@
 
 #include "instructions/instruction.h"
 #include "kernel.h"
+#include "lmi_string.h"
 #include "cimclient.h"
 #include "logger.h"
 #include "widgets/providerwidget.h"
@@ -60,7 +61,7 @@ class IPlugin : public QWidget
 
 private:
     bool m_refreshing;
-    bool isFileEmpty(std::string filename);
+    bool isFileEmpty(String filename);
 
 protected:
     bool m_active; /**< @brief whether provider is active and is being displayed */
@@ -69,7 +70,7 @@ protected:
     boost::thread m_refresh_thread;
     CIMClient *m_client; /**< @brief see CIMClient */
     QMutex *m_mutex; /**< @brief Qt mutex */
-    std::string m_system_id;
+    String m_system_id;
     std::vector<IInstruction *>
     m_instructions; /**< @brief vector where all instructions are stored*/
     std::vector<void *>
@@ -101,7 +102,7 @@ protected:
      * @return position of instruction
      */
     int findInstruction(IInstruction::Subject subject,
-                        std::string instructionName = "", int pos = 0);
+                        String instructionName = "", int pos = 0);
 
 public:
     /**
@@ -153,18 +154,18 @@ public:
      * @param show - if true filter is displayed
      */
     bool showFilter(bool show);
-    std::string getSystemId();
+    String getSystemId();
     /**
      * @brief Virtual method for getting LMIShell code of all instructions
      * @return LMIShell code
      */
-    virtual std::string getInstructionText() = 0;
+    virtual String getInstructionText() = 0;
     /**
      * @brief Label of provider
      * @return label
      */
-    virtual std::string getLabel() = 0;
-    virtual std::string getRefreshInfo() = 0;
+    virtual String getLabel() = 0;
+    virtual String getRefreshInfo() = 0;
     virtual void clear() = 0;
     /**
      * @brief Display all data
@@ -201,7 +202,7 @@ public:
      *
      * Form can be defined later in provider.
      */
-    void saveScript(std::string filename);
+    void saveScript(String filename);
     /**
      * @brief Setter
      * @param active -- whether provider is active
@@ -235,7 +236,7 @@ protected slots:
      * @param data
      * @param error_message -- if something occures when fetching data, error_message is filled with error message
      */
-    void handleDataFetching(std::vector<void *> *data, bool still_refreshing = false, std::string error_message = "");
+    void handleDataFetching(std::vector<void *> *data, bool still_refreshing = false, String error_message = "");
     /**
      * @brief Process applying itself (refresh provider, set to refreshed, ...)
      */
@@ -252,12 +253,12 @@ signals:
      * @param data
      * @param error_message -- if something occures when fetching data, error_message is filled with error message
      */
-    void doneFetchingData(std::vector<void *> *data, bool still_refreshing = false, std::string error_message = "");
+    void doneFetchingData(std::vector<void *> *data, bool still_refreshing = false, String error_message = "");
     /**
      * @brief @brief Emitted when new instruction is added/inserted
      * @param text -- text of new instruction
      */
-    void newInstructionText(std::string text);
+    void newInstructionText(String text);
     /**
      * @brief emitted when there are no changes to be applied/saved
      * @param plugin -- representation of provider
@@ -268,7 +269,7 @@ signals:
      * @param progress -- progress state
      */
     void refreshProgress(int progress, IPlugin *plugin);
-    void refreshProgress(int progress, std::string message, IPlugin *plugin);
+    void refreshProgress(int progress, String message, IPlugin *plugin);
     /**
      * @brief emitted when there are some changes to be applied/saved
      * @param plugin -- representation of provider

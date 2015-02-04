@@ -56,29 +56,29 @@ bool NewUserDialog::isSystemAccount()
     return m_ui->system_account_box->checkState() == Qt::Checked;
 }
 
-std::string NewUserDialog::getGecos()
+String NewUserDialog::getGecos()
 {
-    return m_ui->gecos_line->text().toStdString();
+    return m_ui->gecos_line->text();
 }
 
-std::string NewUserDialog::getHomeDir()
+String NewUserDialog::getHomeDir()
 {
-    return m_ui->home_dir_line->text().toStdString();
+    return m_ui->home_dir_line->text();
 }
 
-std::string NewUserDialog::getName()
+String NewUserDialog::getName()
 {
-    return m_ui->name_line->text().toStdString();
+    return m_ui->name_line->text();
 }
 
-std::string NewUserDialog::getPasswd()
+String NewUserDialog::getPasswd()
 {
-    return m_ui->password_line->text().toStdString();
+    return m_ui->password_line->text();
 }
 
-std::string NewUserDialog::getShell()
+String NewUserDialog::getShell()
 {
-    return m_ui->shell_line->text().toStdString();
+    return m_ui->shell_line->text();
 }
 
 void NewUserDialog::changeHomeDir(QString text)

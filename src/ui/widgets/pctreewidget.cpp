@@ -55,7 +55,7 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
 {
     Logger::getInstance()->debug("PCTreeWidget::PCTreeWidget(QWidget *parent)");
     m_ui->setupUi(this);
-    std::string path = QDir::homePath().toStdString() + "/.config/lmicc_computers.xml";
+    String path = QDir::homePath() + "/.config/lmicc_computers.xml";
     initContextMenu();
 
     connect(
@@ -102,7 +102,7 @@ PCTreeWidget::PCTreeWidget(QWidget *parent) :
 PCTreeWidget::~PCTreeWidget()
 {
     Logger::getInstance()->debug("PCTreeWidget::~PCTreeWidget()");
-    std::string path = QDir::homePath().toStdString() + "/.config/lmicc_computers.xml";
+    String path = QDir::homePath() + "/.config/lmicc_computers.xml";
     saveAllPcs(path);
     delete m_ui;
     delete m_worker;
@@ -114,13 +114,13 @@ QTreeWidget *PCTreeWidget::getTree()
     return m_ui->tree;
 }
 
-QTreeWidgetItem *PCTreeWidget::topLevelNode(std::string item_name)
+QTreeWidgetItem *PCTreeWidget::topLevelNode(String item_name)
 {
-    Logger::getInstance()->debug("PCTreeWidget::topLevelNode(std::string item_name)");
+    Logger::getInstance()->debug("PCTreeWidget::topLevelNode(String item_name)");
     QTreeWidgetItem *node;
     if (!(node = findTopLevelNode(item_name))) {
         node = new QTreeWidgetItem(m_ui->tree);
-        node->setText(0, item_name.c_str());
+        node->setText(0, item_name);
         node->setFlags(Qt::ItemIsEnabled | Qt::ItemIsDropEnabled);
         m_ui->tree->sortByColumn(
             0,
@@ -180,16 +180,16 @@ void PCTreeWidget::setTimeSec(int time_sec)
     m_time_sec = time_sec * 1000;
 }
 
-bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text, QTreeWidgetItem *item)
+bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, String text, QTreeWidgetItem *item)
 {
-    Logger::getInstance()->debug("PCTreeWidget::parentContainsItem(TreeWidgetItem *parent, std::string text)");
+    Logger::getInstance()->debug("PCTreeWidget::parentContainsItem(TreeWidgetItem *parent, String text)");
     for (int i = 0; i < parent->childCount(); i++) {
         TreeWidgetItem *check_item = (TreeWidgetItem *) parent->child(i);
         if (item && check_item == item)
             continue;
-        std::string ipv4 = check_item->getIpv4().empty() ? "N/A" : check_item->getIpv4();
-        std::string ipv6 = check_item->getIpv6().empty() ? "N/A" : check_item->getIpv6();
-        std::string domain = check_item->getName().empty() ? "N/A" : check_item->getName();
+        String ipv4 = check_item->getIpv4().empty() ? "N/A" : check_item->getIpv4();
+        String ipv6 = check_item->getIpv6().empty() ? "N/A" : check_item->getIpv6();
+        String domain = check_item->getName().empty() ? "N/A" : check_item->getName();
         if (ipv4 == text || ipv6 == text || domain == text) {
             return true;
         }
@@ -198,16 +198,16 @@ bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text,
     return false;
 }
 
-int PCTreeWidget::topLevelNodeCount(std::string item_name)
+int PCTreeWidget::topLevelNodeCount(String item_name)
 {
-    Logger::getInstance()->debug("PCTreeWidget::topLevelNodeCount(std::string item_name)");
+    Logger::getInstance()->debug("PCTreeWidget::topLevelNodeCount(String item_name)");
     int cnt = 0;
     TreeWidgetItem *tmp;
     for (int i = 0; i < m_ui->tree->topLevelItemCount(); i++) {
         tmp = (TreeWidgetItem *) m_ui->tree->topLevelItem(i);
         if (item_name.empty()) {
             cnt++;
-        } else if (tmp != NULL && tmp->text(0).toStdString() == item_name) {
+        } else if (tmp != NULL && String(tmp->text(0)) == item_name) {
             cnt++;
         }
     }
@@ -215,9 +215,9 @@ int PCTreeWidget::topLevelNodeCount(std::string item_name)
     return cnt;
 }
 
-std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)
+String PCTreeWidget::getHostName(String &ip, int &ai_family)
 {
-    Logger::getInstance()->debug("PCTreeWidget::getHostName(std::string &ip, int &ai_family)");
+    Logger::getInstance()->debug("PCTreeWidget::getHostName(String &ip, int &ai_family)");
     struct addrinfo hints;
     struct addrinfo *result;
     struct sockaddr_in sa4;
@@ -233,7 +233,7 @@ std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)
     sa6.sin6_family = AF_INET6;
 
     int err;
-    if ((err = getaddrinfo(ip.c_str(), NULL, &hints, &result)) != 0) {
+    if ((err = getaddrinfo(ip, NULL, &hints, &result)) != 0) {
         switch (err) {
         case EAI_FAIL:
         case EAI_AGAIN:
@@ -246,7 +246,7 @@ std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)
 
     ai_family = result->ai_family;
 
-    if ((err = inet_pton(result->ai_family, ip.c_str(),
+    if ((err = inet_pton(result->ai_family, ip,
                          ai_family == AF_INET ? (void *) &sa4.sin_addr : (void *) &sa6.sin6_addr)) != 1) {
         Logger::getInstance()->error(gai_strerror(err));
         return "";
@@ -265,9 +265,9 @@ std::string PCTreeWidget::getHostName(std::string &ip, int &ai_family)
     return h->h_name;
 }
 
-TreeWidgetItem *PCTreeWidget::addPcToTree(std::string parent, std::string text)
+TreeWidgetItem *PCTreeWidget::addPcToTree(String parent, String text)
 {
-    Logger::getInstance()->debug("PCTreeWidget::addPcToTree(std::string parent, std::string text)");
+    Logger::getInstance()->debug("PCTreeWidget::addPcToTree(String parent, String text)");
 
     QTreeWidgetItem *parentItem = topLevelNode(parent);
 
@@ -283,7 +283,7 @@ TreeWidgetItem *PCTreeWidget::addPcToTree(std::string parent, std::string text)
         child->setIcon(0, QIcon(":/computer.png"));
 
         if (text != "") {
-            child->setText(0, text.c_str());
+            child->setText(0, text);
             child->setId(text);
         }
         m_data_of_item_changed = true;
@@ -294,13 +294,13 @@ TreeWidgetItem *PCTreeWidget::addPcToTree(std::string parent, std::string text)
     return NULL;
 }
 
-TreeWidgetItem *PCTreeWidget::findTopLevelNode(std::string item_name)
+TreeWidgetItem *PCTreeWidget::findTopLevelNode(String item_name)
 {
-    Logger::getInstance()->debug("PCTreeWidget::findTopLevelNode(std::string item_name)");
+    Logger::getInstance()->debug("PCTreeWidget::findTopLevelNode(String item_name)");
     TreeWidgetItem *tmp;
     for (int i = 0; i < m_ui->tree->topLevelItemCount(); i++) {
         tmp = (TreeWidgetItem *) m_ui->tree->topLevelItem(i);
-        if (tmp != NULL && tmp->text(0).toStdString() == item_name) {
+        if (tmp != NULL && String(tmp->text(0)) == item_name) {
             return tmp;
         }
     }
@@ -314,18 +314,18 @@ void PCTreeWidget::changeDisplayedName(TreeWidgetItem *item)
         && item->getName() != "N/A"
         && (item->getName() != item->getIpv4()
             && item->getName() != item->getIpv6())) {
-        std::string name = item->getName()
+        String name = item->getName()
                            + " ("
                            + (item->getIpv4().empty() ? item->getIpv6() : item->getIpv4())
                            + ")";
-        item->setText(0, name.c_str());
+        item->setText(0, name);
     }
 }
 
-void PCTreeWidget::getIp(std::string &name, std::string &ipv4,
-                         std::string &ipv6)
+void PCTreeWidget::getIp(String &name, String &ipv4,
+                         String &ipv6)
 {
-    Logger::getInstance()->debug("PCTreeWidget::getIp(std::string &name, std::string &ipv4, std::string &ipv6)");
+    Logger::getInstance()->debug("PCTreeWidget::getIp(String &name, String &ipv4, String &ipv6)");
     struct addrinfo hints;
     struct addrinfo *result;
     void *ptr = NULL;
@@ -337,7 +337,7 @@ void PCTreeWidget::getIp(std::string &name, std::string &ipv4,
     hints.ai_flags = 0;
     hints.ai_protocol = 0;
 
-    if (getaddrinfo(name.c_str(), NULL, &hints, &result) != 0) {
+    if (getaddrinfo(name, NULL, &hints, &result) != 0) {
         return;
     }
 
@@ -419,23 +419,23 @@ void PCTreeWidget::initContextMenu()
         SLOT(deleteGroup()));
 }
 
-void PCTreeWidget::loadPcs(std::string filename)
+void PCTreeWidget::loadPcs(String filename)
 {
-    Logger::getInstance()->debug("PCTreeWidget::loadPcs(std::string filename)");
-    QFile file(filename.c_str());
+    Logger::getInstance()->debug("PCTreeWidget::loadPcs(String filename)");
+    QFile file(filename);
     if (!file.exists()) {
         return;
     }
 
     if (!file.open(QIODevice::ReadOnly)) {
         Logger::getInstance()->error("Failed to read from " + filename + ", error: " +
-                                     file.errorString().toStdString(), false);
+                                     file.errorString(), false);
         return;
     }
 
     QXmlStreamReader in(&file);
     if (in.hasError()) {
-        Logger::getInstance()->error(in.errorString().toStdString(), false);
+        Logger::getInstance()->error(in.errorString(), false);
         return;
     }
 
@@ -450,26 +450,26 @@ void PCTreeWidget::loadPcs(std::string filename)
                 continue;
             } else if (in.name() == "group") {
                 QXmlStreamAttributes attr = in.attributes();
-                std::string name = attr.value("name").toString().toStdString();
+                String name = attr.value("name").toString();
                 if (name.empty()) {
                     continue;
                 }
                 parent = topLevelNode(name);
             } else if (in.name() == "computer") {
                 QXmlStreamAttributes attr = in.attributes();
-                std::string id = attr.value("id").toString().toStdString();
+                String id = attr.value("id").toString();
                 if (id.empty()) {
                     continue;
                 }
 
-                TreeWidgetItem *item = addPcToTree(parent->text(0).toStdString(), id);
+                TreeWidgetItem *item = addPcToTree(parent->text(0), id);
                 m_data_of_item_changed = false;
                 if (item != NULL && parent != NULL) {
-                    item->setIpv4(attr.value("ipv4").toString().toStdString());
-                    item->setIpv6(attr.value("ipv6").toString().toStdString());
-                    item->setName(attr.value("domain").toString().toStdString());
+                    item->setIpv4(attr.value("ipv4").toString());
+                    item->setIpv6(attr.value("ipv6").toString());
+                    item->setName(attr.value("domain").toString());
                     changeDisplayedName(item);
-                    item->setMac(attr.value("mac").toString().toStdString());
+                    item->setMac(attr.value("mac").toString());
                     if (attr.value("valid").toString() == "false") {
                         item->setValid(NOT_VALID);
                         item->setBackgroundColor(0, QColor("red"));
@@ -485,20 +485,20 @@ void PCTreeWidget::loadPcs(std::string filename)
         }
     }
     if (in.hasError()) {
-        Logger::getInstance()->error(in.errorString().toStdString(), false);
+        Logger::getInstance()->error(in.errorString(), false);
         return;
     }
 
     file.close();
 }
 
-void PCTreeWidget::saveAllPcs(std::string filename)
+void PCTreeWidget::saveAllPcs(String filename)
 {
-    Logger::getInstance()->debug("PCTreeWidget::saveAllPcs(std::string filename)");
-    QFile file(filename.c_str());
+    Logger::getInstance()->debug("PCTreeWidget::saveAllPcs(String filename)");
+    QFile file(filename);
     if (!file.open(QIODevice::WriteOnly)) {
         Logger::getInstance()->error("Failed to write to " + filename + ", error: " +
-                                     file.errorString().toStdString(), false);
+                                     file.errorString(), false);
         return;
     }
 
@@ -515,17 +515,17 @@ void PCTreeWidget::saveAllPcs(std::string filename)
         for (int j = 0; j < parent->childCount(); j++) {
             TreeWidgetItem *item = (TreeWidgetItem *) parent->child(j);
             out.writeStartElement("computer");
-            out.writeAttribute("id", item->getId().c_str());
-            out.writeAttribute("ipv4", item->getIpv4().c_str());
-            out.writeAttribute("ipv6", item->getIpv6().c_str());
-            out.writeAttribute("domain", item->getName().c_str());
-            out.writeAttribute("mac", item->getMac().c_str());
+            out.writeAttribute("id", item->getId());
+            out.writeAttribute("ipv4", item->getIpv4());
+            out.writeAttribute("ipv6", item->getIpv6());
+            out.writeAttribute("domain", item->getName());
+            out.writeAttribute("mac", item->getMac());
 
-            std::string valid = "unknown";
+            String valid = "unknown";
             if (item->getValid() != UNKNOWN) {
                 valid = item->getValid() == NOT_VALID ? "false" : "true";
             }
-            out.writeAttribute("valid", valid.c_str());
+            out.writeAttribute("valid", valid);
 
             out.writeEndElement();
         }
@@ -565,6 +565,7 @@ void PCTreeWidget::onAddButtonClicked()
     if (!simple_addition) {
         if (!dialog.exec()) {
             m_emit_signal = true;
+            m_new_item = true;
             return;
         }
     }
@@ -575,6 +576,8 @@ void PCTreeWidget::onAddButtonClicked()
         child->setSelected(true);
         if (simple_addition) {
             m_ui->tree->editItem(child, 0);
+        } else {
+            validate(child, 0);
         }
     }
 }
@@ -720,7 +723,7 @@ void PCTreeWidget::showSystemDetails()
     }
     m_dialog.reset();
 
-    std::string tmp;
+    String tmp;
     if (!(tmp = m_item_to_show->getIpv4()).empty()) {
         m_dialog.setIpv4(tmp);
     }
@@ -761,7 +764,7 @@ void PCTreeWidget::validate(QTreeWidgetItem *item, int column)
     TreeWidgetItem *parent = (TreeWidgetItem *) item->parent();
     if (parent == NULL) {
         if (item->text(0).size() == 0
-            || topLevelNodeCount(item->text(0).toStdString()) > 1) {
+            || topLevelNodeCount(item->text(0)) > 1) {
             m_ui->tree->takeTopLevelItem(m_ui->tree->indexOfTopLevelItem(item));
         } else {
 
@@ -774,7 +777,7 @@ void PCTreeWidget::validate(QTreeWidgetItem *item, int column)
     m_ui->tree->sortByColumn(0, Qt::AscendingOrder);
 
     m_data_of_item_changed = false;
-    std::string text = tree_item->text(column).toStdString();
+    String text = tree_item->text(column);
     if (text.empty() || parentContainsItem(parent, text)) {
         parent->takeChild(parent->indexOfChild(tree_item));
         m_emit_signal = true;
@@ -786,10 +789,10 @@ void PCTreeWidget::validate(QTreeWidgetItem *item, int column)
     }
 
     bool result = false;
-    if (QRegExp(PATTERN_TYPE_FQDN).exactMatch(tree_item->getId().c_str())) {
+    if (QRegExp(PATTERN_TYPE_FQDN).exactMatch(tree_item->getId())) {
         tree_item->setName(tree_item->getId());
         result = true;
-        std::string ipv4, ipv6;
+        String ipv4, ipv6;
         getIp(text, ipv4, ipv6);
         if (!ipv4.empty()) {
             tree_item->setIpv4(ipv4);
@@ -800,8 +803,8 @@ void PCTreeWidget::validate(QTreeWidgetItem *item, int column)
         }
     } else {
         int ai_family;
-        std::string ipv4, ipv6;
-        std::string hostname = getHostName(text, ai_family);
+        String ipv4, ipv6;
+        String hostname = getHostName(text, ai_family);
 
         if (ai_family == AF_INET) {
             tree_item->setIpv4(ipv4 = tree_item->getId());

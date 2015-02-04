@@ -22,6 +22,8 @@
 #ifndef NEWUSERDIALOG_H
 #define NEWUSERDIALOG_H
 
+#include "lmi_string.h"
+
 #include <QDialog>
 
 namespace Ui
@@ -68,27 +70,27 @@ public:
      * @brief Getter
      * @return description of user
      */
-    std::string getGecos();
+    String getGecos();
     /**
      * @brief Getter
      * @return home directory of user
      */
-    std::string getHomeDir();
+    String getHomeDir();
     /**
      * @brief Getter
      * @return name of user
      */
-    std::string getName();
+    String getName();
     /**
      * @brief Getter
      * @return password
      */
-    std::string getPasswd();
+    String getPasswd();
     /**
      * @brief Getter
      * @return what shell user uses
      */
-    std::string getShell();
+    String getShell();
 
 private:
     Ui::NewUserDialog *m_ui;

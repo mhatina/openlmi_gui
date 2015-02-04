@@ -46,7 +46,7 @@ const button buttons[] = {
     {"remove_button", ":/remove.png", "Remove", "", false, false},
     {"discover_button", ":/discover.png", "Discover", "", false, false},
     {"", "", "", "", true, false},
-    {"refresh_button", ":/refresh.png", "Refresh\nCtrl: Stop refresh", "Ctrl+R", true, false},
+    {"refresh_button", ":/refresh.png", "Refresh\nCtrl: Stop refresh", "", true, false},
     {"save_button", ":/save.png", "Save\nCtrl: Save as...", "", true, false},
     {"apply_button", ":/apply.png", "Apply", "", true, false},
     {"", "", "", "", true, false},

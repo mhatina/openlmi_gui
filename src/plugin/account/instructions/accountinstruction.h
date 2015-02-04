@@ -32,7 +32,7 @@ class AccountInstruction : public IInstruction
 {
 protected:
     CIMClient *m_client; /**< @brief see CIMClient */
-    std::string m_name; /**< @brief Name of user */
+    String m_name; /**< @brief Name of user */
 
     /**
      * @brief Getter
@@ -48,7 +48,7 @@ public:
      * @param name -- name of user
      * @param value -- new property value
      */
-    AccountInstruction(CIMClient *client, std::string instruction, std::string name,
+    AccountInstruction(CIMClient *client, String instruction, String name,
                        Pegasus::CIMValue value);
     /**
      * @brief Constructor
@@ -56,13 +56,13 @@ public:
      * @param instruction -- name of instruction
      * @param name -- name of user
      */
-    AccountInstruction(CIMClient *client, std::string instruction,
-                       std::string name);
+    AccountInstruction(CIMClient *client, String instruction,
+                       String name);
     /**
      * @brief Destructor
      */
     ~AccountInstruction();
-    std::string getUserName();
+    String getUserName();
 };
 
 #endif // ACCOUNTINSTRUCTION_H

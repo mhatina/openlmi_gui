@@ -24,20 +24,21 @@
 
 #include "instructions/instruction.h"
 #include "cimclient.h"
+#include "lmi_string.h"
 
 class SoftwareInstruction : public IInstruction
 {
 protected:
     CIMClient *m_client;
     Pegasus::CIMInstance m_instance;
-    std::string m_name;
+    String m_name;
 
 public:
-    SoftwareInstruction(CIMClient *client, std::string instruction,
+    SoftwareInstruction(CIMClient *client, String instruction,
                         Pegasus::CIMInstance instance);
 
     Pegasus::CIMValue invokeInstallMethod(Pegasus::Uint16 install_option);
-    std::string getName();
+    String getName();
 };
 
 #endif // SOFTWAREINSTRUCTION_H

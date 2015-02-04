@@ -43,7 +43,7 @@ public:
      */
     NewGroupInstruction(CIMClient *client, NewGroupDialog *dialog);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

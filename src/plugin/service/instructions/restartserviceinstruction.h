@@ -23,6 +23,7 @@
 #define RESTARTSERVICEINSTRUCTION_H
 
 #include "serviceinstruction.h"
+#include "lmi_string.h"
 
 /**
  * @brief The RestartServiceInstruction class
@@ -37,9 +38,9 @@ public:
      * @param client -- see CIMClient
      * @param name -- name of service
      */
-    RestartServiceInstruction(CIMClient *client, std::string name);
+    RestartServiceInstruction(CIMClient *client, String name);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

@@ -22,6 +22,8 @@
 #ifndef NEWGROUPDIALOG_H
 #define NEWGROUPDIALOG_H
 
+#include "lmi_string.h"
+
 #include <QDialog>
 
 namespace Ui
@@ -58,7 +60,7 @@ public:
      * @brief Getter
      * @return name of group
      */
-    std::string getName();
+    String getName();
 
 private:
     Ui::NewGroupDialog *m_ui;

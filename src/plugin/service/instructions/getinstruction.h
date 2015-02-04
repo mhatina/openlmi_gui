@@ -23,6 +23,7 @@
 #define GETINSTRUCTION_H
 
 #include "instructions/instruction.h"
+#include "lmi_string.h"
 
 /**
  * @brief The GetInstruction class
@@ -32,16 +33,16 @@
 class GetInstruction : public IInstruction
 {
 private:
-    std::string m_name;
+    String m_name;
 
 public:
     /**
      * @brief Constructor
      * @param name -- name of service
      */
-    GetInstruction(std::string name);
+    GetInstruction(String name);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

@@ -36,13 +36,18 @@ OBJECTS_DIR     =       objs
 HEADERS         +=      logicalfile.h \
                         ../../ui/plugin.h \
                         ../../ui/instructions/connectinstruction.h \
-                        ../../ui/instructions/instruction.h
+                        ../../ui/instructions/instruction.h \
+                        filetree.h \
+                        filebrowser.h
 
 SOURCES         +=      logicalfile.cpp \
                         ../../ui/plugin.cpp \
                         ../../ui/instructions/connectinstruction.cpp \
                         ../../ui/instructions/instruction.cpp \
-                        ../../ui/cimvalue.cpp
+                        ../../ui/cimvalue.cpp \
+                        ../../ui/cimdatetimeconv.cpp \
+                        filetree.cpp \
+                        filebrowser.cpp
 
 FORMS           +=      logicalfile.ui
 

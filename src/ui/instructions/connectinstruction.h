@@ -20,6 +20,7 @@
 
 #include "instruction.h"
 #include "cimclient.h"
+#include "lmi_string.h"
 
 /**
  * @brief The ConnectInstruction class
@@ -29,8 +30,8 @@
 class ConnectInstruction : public IInstruction
 {
 private:
-    std::string m_hostname;
-    std::string m_username;
+    String m_hostname;
+    String m_username;
 
 public:
     /**
@@ -38,9 +39,9 @@ public:
      * @param hostname
      * @param username
      */
-    ConnectInstruction(const std::string &hostname, const std::string &username);
+    ConnectInstruction(const String &hostname, const String &username);
     IInstruction::Subject getSubject();
-    std::string toString();
+    String toString();
     void run();
 };
 

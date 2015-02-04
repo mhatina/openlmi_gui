@@ -26,12 +26,14 @@ TEMPLATE        =       lib
 INCLUDEPATH     +=      ../ui
 
 DEFINES         +=      LOGGER_LIBRARY
+DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
 
 UI_DIR          =       uics
 MOC_DIR         =       mocs
 OBJECTS_DIR     =       objs
 
-SOURCES         +=      logger.cpp
+SOURCES         +=      logger.cpp \
+    ../ui/lmi_string.cpp
 
 HEADERS         +=      logger.h \
                         logger_global.h

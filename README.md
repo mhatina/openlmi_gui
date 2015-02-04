@@ -19,8 +19,13 @@ LMI Command Center has several dependencies:
 - boost-thread (1.54.0)
 - boost-devel (1.54.0)
 - openslp (1.2.1)
+- openslp-devel (1.2.1)
 - gnome-keyring (3.10.0)
-- build tools (autoconf, automake, make, qmake, ...)
+- libgnome-keyring-devel (3.10.0)
+- qt (4.8.5)
+- qt-devel (4.8.5) 
+- qtsingleapplication-devel (2.6.1)
+- qscintilla (2.7.2)
 
 To install the module, follow these steps:
 

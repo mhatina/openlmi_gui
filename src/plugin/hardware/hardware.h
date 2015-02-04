@@ -22,6 +22,7 @@
 #ifndef HARDWARE_H
 #define HARDWARE_H
 
+#include "lmi_string.h"
 #include "plugin.h"
 
 #include <QtPlugin>
@@ -130,7 +131,7 @@ class HardwarePlugin : public Engine::IPlugin
 
 private:
     bool m_changes_enabled;
-    std::map<std::string, std::string> m_values;
+    std::map<String, String> m_values;
     std::vector<Pegasus::CIMInstance> m_battery;
     std::vector<Pegasus::CIMInstance> m_chassis;    
     std::vector<Pegasus::CIMInstance> m_pci_bridge;
@@ -141,9 +142,9 @@ private:
     std::vector<std::vector<Pegasus::CIMInstance> > m_processor;
     Ui::HardwarePlugin *m_ui;
 
-    QTreeWidgetItem *findTopLevelNode(std::string item_name);
-    QTreeWidgetItem *topLevelNode(std::string item_name);
-    std::string decodeValues(Pegasus::CIMProperty property);
+    QTreeWidgetItem *findTopLevelNode(String item_name);
+    QTreeWidgetItem *topLevelNode(String item_name);
+    String decodeValues(Pegasus::CIMProperty property);
     void clearComponentInfo();
     void fillBattery(Pegasus::CIMInstance battery);
     void fillChassis(Pegasus::CIMInstance chassis);
@@ -157,9 +158,9 @@ private:
 public:
     explicit HardwarePlugin();
     ~HardwarePlugin();
-    virtual std::string getInstructionText();
-    virtual std::string getLabel();
-    virtual std::string getRefreshInfo();
+    virtual String getInstructionText();
+    virtual String getLabel();
+    virtual String getRefreshInfo();
     virtual void clear();
     virtual void fillTab(std::vector<void *> *data);
     virtual void getData(std::vector<void *> *data);

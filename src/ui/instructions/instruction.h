@@ -18,6 +18,8 @@
 #ifndef INSTRUCTION_H
 #define INSTRUCTION_H
 
+#include "lmi_string.h"
+
 #include <Pegasus/Common/CIMValue.h>
 #include <QObject>
 
@@ -32,7 +34,7 @@ class IInstruction : public QObject
 
 protected:
     Pegasus::CIMValue m_value;
-    std::string m_instruction;
+    String m_instruction;
 
 public:
 
@@ -54,14 +56,14 @@ public:
      * @param instruction -- name of instruction
      * @param value -- value of change
      */
-    IInstruction(std::string instruction, Pegasus::CIMValue value);
+    IInstruction(String instruction, Pegasus::CIMValue value);
     /**
      * @brief Constructor
      * @param instruction -- name of instruction
      */
-    IInstruction(std::string instruction);
+    IInstruction(String instruction);
     Pegasus::CIMValue getValue();
-    std::string getInstructionName();
+    String getInstructionName();
     /**
      * @brief Virtual destructor
      */
@@ -75,7 +77,7 @@ public:
      * @brief toString
      * @return LMIShell code representation of instruction
      */
-    virtual std::string toString() = 0;
+    virtual String toString() = 0;
     /**
      * @brief apply the change
      */

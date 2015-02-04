@@ -29,21 +29,21 @@
 #include <Pegasus/Common/Array.h>
 #include <sstream>
 
-std::string OverviewPlugin::decode(Pegasus::CIMProperty property)
+String OverviewPlugin::decode(Pegasus::CIMProperty property)
 {
     Pegasus::CIMValue value = property.getValue();
     if (property.getName().equal(Pegasus::CIMName("PowerState"))) {
-        return power_state_values[atoi(CIMValue::to_std_string(value).c_str())];
+        return power_state_values[atoi(CIMValue::to_string(value))];
     } else if (property.getName().equal(Pegasus::CIMName("SyslogSeverity"))) {
-        return syslog_severity_values[atoi(CIMValue::to_std_string(value).c_str())];
+        return syslog_severity_values[atoi(CIMValue::to_string(value))];
     } else if (property.getName().equal(Pegasus::CIMName("PerceivedSeverity"))) {
-        return perceived_severity_values[atoi(CIMValue::to_std_string(value).c_str())];
+        return perceived_severity_values[atoi(CIMValue::to_string(value))];
     }
 
     return "";
 }
 
-std::string OverviewPlugin::getTime()
+String OverviewPlugin::getTime()
 {
     time_t rawtime;
     struct tm *timeinfo;
@@ -57,7 +57,7 @@ std::string OverviewPlugin::getTime()
     return buffer;
 }
 
-void OverviewPlugin::fillLogBox(std::string filter)
+void OverviewPlugin::fillLogBox(String filter)
 {
     m_log_mutex->lock();
     unsigned int cnt = m_logs.size();
@@ -69,7 +69,7 @@ void OverviewPlugin::fillLogBox(std::string filter)
         }
         boost::this_thread::interruption_point();
 
-        std::string title;
+        String title;
         for (int j = 0; ; j++) {
             m_log_mutex->lock();
             if (m_logs.empty()) {
@@ -99,9 +99,9 @@ void OverviewPlugin::fillLogBox(std::string filter)
 
         boost::this_thread::interruption_point();
         m_log_mutex->lock();
-        std::string log = CIMValue::get_property_value(m_logs[i], "DataFormat");
-        if (filter.empty() || log.find(filter) != std::string::npos ||
-            title.find(filter) != std::string::npos) {
+        String log = CIMValue::get_property_value(m_logs[i], "DataFormat");
+        if (filter.empty() || log.find(filter) != String::npos ||
+            title.find(filter) != String::npos) {
             emit addLog(title, log);
         }
         m_log_mutex->unlock();
@@ -129,9 +129,9 @@ OverviewPlugin::OverviewPlugin() :
         SLOT(filterChanged(QString)));
     connect(
         this,
-        SIGNAL(addLog(std::string, std::string)),
+        SIGNAL(addLog(String, String)),
         this,
-        SLOT(addLogEntry(std::string, std::string)));
+        SLOT(addLogEntry(String, String)));
     connect(
         m_ui->add_new_log_button,
         SIGNAL(clicked()),
@@ -144,7 +144,7 @@ OverviewPlugin::~OverviewPlugin()
     delete m_ui;
 }
 
-void OverviewPlugin::addLogEntry(std::string label, std::string text)
+void OverviewPlugin::addLogEntry(String label, String text)
 {
     if (!m_ui->content->layout()) {
         m_ui->content->setLayout(new QGridLayout());
@@ -185,7 +185,7 @@ void OverviewPlugin::showLogSeverity()
     }
 }
 
-std::string OverviewPlugin::getInstructionText()
+String OverviewPlugin::getInstructionText()
 {
     std::stringstream ss;
     for (unsigned int i = 0; i < m_instructions.size(); i++) {
@@ -194,12 +194,12 @@ std::string OverviewPlugin::getInstructionText()
     return ss.str();
 }
 
-std::string OverviewPlugin::getLabel()
+String OverviewPlugin::getLabel()
 {
     return "Overview";
 }
 
-std::string OverviewPlugin::getRefreshInfo()
+String OverviewPlugin::getRefreshInfo()
 {
     std::stringstream ss;
     ss << getLabel() << ": ";
@@ -257,7 +257,7 @@ void OverviewPlugin::getData(std::vector<void *> *data)
 
         for (unsigned int i = 0; i < provider.size(); i++) {
             m_journald_available = CIMValue::get_property_value(provider[i],
-                                   "RegisteredName").find("Journald") != std::string::npos;
+                                   "RegisteredName").find("Journald") != String::npos;
             if (m_journald_available) {
                 break;
             }
@@ -336,14 +336,14 @@ void OverviewPlugin::getData(std::vector<void *> *data)
             return;
         }
 
-        std::string time = getTime();
-        std::string query = "Select * FROM LMI_JournalLogRecord WHERE MessageTimestamp > \"";
+        String time = getTime();
+        String query = "Select * FROM LMI_JournalLogRecord WHERE MessageTimestamp > \"";
         query += time + "\"";
         Pegasus::Array<Pegasus::CIMObject> log =
                 execQuery(
                     Pegasus::CIMNamespaceName("root/cimv2"),
                     Pegasus::String("WQL"),
-                    Pegasus::String(query.c_str())
+                    query
                     );
 
         for (unsigned int i = 0; i < log.size(); i++) {
@@ -354,7 +354,7 @@ void OverviewPlugin::getData(std::vector<void *> *data)
         }
 
     } catch (Pegasus::Exception &ex) {
-        emit doneFetchingData(NULL, false, CIMValue::to_std_string(ex.getMessage()));
+        emit doneFetchingData(NULL, false, CIMValue::to_string(ex.getMessage()));
         return;
     }
 
@@ -371,12 +371,11 @@ void OverviewPlugin::fillTab(std::vector<void *> *data)
             Pegasus::CIMInstance instance = *((Pegasus::CIMInstance *) (*data)[i]);
 
             if (CIMValue::get_property_value(instance, "CreationClassName") == "PG_ComputerSystem") {
-                m_ui->name->setText(CIMValue::get_property_value(instance, "Name").c_str());
-                m_ui->description->setText(CIMValue::get_property_value(instance,
-                                           "Description").c_str());
+                m_ui->name->setText(CIMValue::get_property_value(instance, "Name"));
+                m_ui->description->setText(CIMValue::get_property_value(instance, "Description"));
 
                 Pegasus::Uint32 prop_ind = instance.findProperty("PowerState");
-                m_ui->power_state->setText(decode(instance.getProperty(prop_ind)).c_str());
+                m_ui->power_state->setText(decode(instance.getProperty(prop_ind)));
             } else if (CIMValue::get_property_value(instance,
                                                     "CreationClassName") == "LMI_Battery") {
                 if (!m_ui->power_box->layout()) {
@@ -392,8 +391,10 @@ void OverviewPlugin::fillTab(std::vector<void *> *data)
 
                 std::stringstream title;
                 title << "Battery #" << battery_cnt << ":";
-                std::string text = CIMValue::get_property_value(instance,
+                String text = CIMValue::get_property_value(instance,
                                    "EstimatedChargeRemaining");
+                // charge is 100 - EstimatedChargeRemaining
+
                 m_ui->power_box->layout()->addWidget(new LabeledLabel(
                         title.str(),
                         (text.empty() ? "N/A" : text + "%")));
@@ -415,8 +416,8 @@ void OverviewPlugin::fillTab(std::vector<void *> *data)
                     m_ui->network_box->layout()->setContentsMargins(2, 9, 2, 9);
                 }
 
-                std::string title = "IPv4";
-                std::string ip = CIMValue::get_property_value(instance, "IPv4Address");
+                String title = "IPv4";
+                String ip = CIMValue::get_property_value(instance, "IPv4Address");
                 if (ip.empty()) {
                     ip = CIMValue::get_property_value(instance, "IPv6Address");
                     title = "IPv6";
@@ -431,7 +432,7 @@ void OverviewPlugin::fillTab(std::vector<void *> *data)
         }
 
         if (!m_battery_available) {
-            std::string status = "A/C";
+            String status = "A/C";
             if (!m_ui->power_box->layout()) {
                 m_ui->power_box->setLayout(new QFormLayout());
                 m_ui->power_box->layout()->setContentsMargins(2, 9, 2, 9);
@@ -442,7 +443,7 @@ void OverviewPlugin::fillTab(std::vector<void *> *data)
             m_battery_available = true;
         }
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
         return;
     }
 

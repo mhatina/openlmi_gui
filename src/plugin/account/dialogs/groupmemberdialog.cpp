@@ -39,8 +39,8 @@ GroupMemberDialog::~GroupMemberDialog()
     delete m_ui;
 }
 
-void GroupMemberDialog::getUsers(std::vector<std::string> &available_users,
-                                 std::vector<std::string> &selected)
+void GroupMemberDialog::getUsers(std::vector<String> &available_users,
+                                 std::vector<String> &selected)
 {
     GroupMemberDialog dialog;
     for (unsigned int i = 0; i < available_users.size(); i++) {
@@ -51,7 +51,7 @@ void GroupMemberDialog::getUsers(std::vector<std::string> &available_users,
     if (dialog.exec()) {
         QList<QListWidgetItem *> list = dialog.m_ui->list->selectedItems();
         for (int i = 0; i < list.size(); i++) {
-            selected.push_back(list[i]->text().toStdString());
+            selected.push_back(list[i]->text());
         }
     }
 }

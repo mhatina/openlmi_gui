@@ -45,24 +45,25 @@
 #include <QFileDialog>
 #include <QMenu>
 
-std::string AccountPlugin::convertNameToID(std::string name)
+String AccountPlugin::convertNameToID(String name)
 {
-    std::string id;
+    String id;
 
     for (int i = 0; i < m_user_table->rowCount(); i++) {
-        if (m_user_table->item(i, 1)->text().toStdString() == name) {
-            id = m_user_table->item(i, 0)->text().toStdString();
+        String item = m_user_table->item(i, 1)->text();
+        if (item == name) {
+            id = m_user_table->item(i, 0)->text();
             break;
         }
     }
     return id;
 }
 
-int AccountPlugin::findGroupIndex(std::string name)
+int AccountPlugin::findGroupIndex(String name)
 {
     int group_cnt = m_group_table->rowCount();
     for (int i = 0; i < group_cnt; i++) {
-        std::string tmp = m_group_table->item(i, 1)->text().toStdString();
+        String tmp = m_group_table->item(i, 1)->text();
         if (tmp == name) {
             return i;
         }
@@ -206,7 +207,7 @@ AccountPlugin::~AccountPlugin()
     delete m_ui;
 }
 
-std::string AccountPlugin::getInstructionText()
+String AccountPlugin::getInstructionText()
 {
     if (m_instructions.empty()) {
         return "";
@@ -235,12 +236,12 @@ std::string AccountPlugin::getInstructionText()
     return account.str() + "\n" + group.str();
 }
 
-std::string AccountPlugin::getLabel()
+String AccountPlugin::getLabel()
 {
     return "Account";
 }
 
-std::string AccountPlugin::getRefreshInfo()
+String AccountPlugin::getRefreshInfo()
 {
     std::stringstream ss;
     ss << getLabel() << ": " << m_user_instances.size() << " user(s)";
@@ -260,8 +261,8 @@ void AccountPlugin::getData(std::vector<void *> *data)
     Pegasus::Array<Pegasus::CIMObject> users_obj;
     Pegasus::Array<Pegasus::CIMInstance> groups;
 
-    std::string filter_user = m_ui->filter_user_line->text().toStdString();
-    std::string filter_group = m_ui->filter_group_line->text().toStdString();
+    String filter_user = m_ui->filter_user_line->text();
+    String filter_group = m_ui->filter_group_line->text();
     try {
         if (!m_account_refreshed && m_ui->tab_widget->currentWidget()->children()[1] == m_user_table) {
             m_user_instances.clear();
@@ -278,7 +279,7 @@ void AccountPlugin::getData(std::vector<void *> *data)
                 Pegasus::CIMInstance *instance;
                 if (!filter_user.empty()) {
                     instance = new Pegasus::CIMInstance(users[i]);
-                    if (CIMValue::get_property_value(*instance, "Name").find(filter_user) == std::string::npos) {
+                    if (CIMValue::get_property_value(*instance, "Name").find(filter_user) == String::npos) {
                         continue;
                     }
                 } else {
@@ -289,7 +290,7 @@ void AccountPlugin::getData(std::vector<void *> *data)
                 m_user_instances.push_back(*instance);
             }
             for (unsigned int i = 0; i < users.size(); i++) {
-                std::string str_value = CIMValue::get_property_value(users[i], "Name");
+                String str_value = CIMValue::get_property_value(users[i], "Name");
                 m_users.push_back(str_value);
             }
             m_account_refreshed = true;
@@ -308,7 +309,7 @@ void AccountPlugin::getData(std::vector<void *> *data)
                 Pegasus::CIMInstance *instance;
                 if (!filter_group.empty()) {
                     instance = new Pegasus::CIMInstance(groups[i]);
-                    if (CIMValue::get_property_value(*instance, "Name").find(filter_group) == std::string::npos) {
+                    if (CIMValue::get_property_value(*instance, "Name").find(filter_group) == String::npos) {
                         continue;
                     }
                 } else {
@@ -346,8 +347,8 @@ void AccountPlugin::getData(std::vector<void *> *data)
                 users_obj = execQuery(
                                 Pegasus::CIMNamespaceName("root/cimv2"),
                                 Pegasus::String("WQL"),
-                                Pegasus::String(std::string("SELECT * FROM LMI_Account WHERE UserID = \"" +
-                                                CIMValue::to_std_string(member) + "\"").c_str())
+                                String("SELECT * FROM LMI_Account WHERE UserID = \"" +
+                                                CIMValue::to_string(member) + "\"")
                             );
 
                 unsigned pos = data->size() - 1;
@@ -360,7 +361,7 @@ void AccountPlugin::getData(std::vector<void *> *data)
             return;
         }
     } catch (Pegasus::Exception &ex) {
-        emit doneFetchingData(NULL, false, CIMValue::to_std_string(ex.getMessage()));
+        emit doneFetchingData(NULL, false, CIMValue::to_string(ex.getMessage()));
         return;
     }
 
@@ -405,18 +406,18 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
             }
 
             Pegasus::CIMInstance *instance = ((Pegasus::CIMInstance *) (*data)[i]);
-            std::string creation_class_name = CIMValue::get_property_value(*instance, "CreationClassName");
+            String creation_class_name = CIMValue::get_property_value(*instance, "CreationClassName");
 
             if (creation_class_name == "LMI_Account") {
                 int row_count = m_user_table->rowCount();
                 m_user_table->insertRow(row_count);
                 prop_cnt = sizeof(userProperties) / sizeof(userProperties[0]);
                 for (int k = 0; k < prop_cnt; k++) {
-                    std::string str_value = CIMValue::get_property_value(*instance, userProperties[k].property);
+                    String str_value = CIMValue::get_property_value(*instance, userProperties[k].property);
                     QTableWidgetItem *item =
-                        new QTableWidgetItem(str_value.c_str());
+                        new QTableWidgetItem(str_value);
                     item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-                    item->setToolTip(str_value.c_str());
+                    item->setToolTip(str_value);
                     m_user_table->setItem(
                         row_count,
                         k,
@@ -431,19 +432,19 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
 
 
                 int row_count = m_group_table->rowCount();
-                std::string group_name;
+                String group_name;
                 m_group_table->insertRow(row_count);
                 prop_cnt = sizeof(groupProperties) / sizeof(groupProperties[0]);
                 for (int k = 0; k < prop_cnt; k++) {
                     Pegasus::CIMProperty property;
-                    std::string str_value = CIMValue::get_property_value(*instance, groupProperties[k].property, &property);
+                    String str_value = CIMValue::get_property_value(*instance, groupProperties[k].property, &property);
                     if (property.getName() == "Name") {
                         group_name = str_value;
                     }
                     QTableWidgetItem *item =
-                        new QTableWidgetItem(str_value.c_str());
+                        new QTableWidgetItem(str_value);
                     item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-                    item->setToolTip(str_value.c_str());
+                    item->setToolTip(str_value);
                     m_group_table->setItem(
                         row_count,
                         k,
@@ -456,8 +457,8 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
                 }
 
                 MemberBox *box = new MemberBox(group_name);
-                connect(box, SIGNAL(add(std::string)), this, SLOT(addUserToGroup(std::string)));
-                connect(box, SIGNAL(remove(std::string)), this, SLOT(removeUserFromGroup(std::string)));
+                connect(box, SIGNAL(add(String)), this, SLOT(addUserToGroup(String)));
+                connect(box, SIGNAL(remove(String)), this, SLOT(removeUserFromGroup(String)));
                 m_group_table->setCellWidget(
                     row_count,
                     prop_cnt,
@@ -468,11 +469,11 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
                     ((std::multimap<Pegasus::String, Pegasus::CIMInstance> *) (*data)[cnt - 1]);
                 std::pair <std::multimap<Pegasus::String, Pegasus::CIMInstance>::iterator,
                     std::multimap<Pegasus::String, Pegasus::CIMInstance>::iterator> ret =
-                        members->equal_range(Pegasus::String(group_name.c_str()));
+                        members->equal_range(group_name);
 
                 for (std::multimap<Pegasus::String, Pegasus::CIMInstance>::iterator it =
                          ret.first; it != ret.second; it++) {
-                    std::string user_name = CIMValue::get_property_value(it->second, "Name");
+                    String user_name = CIMValue::get_property_value(it->second, "Name");
 
                     MemberBox *item = (MemberBox *) m_group_table->cellWidget(i, prop_cnt);
                     if (item != NULL) {
@@ -482,7 +483,7 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
             }
         }
     } catch (Pegasus::Exception &ex) {
-        Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
+        Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 
     m_user_table->sortByColumn(0, Qt::AscendingOrder);
@@ -507,7 +508,7 @@ void AccountPlugin::add()
                             m_ui->tab_widget->currentWidget()->children()[1];
     NewUserDialog *user_dialog = NULL;
     NewGroupDialog *group_dialog = NULL;
-    std::string name;
+    String name;
 
     if (current == m_user_table) {
         user_dialog = new NewUserDialog(this);
@@ -545,11 +546,7 @@ void AccountPlugin::add()
     for (int i = 0; i < current->columnCount(); i++) {
         QTableWidgetItem *item;
         if (i == 1) {
-            item = new QTableWidgetItem(
-                QString(
-                    name.c_str()
-                )
-            );
+            item = new QTableWidgetItem(name);
             item->setFlags(item_flags);
             current->setItem(
                 current->rowCount() - 1,
@@ -572,17 +569,17 @@ void AccountPlugin::add()
     m_changes_enabled = true;
 }
 
-void AccountPlugin::addUserToGroup(std::string group)
+void AccountPlugin::addUserToGroup(String group)
 {
-    std::vector<std::string> available_users;
-    std::vector<std::string> selected_users;
+    std::vector<String> available_users;
+    std::vector<String> selected_users;
     int cnt = m_users.size();
     int column = (sizeof(groupProperties) / sizeof(groupProperties[0]));
     int group_row = findGroupIndex(group);
 
     MemberBox *box = (MemberBox *) m_group_table->cellWidget(group_row, column);
     for (int i = 0; i < cnt; i++) {
-        std::string user_name = m_users[i];
+        String user_name = m_users[i];
         if (box->findItem(user_name) == -1) {
             available_users.push_back(user_name);
         }
@@ -645,7 +642,7 @@ void AccountPlugin::remove()
 
     if (current == m_user_table) {
         for (int i = rows.size() - 1; i >= 0; i--) {
-            m_last_user_name = m_user_table->item(rows[i], 0)->text().toStdString();
+            m_last_user_name = m_user_table->item(rows[i], 0)->text();
             m_user_table->selectRow(rows[i]);
             if (m_user_table->selectedItems()[0]->backgroundColor() != Qt::red) {
                 setSelectedLineColor(m_user_table->selectedItems(), Qt::red);
@@ -680,7 +677,7 @@ void AccountPlugin::remove()
         m_last_user_name = "invalid";
     } else if (current == m_group_table) {
         for (int i = rows.size() - 1; i >= 0; i--) {
-            m_last_group_name = m_group_table->item(rows[i], 1)->text().toStdString();
+            m_last_group_name = m_group_table->item(rows[i], 1)->text();
             m_group_table->selectRow(rows[i]);
             if (m_group_table->selectedItems()[0]->backgroundColor() != Qt::red) {
                 setSelectedLineColor(m_group_table->selectedItems(), Qt::red);
@@ -718,10 +715,10 @@ void AccountPlugin::remove()
     }
 }
 
-void AccountPlugin::removeUserFromGroup(std::string group)
+void AccountPlugin::removeUserFromGroup(String group)
 {
-    std::vector<std::string> available_users;
-    std::vector<std::string> selected_users;
+    std::vector<String> available_users;
+    std::vector<String> selected_users;
     int column = (sizeof(groupProperties) / sizeof(groupProperties[0]));
     int group_row = findGroupIndex(group);
 
@@ -784,7 +781,7 @@ void AccountPlugin::showDetails()
         if (selected_items.empty()) {
             return;
         }
-        std::string name_expected = selected_items[0]->text().toStdString();
+        String name_expected = selected_items[0]->text();
         int cnt = m_user_instances.size();
         for (int i = 0; i < cnt; i++) {
 
@@ -803,16 +800,16 @@ void AccountPlugin::showDetails()
         dialog.setValues(*user);
 
         int pos = 0;
-        std::map<std::string, std::string> changes;
+        std::map<String, String> changes;
         while ((pos = findInstruction(IInstruction::ACCOUNT, "", pos)) != -1) {
             IInstruction *instruction = m_instructions[pos];
-            std::string name = CIMValue::get_property_value(*user, "Name");
-            std::string property_name = instruction->getInstructionName();
-            std::string str_value = CIMValue::to_std_string(instruction->getValue());
+            String name = CIMValue::get_property_value(*user, "Name");
+            String property_name = instruction->getInstructionName();
+            String str_value = CIMValue::to_string(instruction->getValue());
             pos++;
 
             bool found = false;
-            if (user->findProperty(Pegasus::CIMName(property_name.c_str())) !=
+            if (user->findProperty(Pegasus::CIMName(property_name.asPegasusString())) !=
                 Pegasus::Uint32(-1)) {
                 found = ((ChangeUserPropertyInstruction *) instruction)->getUserName() == name;
             }
@@ -826,10 +823,10 @@ void AccountPlugin::showDetails()
         dialog.alterProperties(changes);
 
         if (dialog.exec()) {
-            std::map<std::string, std::string> changes = dialog.getChanges();
+            std::map<String, String> changes = dialog.getChanges();
             edited = !changes.empty();
-            std::map<std::string, std::string>::iterator it;
-            std::string name = CIMValue::get_property_value(*user, "Name");
+            std::map<String, String>::iterator it;
+            String name = CIMValue::get_property_value(*user, "Name");
             addInstruction(
                 new GetInstruction(
                     IInstruction::ACCOUNT,
@@ -860,7 +857,7 @@ void AccountPlugin::showDetails()
         if (selected_items.empty()) {
             return;
         }
-        std::string name_expected = selected_items[1]->text().toStdString();
+        String name_expected = selected_items[1]->text();
         int cnt = m_group_instances.size();
         for (int i = 0; i < cnt; i++) {
 
@@ -878,16 +875,16 @@ void AccountPlugin::showDetails()
         dialog.setValues(*group);
 
         int pos = 0;
-        std::map<std::string, std::string> changes;
+        std::map<String, String> changes;
         while ((pos = findInstruction(IInstruction::GROUP, "", pos)) != -1) {
             IInstruction *instruction = m_instructions[pos];
-            std::string name = CIMValue::get_property_value(*group, "Name");
-            std::string property_name = instruction->getInstructionName();
-            std::string str_value = CIMValue::to_std_string(instruction->getValue());
+            String name = CIMValue::get_property_value(*group, "Name");
+            String property_name = instruction->getInstructionName();
+            String str_value = CIMValue::to_string(instruction->getValue());
             pos++;
 
             bool found = false;
-            if (group->findProperty(Pegasus::CIMName(property_name.c_str())) !=
+            if (group->findProperty(Pegasus::CIMName(property_name.asPegasusString())) !=
                 Pegasus::Uint32(-1)) {
                 found = ((ChangeGroupPropertyInstruction *) instruction)->getGroupName() ==
                         name;
@@ -902,10 +899,10 @@ void AccountPlugin::showDetails()
         dialog.alterProperties(changes);
 
         if (dialog.exec()) {
-            std::map<std::string, std::string> changes = dialog.getChanges();
+            std::map<String, String> changes = dialog.getChanges();
             edited = !changes.empty();
-            std::map<std::string, std::string>::iterator it;
-            std::string name = CIMValue::get_property_value(*group, "Name");
+            std::map<String, String>::iterator it;
+            String name = CIMValue::get_property_value(*group, "Name");
             addInstruction(
                 new GetInstruction(
                     IInstruction::GROUP,

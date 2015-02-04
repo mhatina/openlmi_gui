@@ -18,6 +18,8 @@
 #ifndef CIMDATETIMECONV_H
 #define CIMDATETIMECONV_H
 
+#include "lmi_string.h"
+
 #include <Pegasus/Common/CIMDateTime.h>
 
 /**
@@ -28,13 +30,13 @@
 class CIMDateTimeConv
 {
 public:
-    static Pegasus::CIMDateTime as_cim_date_time(const std::string &dt);
+    static Pegasus::CIMDateTime as_cim_date_time(const String &dt);
     /**
      * @brief Convert CIMDateTime
      * @param dt -- date
      * @return time in HH:MM:SS DD.MM.YYYY format
      */
-    static std::string as_time_value(const Pegasus::CIMDateTime &dt);
+    static String as_time_value(const Pegasus::CIMDateTime &dt);
 };
 
 #endif // CIMDATETIMECONV_H

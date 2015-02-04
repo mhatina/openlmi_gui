@@ -49,12 +49,12 @@ CIMClient::~CIMClient()
 }
 
 void CIMClient::connect(
-    const std::string &uri,
-    const std::string &username,
-    const std::string &password,
-    const std::string &trust_store)
+    const String &uri,
+    const String &username,
+    const String &password,
+    const String &trust_store)
 {
-    Logger::getInstance()->debug("CIMClient::connect(const std::string &uri, const std::string &username, const std::string &password, const std::string &trust_store)");
+    Logger::getInstance()->debug("CIMClient::connect(const String &uri, const String &username, const String &password, const String &trust_store)");
     Address addr(uri);
     if (!addr.isValid()) {
         Logger::getInstance()->error("Invalid host address!");
@@ -66,34 +66,34 @@ void CIMClient::connect(
 }
 
 void CIMClient::connect(
-    const std::string &hostname,
+    const String &hostname,
     unsigned int port,
     bool is_https,
-    const std::string &username,
-    const std::string &password,
-    const std::string &trust_store)
+    const String &username,
+    const String &password,
+    const String &trust_store)
 {
-    Logger::getInstance()->debug("CIMClient::connect(const std::string &hostname, unsigned int port, bool is_https, const std::string &username, const std::string &password, const std::string &trust_store)");
+    Logger::getInstance()->debug("CIMClient::connect(const String &hostname, unsigned int port, bool is_https, const String &username, const String &password, const String &trust_store)");
     m_hostname = hostname;
     m_username = username;
     if (!is_https) {
         Pegasus::CIMClient::connect(
-            Pegasus::String(hostname.c_str()),
+            hostname,
             Pegasus::Uint32(port),
-            Pegasus::String(username.c_str()),
-            Pegasus::String(password.c_str()));
+            username,
+            password);
     } else {
         Pegasus::Boolean (*verify_cb)(Pegasus::SSLCertificateInfo & ci) =
             m_verify_cert ? verifyCertificate : dontVerifyCertificate;
         Pegasus::SSLContext ctx(
-            Pegasus::String(trust_store.c_str()),
+            trust_store,
             verify_cb);
         Pegasus::CIMClient::connect(
-            Pegasus::String(hostname.c_str()),
+            hostname,
             Pegasus::Uint32(port),
             ctx,
-            Pegasus::String(username.c_str()),
-            Pegasus::String(password.c_str()));
+            username,
+            password);
     }
     m_is_connected = true;
 }

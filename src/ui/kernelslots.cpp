@@ -3,6 +3,7 @@
 #include "dialogs/settingsdialog.h"
 
 #include <gnome-keyring-1/gnome-keyring.h>
+#include <QAction>
 #include <QCheckBox>
 #include <QDesktopServices>
 #include <QLineEdit>
@@ -25,16 +26,16 @@ static int transformLabel(int c)
     }
 }
 
-int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
+int Engine::Kernel::getSilentConnection(String ip, bool silent)
 {
-    Logger::getInstance()->debug("Engine::Kernel::getSilentConnection(std::string ip)");
+    Logger::getInstance()->debug("Engine::Kernel::getSilentConnection(String ip)");
     if (m_connections.find(ip) == m_connections.end()) {
         CIMClient *client = NULL;
         GList *res_list;
 
         m_mutex->lock();
         GnomeKeyringAttributeList *list = gnome_keyring_attribute_list_new();
-        gnome_keyring_attribute_list_append_string(list, "server", ip.c_str());
+        gnome_keyring_attribute_list_append_string(list, "server", ip);
 
         GnomeKeyringResult res = gnome_keyring_find_items_sync(
                                      GNOME_KEYRING_ITEM_NETWORK_PASSWORD,
@@ -47,13 +48,13 @@ int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
             gnome_keyring_found_list_free(res_list);
             return 1;
         } else if (res != GNOME_KEYRING_RESULT_OK) {
-            std::string err = gnome_keyring_result_to_message(res);
+            String err = gnome_keyring_result_to_message(res);
             Logger::getInstance()->error("Cannot get username and password: " + err);
             gnome_keyring_found_list_free(res_list);
             return -1;
         }
 
-        std::string username;
+        String username;
         m_mutex->lock();
         GnomeKeyringFound *keyring = ((GnomeKeyringFound *) res_list->data);
         guint cnt = g_array_get_element_size(keyring->attributes);
@@ -82,16 +83,16 @@ int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
         client = new CIMClient();
         try {
             bool verify = false;
-            std::string cert;
+            String cert;
 
             try {
                 verify = m_settings->value<bool, QCheckBox *>("use_certificate_checkbox");
-                cert = m_settings->value<std::string, QLineEdit *>("certificate");
+                cert = m_settings->value<String, QLineEdit *>("certificate");
 
                 client->setVerifyCertificate(verify);
                 client->connect(ip, 5989, true, username, passwd, cert);
             } catch (Pegasus::Exception &ex) {
-                Logger::getInstance()->info(CIMValue::to_std_string(ex.getMessage()) +
+                Logger::getInstance()->info(CIMValue::to_string(ex.getMessage()) +
                                             " Trying another port.");
                 client->setVerifyCertificate(verify);
                 client->connect(ip, 5988, false, username, passwd, cert);
@@ -100,7 +101,7 @@ int Engine::Kernel::getSilentConnection(std::string ip, bool silent)
             return 0;
         } catch (Pegasus::Exception &ex) {
             if (!silent) {
-                Logger::getInstance()->error(CIMValue::to_std_string(ex.getMessage()));
+                Logger::getInstance()->error(CIMValue::to_string(ex.getMessage()));
             }
             return -1;
         }
@@ -145,13 +146,13 @@ void Engine::Kernel::deletePasswd()
     Logger::getInstance()->debug("Engine::Kernel::deletePasswd()");
     TreeWidgetItem *item = (TreeWidgetItem *)
                            m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
-    std::string id = item->getId();
+    String id = item->getId();
     deletePasswd(id);
 }
 
-void Engine::Kernel::deletePasswd(std::string id)
+void Engine::Kernel::deletePasswd(String id)
 {
-    Logger::getInstance()->debug("Engine::Kernel::deletePasswd(std::string id)");
+    Logger::getInstance()->debug("Engine::Kernel::deletePasswd(String id)");
 
     CIMClient *client = NULL;
     if (!m_connections.empty()) {
@@ -169,7 +170,7 @@ void Engine::Kernel::deletePasswd(std::string id)
                              );
 
     if (res != GNOME_KEYRING_RESULT_OK) {
-        std::string err = gnome_keyring_result_to_message(res);
+        String err = gnome_keyring_result_to_message(res);
         Logger::getInstance()->info("Cannot delete password: " + err);
     } else {
         Logger::getInstance()->info("Password deleted");
@@ -199,11 +200,11 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
     }
     TreeWidgetItem *item = (TreeWidgetItem *) list[0];
 
-    std::string ip = item->getId();
-    AuthenticationDialog dialog(item->text(0).toStdString(), &m_main_window);
+    String ip = item->getId();
+    AuthenticationDialog dialog(item->text(0), &m_main_window);
     if (dialog.exec()) {
-        std::string username = dialog.getUsername();
-        std::string passwd = dialog.getPasswd();
+        String username = dialog.getUsername();
+        String passwd = dialog.getPasswd();
 
         if (username == "" || passwd == "") {
             handleProgressState(Engine::ERROR);
@@ -215,8 +216,8 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
             gnome_keyring_store_password_sync(
                 GNOME_KEYRING_NETWORK_PASSWORD,
                 OPENLMI_KEYRING_DEFAULT,
-                ip.c_str(),
-                passwd.c_str(),
+                ip,
+                passwd,
                 "user", username.c_str(),
                 "server", ip.c_str(),
                 NULL
@@ -224,7 +225,7 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
 
         if (res != GNOME_KEYRING_RESULT_OK) {
             handleProgressState(Engine::ERROR);
-            std::string err = gnome_keyring_result_to_message(res);
+            String err = gnome_keyring_result_to_message(res);
             Logger::getInstance()->error("Cannot store password: " + err);
             return;
         }
@@ -261,15 +262,15 @@ void Engine::Kernel::handleConnecting(CIMClient *client,
         }
     } else {
         setPowerState(client, state);
-        std::string message = getPowerStateMessage(state);
+        String message = getPowerStateMessage(state);
         Logger::getInstance()->info(message);
         handleProgressState(Engine::REFRESHED, message);
     }
 }
 
-void Engine::Kernel::handleInstructionText(std::string text)
+void Engine::Kernel::handleInstructionText(String text)
 {
-    Logger::getInstance()->debug("Engine::Kernel::handleInstructionText(std::string text)");
+    Logger::getInstance()->debug("Engine::Kernel::handleInstructionText(String text)");
     m_code_dialog.setText(text);
 }
 
@@ -283,9 +284,9 @@ void Engine::Kernel::handleProgressState(int state, IPlugin *plugin)
     handleProgressState(state, "Refreshing: " + plugin->getLabel(), plugin);
 }
 
-void Engine::Kernel::handleProgressState(int state, std::string process, IPlugin *plugin)
+void Engine::Kernel::handleProgressState(int state, String process, IPlugin *plugin)
 {
-    Logger::getInstance()->debug("Engine::Kernel::handleProgressState(int state, std::string process, IPlugin *plugin)");
+    Logger::getInstance()->debug("Engine::Kernel::handleProgressState(int state, String process, IPlugin *plugin)");
     switch (state) {
     case REFRESHED:
         m_bar->hide(process);
@@ -325,6 +326,7 @@ void Engine::Kernel::handleProgressState(int state, std::string process, IPlugin
             plugin->setPluginEnabled(false);
             break;
         case ERROR:
+            changeRefreshConnection(true);
             plugin->setPluginEnabled(false);
             break;
         default:
@@ -367,7 +369,7 @@ void Engine::Kernel::reportBug()
 {
     QString url = BUG_REPORT_URL;
     if (!QDesktopServices::openUrl(QUrl(url))) {
-        Logger::getInstance()->error("Cannot open : " + url.toStdString());
+        Logger::getInstance()->error("Cannot open : " + url);
     }
 }
 
@@ -376,7 +378,7 @@ void Engine::Kernel::resetKeyring()
     Logger::getInstance()->debug("Engine::Kernel::resetKeyring()");
     GnomeKeyringResult res = gnome_keyring_delete_sync(OPENLMI_KEYRING_DEFAULT);
     if (res != GNOME_KEYRING_RESULT_OK) {
-        std::string err = gnome_keyring_result_to_message(res);
+        String err = gnome_keyring_result_to_message(res);
         Logger::getInstance()->error("Cannot reset keyring: " + err);
         return;
     }
@@ -397,7 +399,7 @@ void Engine::Kernel::saveScripts()
     if (m_save_script_path.empty()) {
         QFileDialog dialog(&m_main_window);
         dialog.setFileMode(QFileDialog::AnyFile);
-        m_save_script_path = dialog.getExistingDirectory().toStdString();
+        m_save_script_path = dialog.getExistingDirectory();
         TreeWidgetItem *item = (TreeWidgetItem *)
                                m_main_window.getPcTreeWidget()->getTree()
                                ->selectedItems()[0];
@@ -432,10 +434,11 @@ void Engine::Kernel::selectionChanged()
         m_last_system = list[0];
         tab->setCurrentIndex(0);
 
-        std::string id = ((TreeWidgetItem *) list[0])->getId();
-        std::string title = WINDOW_TITLE;
-        title += " @ " + id;
-        m_main_window.setWindowTitle(title.c_str());
+        String id = ((TreeWidgetItem *) list[0])->getId();
+        String title = WINDOW_TITLE;
+        title += " @ ";
+        title += id;
+        m_main_window.setWindowTitle(title);
 
         title = PROVIDER_BOX_TITLE;
         title += id;
@@ -459,7 +462,7 @@ void Engine::Kernel::selectionChanged()
         return;
     }
 
-    std::string label = plugin->getLabel();
+    String label = plugin->getLabel();
     std::transform(label.begin(), label.end(), label.begin(), transformLabel);
 
     if (!m_settings->value<bool, QCheckBox *>(label)) {
@@ -501,7 +504,7 @@ void Engine::Kernel::setActivePlugin(int index)
         return;
     }
 
-    std::string label = plugin->getLabel();
+    String label = plugin->getLabel();
     std::transform(label.begin(), label.end(), label.begin(), transformLabel);
 
     bool enabled = m_settings->value<bool, QCheckBox *>(label);
@@ -521,7 +524,7 @@ void Engine::Kernel::setPluginNoChanges(IPlugin *plugin)
 {
     Logger::getInstance()->debug("Engine::Kernel::setPluginNoChanges(IPlugin *plugin)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
-    tab->setTabText(getIndexOfTab(plugin->getLabel()), plugin->getLabel().c_str());
+    tab->setTabText(getIndexOfTab(plugin->getLabel()), plugin->getLabel());
 }
 
 void Engine::Kernel::setPluginUnsavedChanges(IPlugin *plugin)
@@ -529,13 +532,13 @@ void Engine::Kernel::setPluginUnsavedChanges(IPlugin *plugin)
     Logger::getInstance()->debug("Engine::Kernel::setPluginUnsavedChanges(IPlugin *plugin)");
     QTabWidget *tab = m_main_window.getProviderWidget()->getTabWidget();
     tab->setTabText(getIndexOfTab(plugin->getLabel()),
-                    std::string("* " + plugin->getLabel()).c_str());
+                    String("* " + plugin->getLabel()));
 }
 
 void Engine::Kernel::setPowerState(QAction *action)
 {
     Logger::getInstance()->debug("Engine::Kernel::setPowerState(QAction *action)");
-    std::string message = "";
+    String message = "";
     QMessageBox box;
     box.setObjectName("confirm_action_dialog");
     switch (box.information(
@@ -552,24 +555,24 @@ void Engine::Kernel::setPowerState(QAction *action)
     }
 
 
-    if (action->objectName().toStdString() == "reboot_action") {
+    if (action->objectName() == "reboot_action") {
         message = getPowerStateMessage(PowerStateValues::PowerCycleOffSoft);
         m_main_window.getPcTreeWidget()->setComputerIcon(QIcon(":/reboot.png"));
         boost::thread(boost::bind(&Engine::Kernel::getConnection, this,
                                   PowerStateValues::PowerCycleOffSoft));
-    } else if (action->objectName().toStdString() == "shutdown_action") {
+    } else if (action->objectName() == "shutdown_action") {
         message = getPowerStateMessage(PowerStateValues::PowerOffSoftGraceful);
         boost::thread(boost::bind(&Engine::Kernel::getConnection, this,
                                   PowerStateValues::PowerOffSoftGraceful));
-    } else if (action->objectName().toStdString() == "force_reset_action") {
+    } else if (action->objectName() == "force_reset_action") {
         message = getPowerStateMessage(PowerStateValues::PowerCycleOffHard);
         boost::thread(boost::bind(&Engine::Kernel::getConnection, this,
                                   PowerStateValues::PowerCycleOffHard));
-    } else if (action->objectName().toStdString() == "shutdown_action") {
+    } else if (action->objectName() == "shutdown_action") {
         message = getPowerStateMessage(PowerStateValues::PowerOffHard);
         boost::thread(boost::bind(&Engine::Kernel::getConnection, this,
                                   PowerStateValues::PowerOffHard));
-    } else if (action->objectName().toStdString() == "wake_on_lan") {
+    } else if (action->objectName() == "wake_on_lan") {
         message = getPowerStateMessage(PowerStateValues::WakeOnLan);
         wakeOnLan();
     }
@@ -578,24 +581,12 @@ void Engine::Kernel::setPowerState(QAction *action)
 }
 
 void Engine::Kernel::showAboutDialog()
-{
-    std::string name = STR(DOC_PATH);
-    name += "/about.txt";
-
-    QFile file(name.c_str());
-    if (!file.exists()) {
-        Logger::getInstance()->error("Cannot show about dialog");
-        return;
-    }
-
-    file.open(QIODevice::ReadOnly);
-    QString text;
-    char line[256];
-    while (!file.atEnd()) {
-        file.readLine(line, 255);
-        text += line;
-    }
-    file.close();
+{    
+    QString text = "LMI Command Center\n"
+                   "Version: ";
+    text.append(LMICC_VERSION);
+    text.append("\n\nAuthors: Martin Hatina\n"
+                "Email: mhatina@redhat.com");
 
     QMessageBox box;
     box.setObjectName("about_dialog");
@@ -634,10 +625,10 @@ void Engine::Kernel::showFilter()
 void Engine::Kernel::showHelp()
 {
     QString url = STR(DOC_PATH);
-    url.append("/index.html");
+    url.append("/help/index.html");
 
     if (!QDesktopServices::openUrl(QUrl(url))) {
-        Logger::getInstance()->error("Cannot open : " + url.toStdString());
+        Logger::getInstance()->error("Cannot open : " + url);
     }
 }
 
@@ -650,8 +641,8 @@ void Engine::Kernel::showSettings()
 void Engine::Kernel::startLMIShell()
 {
     Logger::getInstance()->debug("Engine::Kernel::startLMIShell()");
-    std::string command =
-        m_settings->value<std::string, QLineEdit *>("terminal_emulator");
+    String command =
+        m_settings->value<String, QLineEdit *>("terminal_emulator");
     QList<QTreeWidgetItem *> list =
         m_main_window.getPcTreeWidget()->getTree()->selectedItems();
     if (list.empty()) {
@@ -660,12 +651,12 @@ void Engine::Kernel::startLMIShell()
 
 
     TreeWidgetItem *item = (TreeWidgetItem *) list[0];
-    std::string connect = "'c = connect(\"" + item->getId() + "\")'";
+    String connect = "'c = connect(\"" + item->getId() + "\")'";
     // TODO certificate
     command += " -e \"lmishell -c " + connect + "\"";
 
     QProcess shell(this);
-    shell.startDetached(command.c_str());
+    shell.startDetached(command);
 }
 
 void Engine::Kernel::startSsh()
@@ -678,12 +669,12 @@ void Engine::Kernel::startSsh()
     }
 
     TreeWidgetItem *item = (TreeWidgetItem *) list[0];
-    std::string command =
-        m_settings->value<std::string, QLineEdit *>("terminal_emulator");
+    String command =
+        m_settings->value<String, QLineEdit *>("terminal_emulator");
     command += " -e \"ssh "
                + (!item->getIpv4().empty() ? item->getIpv4() : item->getIpv6()) + "\"";
     QProcess shell(this);
-    shell.startDetached(command.c_str());
+    shell.startDetached(command);
 }
 
 void Engine::Kernel::stopRefresh()

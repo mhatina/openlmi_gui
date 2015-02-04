@@ -18,6 +18,8 @@
 #ifndef LOGDIALOG_H
 #define LOGDIALOG_H
 
+#include "lmi_string.h"
+
 #include <QClipboard>
 #include <QDialog>
 #include <QFile>
@@ -33,20 +35,20 @@ class LogDialog : public QDialog
     Q_OBJECT
 
 private:
-    std::string m_last_filter_text;
+    String m_last_filter_text;
     std::vector<QTreeWidgetItem *> m_hidden;
     std::vector<QTreeWidgetItem *> m_shown;
     QMenu *m_context_menu;
     QMenu *m_tool_button_menu;
     Ui::LogDialog *m_ui;
 
-    QTreeWidgetItem *createItem(std::string name, QTreeWidgetItem *parent);
-    QTreeWidgetItem *findItem(std::string item_name, QTreeWidgetItem *parent = NULL);
+    QTreeWidgetItem *createItem(String name, QTreeWidgetItem *parent);
+    QTreeWidgetItem *findItem(String item_name, QTreeWidgetItem *parent = NULL);
     void initContextMenu();
     void initShowButton();
 
 private slots:
-    std::string copy(QTreeWidgetItem *child);
+    String copy(QTreeWidgetItem *child);
     void archive();
     void changeShowOnly(QAction *action);
     void copy();    
