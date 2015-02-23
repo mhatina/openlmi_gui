@@ -190,7 +190,8 @@ bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, String text, QTre
         String ipv4 = check_item->getIpv4().empty() ? "N/A" : check_item->getIpv4();
         String ipv6 = check_item->getIpv6().empty() ? "N/A" : check_item->getIpv6();
         String domain = check_item->getName().empty() ? "N/A" : check_item->getName();
-        if (ipv4 == text || ipv6 == text || domain == text) {
+        String id = check_item->getId();
+        if (ipv4 == text || ipv6 == text || domain == text || id == text) {
             return true;
         }
     }

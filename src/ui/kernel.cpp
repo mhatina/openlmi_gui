@@ -20,7 +20,6 @@
 #include "logger.h"
 
 #include <boost/thread.hpp>
-#include <gnome-keyring-1/gnome-keyring.h>
 #include <Pegasus/Common/Array.h>
 
 #include <QAction>
@@ -41,8 +40,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-extern const GnomeKeyringPasswordSchema *GNOME_KEYRING_NETWORK_PASSWORD;
-
 bool isColon(int c)
 {
     return (c == 0x3A);
@@ -53,7 +50,8 @@ Engine::Kernel::Kernel() :
     m_main_window(),
     m_bar(new ProgressBar()),
     m_mutex(new QMutex()),
-    m_last_system(NULL),    
+    m_last_system(NULL),
+    m_storage(m_mutex),
     m_settings(SettingsDialog::getInstance(&m_main_window)),
     m_code_dialog(&m_main_window)
 {
@@ -62,7 +60,7 @@ Engine::Kernel::Kernel() :
     __uid_t uid = getuid();
     if (uid == 0) {
         Logger::getInstance()->error("Program does not work properly when run as root!");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     struct passwd *pw = getpwuid(uid);
@@ -78,7 +76,10 @@ Engine::Kernel::Kernel() :
     m_main_window.getPcTreeWidget()->setTimeSec(2);
     m_bar->setMaximum(0);
 
-    createKeyring();
+    if (!m_storage.createStorage()) {
+        Logger::getInstance()->error("Cannot create password storage: " + m_storage.errString());
+        exit(EXIT_FAILURE);
+    }
 }
 
 Engine::Kernel::~Kernel()
@@ -88,15 +89,7 @@ Engine::Kernel::~Kernel()
     delete m_bar;
     SettingsDialog::deleteInstance();
 
-    disconnect(
-        m_main_window.getProviderWidget()->getTabWidget(),
-        0,
-        this,
-        0);
-    foreach (QPluginLoader * loader, m_loaders) {
-        loader->unload();
-        delete loader;
-    }
+    deletePlugins();
     Logger::removeInstance();
 }
 
@@ -172,20 +165,6 @@ void Engine::Kernel::changeRefreshConnection(bool refresh)
     }
 }
 
-void Engine::Kernel::createKeyring()
-{
-    Logger::getInstance()->debug("Engine::Kernel::createKeyring()");
-    GnomeKeyringResult res = gnome_keyring_create_sync(OPENLMI_KEYRING_DEFAULT,
-                             NULL);
-    if (res != GNOME_KEYRING_RESULT_OK &&
-        res != GNOME_KEYRING_RESULT_KEYRING_ALREADY_EXISTS) {
-
-        Logger::getInstance()->error("Cannot create " + String(
-                                         OPENLMI_KEYRING_DEFAULT) + " keyring: " + gnome_keyring_result_to_message(res));
-        exit(EXIT_FAILURE);
-    }
-}
-
 void Engine::Kernel::initConnections()
 {
     Logger::getInstance()->debug("Engine::Kernel::initConnections()");
@@ -201,7 +180,7 @@ void Engine::Kernel::initConnections()
         power_button,
         SIGNAL(triggered(QAction *)),
         this,
-        SLOT(setPowerState(QAction *)));    
+        SLOT(setPowerState(QAction *)));
     button = widget<QPushButton *>("show_code_button");
     connect(
         button,
@@ -219,7 +198,7 @@ void Engine::Kernel::initConnections()
         button,
         SIGNAL(clicked()),
         this,
-        SLOT(saveScripts()));   
+        SLOT(saveScripts()));
     connect(
         m_main_window.getPcTreeWidget(),
         SIGNAL(removed(String)),
@@ -250,7 +229,7 @@ void Engine::Kernel::initConnections()
         (QObject *) m_main_window.getResetPasswdStorageAction(),
         SIGNAL(triggered()),
         this,
-        SLOT(resetKeyring()));
+        SLOT(resetPasswdStorage()));
     QAction *action = widget<QAction *>("action_reload_plugins");
     connect(
         (QObject *) action,
@@ -327,10 +306,10 @@ void Engine::Kernel::setButtonsEnabled(bool state, bool refresh_button)
     }
     bool refreshed = plugin->isRefreshed();
 
-    ((QPushButton *) widget<QPushButton *>("apply_button"))->setEnabled(
-        state & refreshed);
-    ((QPushButton *) widget<QPushButton *>("save_button"))->setEnabled(
-        state & refreshed);    
+    QPushButton *button = widget<QPushButton *>("apply_button");
+    button->setEnabled(state & refreshed);
+    button = widget<QPushButton *>("save_button");
+    button->setEnabled(state & refreshed);
     if (refresh_button) {
         enableSpecialButtons(state);
     }
@@ -363,16 +342,14 @@ void Engine::Kernel::setMac(CIMClient *client)
         }
         Pegasus::CIMObject endpoint = lan[0];
 
-        String mac = CIMValue::get_property_value(Pegasus::CIMInstance(endpoint),
-                          "MACAddress");
+        String mac = CIMValue::get_property_value(Pegasus::CIMInstance(endpoint), "MACAddress");
         item->setMac(mac);
     } catch (Pegasus::Exception &ex) {
         Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()), false);
     }
 }
 
-void Engine::Kernel::setPowerState(CIMClient *client,
-                                   PowerStateValues::POWER_VALUES power_state)
+void Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VALUES power_state)
 {
     Logger::getInstance()->debug("Engine::Kernel::setPowerState(CIMClient *client, PowerStateValues::POWER_VALUES power_state)");
 
@@ -514,8 +491,7 @@ void Engine::Kernel::deletePlugins()
 void Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)
 {
     Logger::getInstance()->debug("Engine::Kernel::getConnection(PowerStateValues::POWER_VALUES state)");
-    TreeWidgetItem *item = (TreeWidgetItem *)
-                           m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
+    TreeWidgetItem *item = (TreeWidgetItem *) m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
     String ip = item->getId();
 
     switch (getSilentConnection(ip, false)) {
@@ -582,6 +558,6 @@ void Engine::Kernel::loadPlugin()
 void Engine::Kernel::showMainWindow()
 {
     Logger::getInstance()->debug("Engine::Kernel::showMainWindow()");
-    loadPlugin();
     m_main_window.show();
+    loadPlugin();    
 }

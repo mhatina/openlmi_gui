@@ -1,16 +1,12 @@
 Name:           lmicc-logger
-Version:        0.1.1
-Release:        3%{?dist}
+Version:        0.2.0
+Release:        0%{?dist}
 Summary:        Logger for lmicc
 License:        GPLv2.1+, LGPLv2.1+
-URL:            https://github.com/mhatina/openlmi_gui 
-Source0:        lmicc.tar.gz 
+URL:            https://github.com/mhatina/openlmi_gui
+Source0:        lmicc.tar.gz
 
 BuildRequires:  qt-devel >= 4.8.5
-
-%package doc
-Summary:        Documentation for %{name}
-Group:          Documentation
 
 %description
 %{name} is a logger for Graphical User Interface for OpenLMI.
@@ -24,14 +20,14 @@ Group:          Documentation
 %build
 cd src/logger
 qmake-qt4 PREFIX=%{buildroot} LIB_PATH=%{_libdir}
-make  
+make
 cd -
 
 %install
 make -C src/logger install
 
 %files
-%defattr(-,root,root,0755)  
+%defattr(-,root,root,0755)
 %doc LICENSE README.md
 %{_libdir}/lib*
 

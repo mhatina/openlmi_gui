@@ -21,6 +21,8 @@
 
 QT              -=      gui
 
+include(../../project.pri)
+
 TARGET          =       lmicclogger
 TEMPLATE        =       lib
 INCLUDEPATH     +=      ../ui
@@ -33,22 +35,15 @@ MOC_DIR         =       mocs
 OBJECTS_DIR     =       objs
 
 SOURCES         +=      logger.cpp \
-    ../ui/lmi_string.cpp
+                        ../ui/lmi_string.cpp
 
 HEADERS         +=      logger.h \
                         logger_global.h
 
-isEmpty(PREFIX) {
-    PREFIX = /usr
-}
-isEmpty(LIB_PATH) {
-    LIB_PATH    =       /lib
-}
-
 CONFIG(debug, debug|release) {
     DEFINES     +=      "DEBUGGING=false"
 } else {
-    target.path =   $$PREFIX$$LIB_PATH
+    target.path =       $$PREFIX$$LIB_PATH
 }
 
 DEFINES         +=      DEFAULT_LOG_PATH="\\\"/tmp/lmicc_log\\\""

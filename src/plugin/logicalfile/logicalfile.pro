@@ -20,18 +20,32 @@
 # ***** END LICENSE BLOCK ***** */
 
 QT              +=      core gui
+
+include(../../../project.pri)
+
 TEMPLATE        =       lib
 CONFIG          +=      plugin
-QMAKE_CXXFLAGS  +=      -ansi -pedantic -Wall -Wextra
 INCLUDEPATH     +=      ../../ui ../../ui/uics ../../logger
 
 TARGET          =       $$qtLibraryTarget(lmicclogicalfile)
 DESTDIR         =       ../libs
-DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
 
 UI_DIR          =       uics
 MOC_DIR         =       mocs
 OBJECTS_DIR     =       objs
+
+CONFIG(debug, debug|release) {
+    target.path =       ../libs
+    LIBS        +=      -L../../logger -llmicclogger
+} else {
+    target.path =       $$PREFIX$$LIB_PATH/lmicc
+    manual_install {
+        LIBS    +=      -L/usr/lib/lmicc -llmicclogger
+    } else {
+        LIBS    +=      -llmicclogger
+    }
+}
+INSTALLS        +=      target
 
 HEADERS         +=      logicalfile.h \
                         ../../ui/plugin.h \
@@ -50,18 +64,5 @@ SOURCES         +=      logicalfile.cpp \
                         filebrowser.cpp
 
 FORMS           +=      logicalfile.ui
-
-CONFIG(debug, debug|release) {
-    target.path =       ../libs
-    LIBS        +=      -L../../logger -llogger
-} else {
-    linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-        target.path =   /usr/lib64/openlmi
-    } else {
-        target.path =   /usr/lib/openlmi
-    }
-    LIBS        +=      -llogger
-}
-INSTALLS        +=      target
 
 RESOURCES       +=      ../../../icons/icons.qrc

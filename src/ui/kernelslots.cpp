@@ -2,7 +2,6 @@
 #include "cimvalue.h"
 #include "dialogs/settingsdialog.h"
 
-#include <gnome-keyring-1/gnome-keyring.h>
 #include <QAction>
 #include <QCheckBox>
 #include <QDesktopServices>
@@ -14,8 +13,6 @@
 #include <QUrl>
 
 #define BUG_REPORT_URL "https://github.com/mhatina/openlmi_gui/issues"
-
-extern const GnomeKeyringPasswordSchema *GNOME_KEYRING_NETWORK_PASSWORD;
 
 static int transformLabel(int c)
 {
@@ -31,83 +28,45 @@ int Engine::Kernel::getSilentConnection(String ip, bool silent)
     Logger::getInstance()->debug("Engine::Kernel::getSilentConnection(String ip)");
     if (m_connections.find(ip) == m_connections.end()) {
         CIMClient *client = NULL;
-        GList *res_list;
-
-        m_mutex->lock();
-        GnomeKeyringAttributeList *list = gnome_keyring_attribute_list_new();
-        gnome_keyring_attribute_list_append_string(list, "server", ip);
-
-        GnomeKeyringResult res = gnome_keyring_find_items_sync(
-                                     GNOME_KEYRING_ITEM_NETWORK_PASSWORD,
-                                     list,
-                                     &res_list
-                                 );
-        m_mutex->unlock();
-
-        if (res == GNOME_KEYRING_RESULT_NO_MATCH) {
-            gnome_keyring_found_list_free(res_list);
-            return 1;
-        } else if (res != GNOME_KEYRING_RESULT_OK) {
-            String err = gnome_keyring_result_to_message(res);
-            Logger::getInstance()->error("Cannot get username and password: " + err);
-            gnome_keyring_found_list_free(res_list);
-            return -1;
-        }
-
-        String username;
-        m_mutex->lock();
-        GnomeKeyringFound *keyring = ((GnomeKeyringFound *) res_list->data);
-        guint cnt = g_array_get_element_size(keyring->attributes);
-        for (guint i = 0; i < cnt; i++) {
-            GnomeKeyringAttribute tmp;
-            if (strcmp((tmp = g_array_index(keyring->attributes, GnomeKeyringAttribute,
-                                            i)).name, "user") == 0) {
-                username = gnome_keyring_attribute_get_string(&tmp);
-                break;
-            }
-        }
-        m_mutex->unlock();
-
-        gchar *passwd;
-        m_mutex->lock();
-        gnome_keyring_find_password_sync(
-            GNOME_KEYRING_NETWORK_PASSWORD,
-            &passwd,
-            "user", username.c_str(),
-            "server", ip.c_str(),
-            NULL
-        );
-        gnome_keyring_found_list_free(res_list);
-        m_mutex->unlock();
-
-        client = new CIMClient();
-        try {
-            bool verify = false;
-            String cert;
-
+        String username, passwd;
+        switch (m_storage.getUserData(ip, username, passwd)) {
+        case PASSWD_NO_MATCH:
+            return PASSWD_NO_MATCH;
+        case PASSWD_OK:
+            client = new CIMClient();
             try {
-                verify = m_settings->value<bool, QCheckBox *>("use_certificate_checkbox");
-                cert = m_settings->value<String, QLineEdit *>("certificate");
+                bool verify = false;
+                String cert;
 
-                client->setVerifyCertificate(verify);
-                client->connect(ip, 5989, true, username, passwd, cert);
+                try {
+                    verify = m_settings->value<bool, QCheckBox *>("use_certificate_checkbox");
+                    cert = m_settings->value<String, QLineEdit *>("certificate");
+
+                    client->setVerifyCertificate(verify);
+                    client->connect(ip, 5989, true, username, passwd, cert);
+                } catch (Pegasus::Exception &ex) {
+                    Logger::getInstance()->info(CIMValue::to_string(ex.getMessage()) +
+                                                " Trying another port.");
+                    client->setVerifyCertificate(verify);
+                    client->connect(ip, 5988, false, username, passwd, cert);
+                }
+                m_connections[ip] = client;
+                return PASSWD_OK;
             } catch (Pegasus::Exception &ex) {
-                Logger::getInstance()->info(CIMValue::to_string(ex.getMessage()) +
-                                            " Trying another port.");
-                client->setVerifyCertificate(verify);
-                client->connect(ip, 5988, false, username, passwd, cert);
+                if (!silent) {
+                    Logger::getInstance()->error(CIMValue::to_string(ex.getMessage()));
+                }
+                return PASSWD_ERR;
             }
-            m_connections[ip] = client;
-            return 0;
-        } catch (Pegasus::Exception &ex) {
-            if (!silent) {
-                Logger::getInstance()->error(CIMValue::to_string(ex.getMessage()));
-            }
-            return -1;
+            break;
+        case PASSWD_ERR:
+            Logger::getInstance()->error("Cannot get username and password: " + m_storage.errString());
+        default:
+            return PASSWD_ERR;
         }
     }
 
-    return 0;
+    return PASSWD_OK;
 }
 
 void Engine::Kernel::changeButtonConnection(bool control)
@@ -144,10 +103,9 @@ void Engine::Kernel::changeButtonConnection(bool control)
 void Engine::Kernel::deletePasswd()
 {
     Logger::getInstance()->debug("Engine::Kernel::deletePasswd()");
-    TreeWidgetItem *item = (TreeWidgetItem *)
-                           m_main_window.getPcTreeWidget()->getTree()->selectedItems()[0];
-    String id = item->getId();
-    deletePasswd(id);
+    TreeWidgetItem *item = (TreeWidgetItem *) m_main_window.getPcTreeWidget()->
+                           getTree()->selectedItems()[0];
+    deletePasswd(item->getId());
 }
 
 void Engine::Kernel::deletePasswd(String id)
@@ -163,15 +121,8 @@ void Engine::Kernel::deletePasswd(String id)
         m_connections.erase(m_connections.find(id));
     }
 
-    GnomeKeyringResult res = gnome_keyring_delete_password_sync(
-                                 GNOME_KEYRING_NETWORK_PASSWORD,
-                                 "server", id.c_str(),
-                                 NULL
-                             );
-
-    if (res != GNOME_KEYRING_RESULT_OK) {
-        String err = gnome_keyring_result_to_message(res);
-        Logger::getInstance()->info("Cannot delete password: " + err);
+    if (!m_storage.deletePassword(id)) {
+        Logger::getInstance()->info("Cannot delete password: " + m_storage.errString());
     } else {
         Logger::getInstance()->info("Password deleted");
     }
@@ -209,24 +160,13 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
         if (username == "" || passwd == "") {
             handleProgressState(Engine::ERROR);
             Logger::getInstance()->error("Username/password cannot be empty");
+            handleAuthentication(state);
             return;
         }
 
-        GnomeKeyringResult res =
-            gnome_keyring_store_password_sync(
-                GNOME_KEYRING_NETWORK_PASSWORD,
-                OPENLMI_KEYRING_DEFAULT,
-                ip,
-                passwd,
-                "user", username.c_str(),
-                "server", ip.c_str(),
-                NULL
-            );
-
-        if (res != GNOME_KEYRING_RESULT_OK) {
+        if (!m_storage.setUserData(ip, username, passwd)) {
             handleProgressState(Engine::ERROR);
-            String err = gnome_keyring_result_to_message(res);
-            Logger::getInstance()->error("Cannot store password: " + err);
+            Logger::getInstance()->error("Cannot store password: " + m_storage.errString());
             return;
         }
 
@@ -237,8 +177,7 @@ void Engine::Kernel::handleAuthentication(PowerStateValues::POWER_VALUES state)
     }
 }
 
-void Engine::Kernel::handleConnecting(CIMClient *client,
-                                      PowerStateValues::POWER_VALUES state)
+void Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER_VALUES state)
 {
     Logger::getInstance()->debug("Engine::Kernel::handleConnecting(CIMClient *client, PowerStateValues::POWER_VALUES state)");
     if (client == NULL) {
@@ -354,8 +293,13 @@ void Engine::Kernel::refresh()
     setButtonsEnabled(false, false);
     handleProgressState(Engine::NOT_REFRESHED);
 
-    boost::thread(boost::bind(&Engine::Kernel::getConnection, this,
-                              PowerStateValues::NoPowerSetting));
+    boost::thread(
+        boost::bind(
+            &Engine::Kernel::getConnection,
+            this,
+            PowerStateValues::NoPowerSetting
+        )
+    );
 }
 
 void Engine::Kernel::reloadPlugins()
@@ -373,16 +317,13 @@ void Engine::Kernel::reportBug()
     }
 }
 
-void Engine::Kernel::resetKeyring()
+void Engine::Kernel::resetPasswdStorage()
 {
-    Logger::getInstance()->debug("Engine::Kernel::resetKeyring()");
-    GnomeKeyringResult res = gnome_keyring_delete_sync(OPENLMI_KEYRING_DEFAULT);
-    if (res != GNOME_KEYRING_RESULT_OK) {
-        String err = gnome_keyring_result_to_message(res);
-        Logger::getInstance()->error("Cannot reset keyring: " + err);
+    Logger::getInstance()->debug("Engine::Kernel::resetPasswdStorage()");
+    if (!m_storage.resetStorage()) {
+        Logger::getInstance()->error("Cannot reset password storage: " + m_storage.errString());
         return;
     }
-    createKeyring();
 }
 
 void Engine::Kernel::saveAsScripts()
@@ -581,7 +522,7 @@ void Engine::Kernel::setPowerState(QAction *action)
 }
 
 void Engine::Kernel::showAboutDialog()
-{    
+{
     QString text = "LMI Command Center\n"
                    "Version: ";
     text.append(LMICC_VERSION);

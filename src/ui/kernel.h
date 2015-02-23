@@ -23,6 +23,7 @@
 #include "dialogs/codedialog.h"
 #include "dialogs/mainwindow.h"
 #include "dialogs/settingsdialog.h"
+#include "passwordstorage.h"
 #include "plugin.h"
 #include "widgets/progressbar.h"
 
@@ -30,12 +31,9 @@
 #include <QApplication>
 #include <QDir>
 #include <QPluginLoader>
-#include <string>
 
 #define UNUSED(x) (void)x;
 #define STR(X)  __STRING(X)
-
-#define OPENLMI_KEYRING_DEFAULT "openlmi"
 
 #define LMICC_VERSION "0.1.1"
 
@@ -90,10 +88,11 @@ private:
     bool m_refreshEnabled;
     connection_map m_connections;
     MainWindow m_main_window;
-    plugin_map m_loaded_plugins;
+    plugin_map m_loaded_plugins;    
     ProgressBar *m_bar;
     QMutex *m_mutex;
     QTreeWidgetItem *m_last_system;
+    PasswordStorage m_storage;
     SettingsDialog *m_settings;
     CodeDialog m_code_dialog;
     String m_save_script_path;
@@ -102,7 +101,6 @@ private:
     int  getIndexOfTab(String name);
     String getPowerStateMessage(PowerStateValues::POWER_VALUES state);
     void changeRefreshConnection(bool refresh);
-    void createKeyring();
     void initConnections();
     /**
      * @brief setButtonsEnabled -- enable/disable buttons
@@ -163,7 +161,7 @@ private slots:
     void refresh();
     void reloadPlugins();
     void reportBug();
-    void resetKeyring();
+    void resetPasswdStorage();
     void saveAsScripts();
     void saveScripts();
     void selectionChanged();

@@ -20,6 +20,9 @@
 # ***** END LICENSE BLOCK ***** */
 
 QT              +=      core gui
+
+include(../../../project.pri)
+
 TEMPLATE        =       lib
 CONFIG          +=      plugin
 QMAKE_CXXFLAGS  +=      -ansi -pedantic -Wall -Wextra

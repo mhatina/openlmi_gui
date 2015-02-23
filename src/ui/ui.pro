@@ -19,31 +19,18 @@ QT              +=      core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+include(../../project.pri)
+
 TARGET          =       lmicc
 TEMPLATE        =       app
 QMAKE_CXXFLAGS  +=      -ansi -pedantic -Wall -Wextra
-LIBS            +=      -lslp -lpegclient -lpegcommon -lboost_thread -lgnome-keyring -lqscintilla2
+LIBS            +=      -lslp -lpegclient -lpegcommon -lboost_thread -lqscintilla2
 INCLUDEPATH     +=      ../logger
-DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
-CONFIG          +=      link_pkgconfig qtestlib qscintilla2
-PKGCONFIG       +=      glib-2.0
+CONFIG          +=      qtestlib qscintilla2
 
 UI_DIR          =       uics
 MOC_DIR         =       mocs
 OBJECTS_DIR     =       objs
-
-isEmpty(QT_SINGLE_APP) {
-    QT_SINGLE_APP =     /usr/lib64/qt4/mkspecs/features/qtsingleapplication.prf
-}
-isEmpty(PREFIX) {
-    PREFIX      =       /usr
-}
-isEmpty(LIB_PATH) {
-    LIB_PATH    =       /lib
-}
-isEmpty(DOC) {
-    DOC         =       /usr/share/doc/lmicc
-}
 
 include($$QT_SINGLE_APP)
 
@@ -93,7 +80,8 @@ SOURCES         +=      main.cpp \
                         dialogs/systemdetailsdialog.cpp \
                         cimaddress.cpp \
                         widgets/treewidgetitem.cpp \
-    lmi_string.cpp
+                        lmi_string.cpp \
+                        passwordstorage.cpp
 
 HEADERS         +=      kernel.h \
                         plugin.h \
@@ -122,7 +110,8 @@ HEADERS         +=      kernel.h \
                         dialogs/settingsdialog.h \
                         dialogs/systemdetailsdialog.h \
                         widgets/treewidgetitem.h \
-    lmi_string.h
+                        lmi_string.h \
+                        passwordstorage.h
 
 FORMS           +=      widgets/providerwidget.ui \
                         widgets/pctreewidget.ui \

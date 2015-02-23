@@ -20,24 +20,18 @@
 # ***** END LICENSE BLOCK ***** */
 
 QT              +=      core gui
+
+include(../../../project.pri)
+
 TEMPLATE        =       lib
 CONFIG          +=      plugin
-QMAKE_CXXFLAGS  +=      -ansi -pedantic -Wall -Wextra
 INCLUDEPATH     +=      ../../ui ../../ui/uics ../../logger
 TARGET          =       $$qtLibraryTarget(lmiccnetwork)
 DESTDIR         =       ../libs
-DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
 
 UI_DIR          =       uics
 MOC_DIR         =       mocs
 OBJECTS_DIR     =       objs
-
-isEmpty(PREFIX) {
-    PREFIX      =       /usr
-}
-isEmpty(LIB_PATH) {
-    LIB_PATH    =       /lib
-}
 
 CONFIG(debug, debug|release) {
     target.path =       ../libs

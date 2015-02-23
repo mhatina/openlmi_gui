@@ -5,4 +5,3 @@ SUBDIRS += \
     plugin/plugin.pro
 
 CONFIG += ordered
-

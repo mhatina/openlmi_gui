@@ -20,25 +20,18 @@
 # ***** END LICENSE BLOCK ***** */
 
 QT              +=      core gui
+
+include(../../../project.pri)
+
 TEMPLATE        =       lib
 CONFIG          +=      plugin
-QMAKE_CXXFLAGS  +=      -ansi -pedantic -Wall -Wextra
 INCLUDEPATH     +=      ../../ui ../../ui/uics ../../logger
-
 TARGET          =       $$qtLibraryTarget(lmiccsoftware)
 DESTDIR         =       ../libs
-DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
 
 UI_DIR          =       uics
 MOC_DIR         =       mocs
 OBJECTS_DIR     =       objs
-
-isEmpty(PREFIX) {
-    PREFIX      =       /usr
-}
-isEmpty(LIB_PATH) {
-    LIB_PATH    =       /lib
-}
 
 CONFIG(debug, debug|release) {
     target.path =       ../libs
@@ -67,7 +60,7 @@ HEADERS         +=      software.h \
                         instructions/uninstallpackageinstruction.h \
                         instructions/updatepackageinstruction.h \
                         instructions/softwareinstruction.h \
-    dialogs/installdialog.h
+                        dialogs/installdialog.h
 
 SOURCES         +=      software.cpp \
                         ../../ui/plugin.cpp \
@@ -85,10 +78,10 @@ SOURCES         +=      software.cpp \
                         instructions/uninstallpackageinstruction.cpp \
                         instructions/updatepackageinstruction.cpp \
                         instructions/softwareinstruction.cpp \
-    dialogs/installdialog.cpp
+                        dialogs/installdialog.cpp
 
 FORMS           +=      software.ui \
                         listwidget.ui \
-    dialogs/installdialog.ui
+                        dialogs/installdialog.ui
 
 RESOURCES       +=      ../../../icons/icons.qrc

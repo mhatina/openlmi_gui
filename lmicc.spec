@@ -1,12 +1,12 @@
 %define lib_path lmicc
 
 Name:           lmicc
-Version:        0.1.1
-Release:        3%{?dist}
+Version:        0.2.0
+Release:        0%{?dist}
 Summary:        GUI for OpenLMI
 License:        GPLv2.1+, LGPLv2.1+
-URL:            https://github.com/mhatina/openlmi_gui 
-Source0:        lmicc.tar.gz 
+URL:            https://github.com/mhatina/openlmi_gui
+Source0:        lmicc.tar.gz
 
 BuildRequires:  qt-devel >= 4.8.5
 BuildRequires:  qtsingleapplication-devel >= 2.6.1
@@ -89,29 +89,29 @@ Requires:       lmicc
 %{summary}
 
 %description account
-%{summary} 
+%{summary}
 
 %description hardware
-%{summary}      
+%{summary}
 
 %description network
-%{summary} 
+%{summary}
 
 %description overview
-%{summary} 
+%{summary}
 
 %description service
-%{summary}      
+%{summary}
 
 %description software
-%{summary} 
+%{summary}
 
 %prep
 %setup -q -n %{name}-%{version}
 
 %build
 qmake-qt4 PREFIX=%{buildroot}/usr/ LIB_PATH=%{_lib}
-make 
+make
 
 %install
 make -C src/ui install
@@ -123,10 +123,10 @@ export QA_SKIP_BUILD_ROOT="true"
 %files bin
 %defattr(-,root,root,0755)
 %doc LICENSE README.md
-%{_bindir}/lmicc 
+%{_bindir}/lmicc
 
-#%files doc
-#%dir %{_docdir}/%{name}
+%files doc
+%dir %{_docdir}/%{name}
 
 %files libs
 
