@@ -180,15 +180,19 @@ void PCTreeWidget::setTimeSec(int time_sec)
     m_time_sec = time_sec * 1000;
 }
 
-bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text)
+bool PCTreeWidget::parentContainsItem(QTreeWidgetItem *parent, std::string text, QTreeWidgetItem *item)
 {
     Logger::getInstance()->debug("PCTreeWidget::parentContainsItem(TreeWidgetItem *parent, std::string text)");
     for (int i = 0; i < parent->childCount(); i++) {
-        TreeWidgetItem *item = (TreeWidgetItem *) parent->child(i);
-        std::string ipv4 = item->getIpv4().empty() ? "N/A" : item->getIpv4();
-        std::string ipv6 = item->getIpv6().empty() ? "N/A" : item->getIpv6();
-        std::string domain = item->getName().empty() ? "N/A" : item->getName();
-        if (ipv4 == text || ipv6 == text || domain == text) {
+        TreeWidgetItem *check_item = (TreeWidgetItem *) parent->child(i);
+        if (item && check_item == item) {
+            continue;
+        }
+        std::string ipv4 = check_item->getIpv4().empty() ? "N/A" : check_item->getIpv4();
+        std::string ipv6 = check_item->getIpv6().empty() ? "N/A" : check_item->getIpv6();
+        std::string domain = check_item->getName().empty() ? "N/A" : check_item->getName();
+        std::string id = check_item->getId();
+        if (ipv4 == text || ipv6 == text || domain == text || id == text) {
             return true;
         }
     }
@@ -203,9 +207,9 @@ int PCTreeWidget::topLevelNodeCount(std::string item_name)
     TreeWidgetItem *tmp;
     for (int i = 0; i < m_ui->tree->topLevelItemCount(); i++) {
         tmp = (TreeWidgetItem *) m_ui->tree->topLevelItem(i);
-        if (item_name.empty())
+        if (item_name.empty()) {
             cnt++;
-        else if (tmp != NULL && tmp->text(0).toStdString() == item_name) {
+        } else if (tmp != NULL && tmp->text(0).toStdString() == item_name) {
             cnt++;
         }
     }
@@ -742,12 +746,12 @@ void PCTreeWidget::validate(QTreeWidgetItem *item, int column)
         return;
     }
 
-    TreeWidgetItem *tree_item = (TreeWidgetItem *) item;    
+    TreeWidgetItem *tree_item = (TreeWidgetItem *) item;
     m_ui->tree->sortByColumn(0, Qt::AscendingOrder);
 
     m_data_of_item_changed = false;
     std::string text = tree_item->text(column).toStdString();
-    if (text.empty() || parentContainsItem(parent, text)) {
+    if (text.empty() || parentContainsItem(parent, text, item)) {
         parent->takeChild(parent->indexOfChild(tree_item));
         m_emit_signal = true;
         return;

@@ -88,6 +88,7 @@ void NetworkPageWidget::setIPNetworkConnection(Pegasus::CIMInstance instance)
 
 void NetworkPageWidget::setIPProtocolEndpoint(Pegasus::CIMInstance instance)
 {
+    Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     QTableWidgetItem *item;
     int i = 0;
     while (1) {
@@ -157,6 +158,7 @@ void NetworkPageWidget::setLanEndPoint(Pegasus::CIMInstance instance)
 
 void NetworkPageWidget::setNetworkRemoteService(Pegasus::CIMInstance instance)
 {
+    Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     QTableWidgetItem *item;
     int i = 0;
     while (1) {

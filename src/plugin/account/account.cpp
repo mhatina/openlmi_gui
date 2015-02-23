@@ -493,6 +493,11 @@ void AccountPlugin::add()
         }
 
         name = user_dialog->getName();
+        if (name.empty()) {
+            Logger::getInstance()->error("Username cannot be empty");
+            delete user_dialog;
+            return;
+        }
         addInstruction(
             new NewUserInstruction(
                 m_client,
@@ -507,6 +512,11 @@ void AccountPlugin::add()
         }
 
         name = group_dialog->getName();
+        if (name.empty()) {
+            Logger::getInstance()->error("Group name cannot be empty");
+            delete group_dialog;
+            return;
+        }
         addInstruction(
             new NewGroupInstruction(
                 m_client,
@@ -541,6 +551,7 @@ void AccountPlugin::add()
                 i,
                 item
             );
+            item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
         }
     }
     current->selectRow(row_count);

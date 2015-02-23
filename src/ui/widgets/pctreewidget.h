@@ -66,7 +66,7 @@ private:
     TreeWidgetItem *m_item_to_show;
     Ui::PCTreeWidget *m_ui;
 
-    bool parentContainsItem(QTreeWidgetItem *parent, std::string text);
+    bool parentContainsItem(QTreeWidgetItem *parent, std::string text, QTreeWidgetItem *item = NULL);
     int topLevelNodeCount(std::string item_name = "");
     std::string getHostName(std::string &ip, int &ai_family);
     TreeWidgetItem *addPcToTree(std::string parent, std::string text);
