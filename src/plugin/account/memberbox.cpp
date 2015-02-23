@@ -22,7 +22,7 @@
 #include "memberbox.h"
 #include "ui_memberbox.h"
 
-MemberBox::MemberBox(std::string owner) :
+MemberBox::MemberBox(String owner) :
     m_ui(new Ui::MemberBox),
     m_owner(owner)
 {
@@ -36,7 +36,7 @@ MemberBox::~MemberBox()
     delete m_ui;
 }
 
-int MemberBox::findItem(std::string text)
+int MemberBox::findItem(String text)
 {
     return m_ui->member_box->findText(text.c_str());
 }
@@ -46,17 +46,17 @@ int MemberBox::itemCount()
     return m_ui->member_box->count();
 }
 
-std::string MemberBox::getItem(int i)
+String MemberBox::getItem(int i)
 {
     return m_ui->member_box->itemText(i).toStdString();
 }
 
-void MemberBox::addItem(std::string text)
+void MemberBox::addItem(String text)
 {
     m_ui->member_box->addItem(text.c_str());
 }
 
-void MemberBox::deleteItem(std::string text)
+void MemberBox::deleteItem(String text)
 {
     m_ui->member_box->removeItem(findItem(text));
 }

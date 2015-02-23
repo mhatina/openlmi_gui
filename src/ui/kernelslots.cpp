@@ -113,12 +113,12 @@ void Engine::Kernel::deletePasswd(String id)
     Logger::getInstance()->debug("Engine::Kernel::deletePasswd(String id)");
 
     CIMClient *client = NULL;
-    if (!m_connections.empty()) {
+    if (!m_connections.empty() && m_connections.find(id) != m_connections.end()) {
         client = (*m_connections.find(id)).second;
-    }
-    if (client && client->isConnected()) {
-        client->disconnect();
-        m_connections.erase(m_connections.find(id));
+        if (client && client->isConnected()) {
+            client->disconnect();
+            m_connections.erase(m_connections.find(id));
+        }
     }
 
     if (!m_storage.deletePassword(id)) {

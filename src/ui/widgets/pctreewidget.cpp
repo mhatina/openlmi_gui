@@ -277,8 +277,8 @@ TreeWidgetItem *PCTreeWidget::addPcToTree(String parent, String text)
         Qt::ItemFlags flags =
             Qt::ItemIsSelectable
             | Qt::ItemIsDragEnabled
-            | Qt::ItemIsEnabled
-            | Qt::ItemIsEditable;
+            | Qt::ItemIsEnabled;
+//            | Qt::ItemIsEditable;
         m_data_of_item_changed = false;
         child->setFlags(flags);
         child->setIcon(0, QIcon(":/computer.png"));
@@ -779,7 +779,7 @@ void PCTreeWidget::validate(QTreeWidgetItem *item, int column)
 
     m_data_of_item_changed = false;
     String text = tree_item->text(column);
-    if (text.empty() || parentContainsItem(parent, text)) {
+    if (text.empty() || parentContainsItem(parent, text, item)) {
         parent->takeChild(parent->indexOfChild(tree_item));
         m_emit_signal = true;
         return;

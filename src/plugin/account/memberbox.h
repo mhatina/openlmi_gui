@@ -22,6 +22,8 @@
 #ifndef MEMBERBOX_H
 #define MEMBERBOX_H
 
+#include "lmi_string.h"
+
 #include <QWidget>
 
 namespace Ui
@@ -43,7 +45,7 @@ public:
      * @brief Constructor
      * @param owner -- group name
      */
-    explicit MemberBox(std::string owner);
+    explicit MemberBox(String owner);
     /**
      * @brief Destructor
      */
@@ -54,7 +56,7 @@ public:
      * @param text
      * @return index of item
      */
-    int findItem(std::string text);
+    int findItem(String text);
     /**
      * @brief Count of members in combobox
      * @return item count
@@ -65,21 +67,21 @@ public:
      * @param i -- index
      * @return item with index @ref i
      */
-    std::string getItem(int i);
+    String getItem(int i);
     /**
      * @brief Add item with text
      * @param text
      */
-    void addItem(std::string text);
+    void addItem(String text);
     /**
      * @brief Delete item with text
      * @param text
      */
-    void deleteItem(std::string text);
+    void deleteItem(String text);
 
 private:
     Ui::MemberBox *m_ui;
-    std::string m_owner;
+    String m_owner;
 
 private slots:
     /**
@@ -100,12 +102,12 @@ signals:
      * @brief Emitted when on '+' button clicked
      * @param group -- name of group
      */
-    void add(std::string group);
+    void add(String group);
     /**
      * @brief Emitted when on '-' button clicked
      * @param group -- name of group
      */
-    void remove(std::string group);
+    void remove(String group);
 };
 
 #endif // MEMBERBOX_H

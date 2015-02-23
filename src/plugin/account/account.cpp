@@ -518,12 +518,17 @@ void AccountPlugin::add()
         }
 
         name = user_dialog->getName();
+        if (name.empty()) {
+            Logger::getInstance()->error("Username cannot be empty!");
+            delete user_dialog;
+            return;
+        }
         addInstruction(
             new NewUserInstruction(
                 m_client,
                 user_dialog
             )
-        );
+        );        
     } else if (current == m_group_table) {
         group_dialog = new NewGroupDialog(this);
         if (!group_dialog->exec()) {
@@ -532,6 +537,11 @@ void AccountPlugin::add()
         }
 
         name = group_dialog->getName();
+        if (name.empty()) {
+            Logger::getInstance()->error("Group name cannot be empty!");
+            delete group_dialog;
+            return;
+        }
         addInstruction(
             new NewGroupInstruction(
                 m_client,
@@ -563,6 +573,7 @@ void AccountPlugin::add()
                 item
             );
         }
+        item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     }
     current->selectRow(row_count);
     setSelectedLineColor(current->selectedItems(), Qt::green);
