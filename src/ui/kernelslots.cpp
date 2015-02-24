@@ -29,6 +29,10 @@ int Engine::Kernel::getSilentConnection(String ip, bool silent)
     if (m_connections.find(ip) == m_connections.end()) {
         CIMClient *client = NULL;
         String username, passwd;
+        if (!m_storage.unlock()) {
+            return PASSWD_ERR;
+        }
+
         switch (m_storage.getUserData(ip, username, passwd)) {
         case PASSWD_NO_MATCH:
             return PASSWD_NO_MATCH;

@@ -16,11 +16,11 @@ isEmpty(QT_SINGLE_APP) {
     QT_SINGLE_APP =     /usr$$LIB_PATH/qt4/mkspecs/features/qtsingleapplication.prf
 }
 
-#exists(/usr$$LIB_PATH/libsecret*) {
-#    DEFINES     +=      "HAVE_LIBSECRET"
-#    LIBS        +=      -lsecret-1
-#    PKGCONFIG   +=      libsecret-1
-#}
+exists(/usr$$LIB_PATH/libsecret*) {
+    DEFINES     +=      "HAVE_LIBSECRET"
+    LIBS        +=      -lsecret-1
+    PKGCONFIG   +=      libsecret-1
+}
 !contains(DEFINES, HAVE_LIBSECRET) {
     exists(/usr$$LIB_PATH/libgnome-keyring*) {
         DEFINES +=      "HAVE_LIBKEYRING"

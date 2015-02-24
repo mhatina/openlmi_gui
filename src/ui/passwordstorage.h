@@ -68,6 +68,7 @@ public:
     PasswordStorage(QMutex *kernel_mutex);
     ~PasswordStorage();
 
+    bool unlock();
     bool createStorage();
     bool resetStorage();
     bool setUserData(String &system, String &username, String &password);

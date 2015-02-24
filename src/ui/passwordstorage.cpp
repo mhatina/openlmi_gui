@@ -57,13 +57,32 @@ void PasswordStorage::resetErr()
     }
 }
 
-static void create_collection_finished(
-    GDBusConnection *connection,
-    GAsyncResult    *res,
-    gpointer         user_data)
+bool PasswordStorage::unlock()
 {
-    Q_UNUSED(connection)
-    user_data = secret_collection_create_finish(res, (GError **) user_data);
+    resetErr();
+
+    SecretService *service = secret_service_get_sync(
+                                 SECRET_SERVICE_LOAD_COLLECTIONS,
+                                 NULL,
+                                 &m_res);
+
+    if (m_res != NULL) {
+        g_object_unref(service);
+        return false;
+    }
+
+    GList *list = NULL;
+    list = g_list_append(list, m_collection);
+    if (!secret_service_unlock_sync(service, list, NULL, NULL, &m_res)) {
+        g_object_unref(service);
+        g_list_free(list);
+        return false;
+    }
+
+    g_object_unref(service);
+    g_list_free(list);
+
+    return true;
 }
 
 bool PasswordStorage::createStorage()
@@ -72,14 +91,56 @@ bool PasswordStorage::createStorage()
         g_object_unref(m_collection);
     }
     resetErr();
-    secret_collection_create(
-        NULL,
-        OPENLMI_KEYRING_DEFAULT,
-        "",
-        SECRET_COLLECTION_CREATE_NONE,
-        NULL,
-        (GAsyncReadyCallback) create_collection_finished,
-        &m_collection);
+    SecretService *service = secret_service_get_sync(
+                                 SECRET_SERVICE_LOAD_COLLECTIONS,
+                                 NULL,
+                                 &m_res);
+
+    if (m_res != NULL) {
+        g_object_unref(service);
+        return false;
+    }
+
+    if (secret_service_load_collections_sync(service, NULL, NULL) == FALSE) {
+        g_object_unref(service);
+        return false;
+    }
+
+    GList *collections = secret_service_get_collections(service);
+    SecretCollection *item = NULL;
+
+    bool collection_exists = false;
+    for (GList *list = collections; list && (item = (SecretCollection *) list->data, TRUE); list = list->next) {
+        gchar *label = secret_collection_get_label(item);
+        if (strcmp(label, OPENLMI_KEYRING_DEFAULT) == 0) {
+            collection_exists = true;
+            m_collection = item;
+            g_object_ref(m_collection);
+
+            g_free(label);
+            break;
+        }
+        g_free(label);
+    }
+
+    if (!collection_exists) {
+        m_collection = secret_collection_create_sync(
+                           service,
+                           OPENLMI_KEYRING_DEFAULT,
+                           "",
+                           SECRET_COLLECTION_CREATE_NONE,
+                           NULL,
+                           &m_res);
+
+        if (m_collection == NULL) {
+            g_list_free_full(collections, g_object_unref);
+            g_object_unref(service);
+            return false;
+        }
+    }
+
+    g_object_unref(service);
+    g_list_free_full(collections, g_object_unref);
 
     return true;
 }
@@ -88,6 +149,8 @@ bool PasswordStorage::resetStorage()
 {
     resetErr();
     if (secret_collection_delete_sync(m_collection, NULL, &m_res)) {
+        g_object_unref(m_collection);
+        m_collection = NULL;
         return createStorage();
     }
 
@@ -97,10 +160,34 @@ bool PasswordStorage::resetStorage()
 bool PasswordStorage::setUserData(String &system, String &username, String &password)
 {
     resetErr();
-    return secret_password_store_sync(PASSWD_SCHEMA, OPENLMI_KEYRING_DEFAULT, "passwd", password, NULL, &m_res,
-                                      "system", system.asConstChar(),
-                                      "username", username.asConstChar(),
-                                      NULL);
+    GHashTable *attributes = secret_attributes_build(PASSWD_SCHEMA,
+                             "system", system.asConstChar(),
+                             "username", username.asConstChar(),
+                             NULL);
+
+    SecretValue *secret = secret_value_new(password, -1, "text/plain");
+
+    SecretItem *item =
+        secret_item_create_sync(
+            m_collection,
+            PASSWD_SCHEMA,
+            attributes,
+            OPENLMI_KEYRING_DEFAULT,
+            secret,
+            SECRET_ITEM_CREATE_REPLACE,
+            NULL,
+            &m_res);
+
+    g_hash_table_destroy(attributes);
+    secret_value_unref(secret);
+
+    if (item == NULL) {
+        return false;
+    }
+
+    g_object_unref(item);
+
+    return true;
 }
 
 passwd_state PasswordStorage::getUserData(String &system, String &username, String &password)
@@ -178,6 +265,10 @@ PasswordStorage::~PasswordStorage()
 
 }
 
+bool PasswordStorage::unlock()
+{
+}
+
 bool PasswordStorage::createStorage()
 {
     m_res = gnome_keyring_create_sync(OPENLMI_KEYRING_DEFAULT, NULL);
@@ -197,14 +288,14 @@ bool PasswordStorage::resetStorage()
 bool PasswordStorage::setUserData(String &system, String &username, String &password)
 {
     m_res = gnome_keyring_store_password_sync(
-                                 GNOME_KEYRING_NETWORK_PASSWORD,
-                                 OPENLMI_KEYRING_DEFAULT,
-                                 system,
-                                 password,
-                                 "user", username.asConstChar(),
-                                 "server", system.asConstChar(),
-                                 NULL
-                             );
+                GNOME_KEYRING_NETWORK_PASSWORD,
+                OPENLMI_KEYRING_DEFAULT,
+                system,
+                password,
+                "user", username.asConstChar(),
+                "server", system.asConstChar(),
+                NULL
+            );
 
     return m_res == GNOME_KEYRING_RESULT_OK;
 }
