@@ -277,6 +277,9 @@ std::string CIMValue::get_property_value(Pegasus::CIMInstance instance,
         std::string propertyName, Pegasus::CIMProperty *property)
 {
     const char *name = propertyName.c_str();
+    if (instance.isUninitialized())
+        return "";
+
     const Pegasus::Uint32 propIndex = instance.findProperty(name);
     if (propIndex == Pegasus::PEG_NOT_FOUND) {
         return "";
