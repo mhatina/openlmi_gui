@@ -1,5 +1,5 @@
 /* ***** BEGIN LICENSE BLOCK *****
- *   Copyright (C) 2013-2014, Martin Hatina <mhatina@redhat.com>
+ *   Copyright (C) 2013-2014, Dominika Hoďovská <dominika.hodovska@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License as
@@ -27,6 +27,8 @@
 #include "pctreewidgettestsuite.h"
 #include "startuptestsuite.h"
 #include "toolbartestsuite.h"
+#include "accounttestsuite.h"
+#include "hardwareplugintestsuite.h"
 
 class Tst_LMICC: public QObject {
 

@@ -174,8 +174,6 @@ void Engine::Kernel::enableSpecialButtons(bool state)
     bool refresh = !list.empty() & m_refreshEnabled & state;
     QPushButton *button = widget<QPushButton *>("refresh_button");
     button->setEnabled(refresh);
-    button = widget<QPushButton *>("delete_passwd_button");
-    button->setEnabled(refresh);
     widget<QToolButton *>("power_button")->setEnabled(
         refresh);
 }

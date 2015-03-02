@@ -1,5 +1,5 @@
 /* ***** BEGIN LICENSE BLOCK *****
- *   Copyright (C) 2013-2014, Martin Hatina <mhatina@redhat.com>
+ *   Copyright (C) 2013-2014, Dominika Hoďovská <dominika.hodovska@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License as
@@ -23,21 +23,18 @@
 
 #include "abstracttestsuite.h"
 
-#include <QDialogButtonBox>
-
 class MenuBarTestSuite: public AbstractTestSuite
 {
     Q_OBJECT
+    friend class Tst_Helper;
 private:
-    void actionAboutTestresult();
+    void actionAboutTestResult();
+
 public:
     MenuBarTestSuite();
-    ~MenuBarTestSuite();
 
 private slots:
-    void testOptionsButton();
-    void testOptionsGeneralPlugin();
-//    void testOptionsGeneral();
+//    void testOptionsAction();
     void testCloseApp();
     void testReloadPluginsAction();
     void testShowAbout();

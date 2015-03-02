@@ -1,5 +1,5 @@
 /* ***** BEGIN LICENSE BLOCK *****
- *   Copyright (C) 2013-2014, Martin Hatina <mhatina@redhat.com>
+ *   Copyright (C) 2013-2014, Dominika Hoďovská <dominika.hodovska@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License as
@@ -22,12 +22,11 @@ MenuBarTestSuite::MenuBarTestSuite() :
 {
 }
 
-MenuBarTestSuite::~MenuBarTestSuite()
-{
-
-}
-
-void MenuBarTestSuite::actionAboutTestresult() {
+/*
+ * TODO class for logs, test ctrl+L etc.
+ * what for is field in logs window
+ */
+void MenuBarTestSuite::actionAboutTestResult() {
 
     QList<QMessageBox *> childList = getWindow<QMessageBox *>();
     if (childList.isEmpty())
@@ -42,51 +41,14 @@ void MenuBarTestSuite::actionAboutTestresult() {
     QTest::keyClick(detail, Qt::Key_Escape);
 }
 
-void MenuBarTestSuite::testOptionsButton() {
-    QSKIP("Not develped now.", SkipSingle);
-    QAction* options = kernel->widget<QAction*>("action_options");
-    QVERIFY2(options, "Failed to get action_options Widget");
-    QVERIFY2(options->isVisible(), "Options menu item is not visible");
+//void MenuBarTestSuite::testOptionsAction() {
 
-    options->trigger();
-    QDialog* dialog = getWindow<QDialog*>("SettingsDialog");
-    QVERIFY2(dialog, "Failed to get SettingsDialog");
-
-    QTest::qWait(1000);
-    QDialogButtonBox* buttonBox = dialog->findChild<QDialogButtonBox*>("button_box");
-    QVERIFY2(buttonBox, "Failed to getbutton_box");
-
-// <------------------ tu si skoncila
-
-//    buttonBox->button(
-    QPushButton* closeButton = buttonBox->button(QDialogButtonBox::Close);
-    QVERIFY2(closeButton, "Failed to get close button.");
-    closeButton->click();
-//    std::cerr << closeButton->actions().size() << std::endl;
-//    QAction* closeAction = closeButton->actions().at(0);
-//    closeAction->trigger();
-}
-
-void MenuBarTestSuite::testOptionsGeneralPlugin() {
-    QSKIP("Not develped now.", SkipSingle);
-    QAction* options = kernel->widget<QAction*>("action_options");
-    QVERIFY2(options, "Failed to get action_options Widget");
-    QVERIFY2(options->isVisible(), "Options menu item is not visible");
-
-    options->trigger();
-    QDialog* dialog = getWindow<QDialog*>("SettingsDialog");
-    QVERIFY2(dialog, "Failed to get SettingsDialog");
-
-    //QListWidgetItem* list = dialog->findChild<QListWidgetItem*>("list");
-    //QVERIFY2(list, "Failed to get list from SettingsDialog");
-    //qlistwidget, qbutton_box?
-
-}
+//}
 
 //ready?
 void MenuBarTestSuite::testCloseApp()
 {
-//    QSKIP("Not needed.", SkipSingle);
+    QSKIP("Ready.", SkipSingle);
     QAction *exit = kernel->widget<QAction *>("action_exit");
     QVERIFY2(exit, "Failed to get action_exit Widget");
     QVERIFY2(exit->isVisible(), "Exit menu item is not visible");
@@ -99,7 +61,7 @@ void MenuBarTestSuite::testCloseApp()
 //ready?
 void MenuBarTestSuite::testReloadPluginsAction()
 {
-//    QSKIP("Not needed.", SkipSingle);
+    QSKIP("Ready.", SkipSingle);
     QTabWidget *plugins = kernel->widget<QTabWidget *>("tab_widget");
     QVERIFY2(plugins, "Failed to get tab_widget");
     QAction *reloadPluginsAct = kernel->widget<QAction *>("action_reload_plugins");
@@ -117,14 +79,14 @@ void MenuBarTestSuite::testReloadPluginsAction()
 //ready?
 void MenuBarTestSuite::testShowAbout()
 {
-//    QSKIP("Not needed", SkipSingle);
+    QSKIP("Ready", SkipSingle);
     QAction *actionAbout = kernel->widget<QAction *>("action_about");
     QVERIFY2(actionAbout, "Failed to get action_about widget");
 
     QMessageBox *detail = kernel->widget<QMessageBox *>("about_dialog");
     QVERIFY2(detail == NULL, "about_dialog not null before action_about triggering");
 
-    boost::thread t(boost::bind(&MenuBarTestSuite::actionAboutTestresult,this));
+    boost::thread t(boost::bind(&MenuBarTestSuite::actionAboutTestResult,this));
     actionAbout->trigger();
     QTest::qWait(1000);
     t.join();

@@ -1,5 +1,5 @@
 /* ***** BEGIN LICENSE BLOCK *****
- *   Copyright (C) 2013-2014, Martin Hatina <mhatina@redhat.com>
+ *   Copyright (C) 2013-2014, Dominika Hoďovská <dominika.hodovska@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License as
@@ -22,10 +22,6 @@ StartupTestSuite::StartupTestSuite() :
 {
 }
 
-StartupTestSuite::~StartupTestSuite()
-{
-
-}
 
 //ready?
 void StartupTestSuite::testVersionNr() {

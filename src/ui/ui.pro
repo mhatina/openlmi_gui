@@ -90,7 +90,11 @@ SOURCES         +=      main.cpp \
                         tests/toolbartestsuite.cpp \
                         tests/pctreewidgettestsuite.cpp \
                         tests/startuptestsuite.cpp \
-                        tests/tst_helper.cpp
+                        tests/tst_helper.cpp \
+    tests/accounttestsuite.cpp \
+    tests/hardwareplugintestsuite.cpp \
+    tests/abstractplugintestsuite.cpp \
+    tests/handler.cpp
 
 HEADERS         +=      mainwindow.h \
                         kernel.h \
@@ -124,7 +128,11 @@ HEADERS         +=      mainwindow.h \
                         tests/toolbartestsuite.h \
                         tests/pctreewidgettestsuite.h \
                         tests/startuptestsuite.h \
-                        tests/tst_helper.h
+                        tests/tst_helper.h \
+    tests/accounttestsuite.h \
+    tests/hardwareplugintestsuite.h \
+    tests/abstractplugintestsuite.h \
+    tests/handler.h
 
 FORMS           +=      mainwindow.ui \
                         widgets/providerwidget.ui \

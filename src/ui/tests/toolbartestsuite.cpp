@@ -1,5 +1,5 @@
 /* ***** BEGIN LICENSE BLOCK *****
- *   Copyright (C) 2013-2014, Martin Hatina <mhatina@redhat.com>
+ *   Copyright (C) 2013-2014, Dominika Hoďovská <dominika.hodovska@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License as
@@ -21,14 +21,11 @@ ToolbarTestSuite::ToolbarTestSuite() :
     AbstractTestSuite()
 {
 }
-ToolbarTestSuite::~ToolbarTestSuite()
-{
-}
 
 //ready?
 void ToolbarTestSuite::testAddButton()
 {
-//    QSKIP("Not needed.", SkipSingle);
+//    QSKIP("Ready?", SkipSingle);
     PCTreeWidget *pcTree = kernel->getMainWindow()->getPcTreeWidget();
     QVERIFY2(pcTree, "Failed to get PCTreeWidget.");
     QPushButton *addButton = kernel->getMainWindow()->getToolbar()->findChild<QPushButton *>("add_button");
@@ -46,16 +43,16 @@ void ToolbarTestSuite::testAddButton()
 
 }
 
-//not ready - doesn't work
+//ready?
 void ToolbarTestSuite::testRemoveButton() {
-    QSKIP("Segfault - neviem co s nim.", SkipSingle);
+//    QSKIP("Ready?", SkipSingle);
     QTreeWidget *tree = kernel->getMainWindow()->getPcTreeWidget()->getTree();
     QVERIFY2(tree, "Failed to get PCTreeWidget.");
 
     for (int i = 1; i <= 3; i++) {
         std::stringstream ss;
-        ss << "192.256.0." << i;
-        addSystem(ss.str(), 0);
+        ss << "192.168.0." << i;
+        addSystem(ss.str(), 1);
     }
 
     std::vector<std::string> itemsBefore;
@@ -78,7 +75,7 @@ void ToolbarTestSuite::testRemoveButton() {
 
     //items after -> items before
     getAllItems(tree->invisibleRootItem(), itemsBefore);
-    removeSystem("192.168.0.2");
+    removeSystem(std::string("192.168.0.2"));
     getAllItems(tree->invisibleRootItem(), itemsAfter);
 
 

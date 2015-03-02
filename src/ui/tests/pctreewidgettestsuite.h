@@ -1,5 +1,5 @@
 /* ***** BEGIN LICENSE BLOCK *****
- *   Copyright (C) 2013-2014, Martin Hatina <mhatina@redhat.com>
+ *   Copyright (C) 2013-2014, Dominika Hoďovská <dominika.hodovska@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License as
@@ -23,14 +23,19 @@
 class PCTreeWidgetTestSuite : public AbstractTestSuite
 {
     Q_OBJECT
+private:
+    void addGroup(std::string g);
+    void deleteGroup(std::string g);
 public:
     PCTreeWidgetTestSuite();
-    ~PCTreeWidgetTestSuite();
 private slots:
     void testContextMenu();
+    void testAddedGroupPresence();
     void testAdressVerification_data();
     void testAdressVerification();
+    void testAddSystems_data();
     void testAddSystems();
+    void testTwoSystemsSameName();
     void testAddGroups();
     void testRemoveGroup();
     void testAddNamelessGroup();

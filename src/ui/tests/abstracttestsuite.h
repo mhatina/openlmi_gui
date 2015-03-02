@@ -1,5 +1,5 @@
 /* ***** BEGIN LICENSE BLOCK *****
- *   Copyright (C) 2013-2014, Martin Hatina <mhatina@redhat.com>
+ *   Copyright (C) 2013-2014, Dominika Hoďovská <dominika.hodovska@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License as
@@ -22,12 +22,17 @@
 #include <QObject>
 #include <QtTest/QtTestGui>
 #include <QtTest/QtTest>
+#include "plugin.h"
 #include "kernel.h"
 #include "tst_helper.h"
+
+class Tst_Helper;
+
 
 class AbstractTestSuite: public QObject
 {
     Q_OBJECT
+    friend class Tst_Helper;
 protected:
     Engine::Kernel *kernel;
     Tst_Helper* h;
@@ -40,7 +45,7 @@ protected:
             dialog = kernel->widget<T>(str);
             sleep(1);
             i++;
-        } while (!dialog && i < 10);
+        } while (!dialog && i < 5);
 
         return dialog;
     }
@@ -51,9 +56,9 @@ protected:
         int i = 0;
         do {
             l = kernel->getMainWindow()->findChildren<T>();
-            sleep(1);
+            usleep(100000);
             i++;
-        } while (l.empty() && i < 10);
+        } while (l.empty() && i < 300);
 
         return l;
     }
@@ -62,17 +67,19 @@ protected:
     void performAuthentication(int opt);
     void addSystem(std::string systemName, int opt = 0);
     void removeSystem(std::string name = "");
+    void selectPlugin(std::string s);
 
+    Engine::IPlugin* findPlugin(std::string s);
     QTreeWidgetItem* getSystem(std::string name, QTreeWidget *tree);
     std::vector<QTreeWidgetItem*>findGroup(std::string name);
 
 public:
+    void status();
     explicit AbstractTestSuite(QObject *parent = 0);
     ~AbstractTestSuite();
 
 protected slots:
     void init();
-    void testRun();
     void cleanup();
 
 signals:

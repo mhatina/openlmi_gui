@@ -1,5 +1,5 @@
 /* ***** BEGIN LICENSE BLOCK *****
- *   Copyright (C) 2013-2014, Martin Hatina <mhatina@redhat.com>
+ *   Copyright (C) 2013-2014, Dominika Hoďovská <dominika.hodovska@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License as
@@ -25,6 +25,10 @@
 #include <QtTestGui>
 #include <QWidget>
 
+#include "abstracttestsuite.h"
+
+class AbstractTestSuite;
+
 class Tst_Helper : public QObject
 {
     Q_OBJECT
@@ -32,12 +36,16 @@ class Tst_Helper : public QObject
 private:
     bool m_closed;
     bool m_success;
+    boost::thread *t;
+    AbstractTestSuite* ts;
 
+    void closeWarning();
 public:
-    Tst_Helper();
+    Tst_Helper(AbstractTestSuite *parent);
 
     bool getClosed() const;
     bool getSuccess();
+    bool cleanupThread();
 
 public slots:
     void closed();

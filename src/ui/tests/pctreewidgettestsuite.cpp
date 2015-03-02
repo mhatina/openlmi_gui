@@ -1,5 +1,5 @@
 /* ***** BEGIN LICENSE BLOCK *****
- *   Copyright (C) 2013-2014, Martin Hatina <mhatina@redhat.com>
+ *   Copyright (C) 2013-2014, Dominika Hoďovská <dominika.hodovska@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License as
@@ -25,13 +25,93 @@ PCTreeWidgetTestSuite::PCTreeWidgetTestSuite() :
 {
 }
 
-PCTreeWidgetTestSuite::~PCTreeWidgetTestSuite() {
+void PCTreeWidgetTestSuite::addGroup(std::string g) {
+
+    std::vector<QTreeWidgetItem*> foundGroups;
+
+    QAction* addGroupsAction = kernel->widget<QAction*>("create_group_action");
+    QVERIFY2(addGroupsAction, "Failed to get create_group_action");
+
+    QTreeWidget* tree = kernel->getMainWindow()->getPcTreeWidget()->getTree();
+    QVERIFY2(tree, "Failed to get PCTreeWidget");
+
+    boost::thread t(boost::bind(&QAction::trigger,addGroupsAction));
+    QTest::qWait(1000);
+
+    foundGroups = findGroup("");
+    if (foundGroups.size() != 1) {
+        QFAIL("Can not find recently added group which name hasn't been set yet.");
+    }
+    foundGroups.at(0)->setText(0, g.c_str());
+    t.join();
+}
+
+void PCTreeWidgetTestSuite::deleteGroup(std::string g) {
+    QAction* deleteGroupAction = kernel->widget<QAction*>("delete_group_action");
+    QVERIFY2(deleteGroupAction, "Failed to get delete_group_action");
+    QTreeWidget* tree = kernel->getMainWindow()->getPcTreeWidget()->getTree();
+    QVERIFY2(tree, "Failed to get PCTreeWidget");
+
+    std::vector<QTreeWidgetItem*> foundGroups = findGroup(g);
+    if (foundGroups.size() == 0) {
+        std::stringstream ss;
+        ss << "Failed to find group named " << g;
+        QFAIL(ss.str().c_str());
+    }
+
+    QPoint point = tree->visualItemRect(foundGroups.at(0)).center();
+    kernel->getMainWindow()->getPcTreeWidget()->showContextMenu(point);
+    QTest::qWait(1000);
+    if (!deleteGroupAction->isEnabled())
+        std::cerr << g.c_str() << std::endl;
+    QVERIFY2(deleteGroupAction->isEnabled(), "delete_group_action not enabled after rightclicking on group.");
+    deleteGroupAction->trigger();
+
+    QTest::qWait(100);
+    foundGroups = findGroup(g);
+    QVERIFY2(foundGroups.size() == 0, "Failed to remove group.");
+}
+
+void PCTreeWidgetTestSuite::testAddedGroupPresence() {
+
+    QSKIP("Not developed now", SkipSingle);
+    std::vector<QTreeWidgetItem*> foundGroups;
+    foundGroups = findGroup("Added");
+    QVERIFY2(foundGroups.size() == 1, "Group Added not found after app start.");
+
+    deleteGroup("Added");
+    foundGroups = findGroup("Added");
+    QVERIFY2(foundGroups.size() == 0, "Failed to delete Added group.");
+
+    cleanup();
+    init();
+
+    foundGroups = findGroup("Added");
+    QVERIFY2(foundGroups.size() == 1, "Group Added not found after app start.");
+
+    deleteGroup("Added");
+    QTest::qWait(1000);
+    QVERIFY2(foundGroups.size() == 0, "Failed to delete Added group.");
+
+    addSystem("localhost", 1);
+
+    foundGroups = findGroup("Added");
+    QVERIFY2(foundGroups.size() == 1, "Group Added not found after its deleting  and adding system.");
+
+    deleteGroup("Added");
+    QVERIFY2(foundGroups.size() == 0, "Failed to delete Added group.");
+
+    addGroup("devil");
+    addSystem("localhost", 1);
+
+    foundGroups = findGroup("Added");
+    QVERIFY2(foundGroups.size() == 1, "Group Added not found after its deleting  and adding system.");
 
 }
 
 //ready??
 void PCTreeWidgetTestSuite::testContextMenu() {
-//    QSKIP("Ready.", SkipSingle);
+    QSKIP("Ready.", SkipSingle);
     QMenu* menu = kernel->widget<QMenu*>("pctree_context_menu");
     QVERIFY2(menu, "Failed to get pctree_context_menu");
     QVERIFY2(!menu->isVisible(),"Context menu shouldn't be visible by default");
@@ -53,20 +133,18 @@ void PCTreeWidgetTestSuite::testAdressVerification_data() {
     QTest::addColumn<QString>("system");
     QTest::addColumn<bool>("success");
 
-    QTest::newRow("valid IPv4") << "127.0.0.1" << true;
-    QTest::newRow("localhost") << "localhost" << true;
-    QTest::newRow("valid IPv6") << "::1" << true;
+    QTest::newRow("valid IPv4")     << "127.0.0.1" << true;
+    QTest::newRow("localhost")      << "localhost" << true;
+    QTest::newRow("valid IPv6")     << "::1" << true;
     QTest::newRow("not valid IPv4") << "192.168.0.256" << false;
     QTest::newRow("not valid IPv6") << ":1" << false;
-    QTest::newRow("valid domain") << "www.google.com" << true;
+    QTest::newRow("valid domain")   << "www.google.com" << true;
 }
 
-//not ready - check systems after restart -> waiting for devel. op.
-//zmenit vypis pri testAddress verification pridat nazov farby
-//dokonciverifikacie po restarte (vyhadzuje segfault neviem preco)
+//ready
 void PCTreeWidgetTestSuite::testAdressVerification() {
 
-    QSKIP("Segfault- neviem co s nim.", SkipAll);
+    QSKIP("Ready.", SkipAll);
     QFETCH(QString, system);
     QFETCH(bool, success);
 
@@ -74,19 +152,22 @@ void PCTreeWidgetTestSuite::testAdressVerification() {
     std::string systemStr = system.toStdString();
     addSystem(systemStr, success);
 
-    //check
-    //pre docasne ucely
     QColor c = getSystem(systemStr, tree)->backgroundColor(0);
-
     std::stringstream ss;
-    ss << "Color of valid system is " << c.name().toStdString() << " but it shouldn't have color set.";
-    ss << "Color of added system is not white.";
-    QVERIFY2(!success || c == QColor("white"), ss.str().c_str());
 
+    if (success && c == QColor("red")) {
+        removeSystem(systemStr);
+        ss << "Color of valid system is " << c.name().toStdString();
+        ss << " but it should be " << QColor("white").name().toStdString();
+        QFAIL(ss.str().c_str());
+    }
 
-    //ss << "Color of added system is " << c << " but it should be red.";
-    ss << "Color of not valid system should be red.";
-    QVERIFY2(success || c == QColor("red"), ss.str().c_str());
+    if (!success && c != QColor("red")) {
+        removeSystem(systemStr);
+        ss << "After program restart: Color of not valid system is " << c.name().toStdString();
+        ss << " but it should be " << QColor("red").name().toStdString();
+        QFAIL(ss.str().c_str());
+    }
 
     cleanup();
     init();
@@ -94,54 +175,71 @@ void PCTreeWidgetTestSuite::testAdressVerification() {
     tree = kernel->getMainWindow()->getPcTreeWidget()->getTree();
     c = getSystem(systemStr, tree)->backgroundColor(0);
 
-    ss << "After program restart: Color of added system is not white.";
-    QVERIFY2(!success || c == QColor("white"), ss.str().c_str());
+    if (success && c == QColor("red")) {
+        removeSystem(systemStr);
+        ss << "After program restart: Color of valid system is " << c.name().toStdString();
+        ss << " but it should be " << QColor("white").name().toStdString();
+        QFAIL(ss.str().c_str());
+    }
 
-    ss << "After program restart: Color of not valid system should be red.";
-    QVERIFY2(success || c == QColor("red"), ss.str().c_str());
+    if (!success && c != QColor("red")) {
+        removeSystem(systemStr);
+        ss << "After program restart: Color of not valid system is " << c.name().toStdString();
+        ss << " but it should be " << QColor("red").name().toStdString();
+        QFAIL(ss.str().c_str());
+    }
     removeSystem(systemStr);
 
 }
 
+void PCTreeWidgetTestSuite::testAddSystems_data() {
+    QTest::addColumn<int>("authType");
+
+    QTest::newRow("press esc key") << 1;
+    QTest::newRow("press cancel button") << 2;
+    QTest::newRow("press ok button") << 3;
+    QTest::newRow("not valid username, no password") << 4;
+    QTest::newRow("valid username, no password") << 5;
+    QTest::newRow("no user, valid password") << 6;
+    QTest::newRow("not valid username, not valid password") << 7;
+    QTest::newRow("valid username, not valid password") << 8;
+    QTest::newRow("valid username, valid password") << 9;
+}
+
 //not ready - check correct behaviour after verification
 void PCTreeWidgetTestSuite::testAddSystems() {
-    QSKIP("Segfault - neviem co s nim.", SkipSingle);
-    for (int i = 3; i < 7; i++) {
-        addSystem("localhost", i);
+    QSKIP("Ready", SkipSingle);
+    QFETCH(int, authType);
 
-        //inetrnal purpose
-//        QTest::qWait(1000);
-
-        removeSystem("localhost");
+    addSystem("localhost", authType);
+    if (authType < 9 && authType > 2) {
+        while (!h->cleanupThread())
+            QTest::qWait(1000);
     }
+    removeSystem("localhost");
+}
 
+void PCTreeWidgetTestSuite::testTwoSystemsSameName() {
+    QSKIP("Ready?", SkipSingle);
     addSystem("twin",1);
     addSystem("twin",1);
     std::vector<std::string> items;
-    getAllItems(kernel->getMainWindow()->getPcTreeWidget()->getTree()->invisibleRootItem(), items, (char*)"twin");
+
+    QTreeWidget* tree = kernel->getMainWindow()->getPcTreeWidget()->getTree();
+    QTreeWidgetItem* addedItem = tree->findItems("Added", Qt::MatchExactly).at(0);
+    getAllItems(addedItem, items, (char*)"twin");
+
     QVERIFY2(items.size() == 1, "There should not be possible to add two systems of same name");
 }
 
-//not ready - check group added is present
+//ready
 void PCTreeWidgetTestSuite::testAddGroups() {
-//    QSKIP("Not develped now.", SkipSingle);
-//    PCTreeWidget *pcTree = kernel->getMainWindow()->getPcTreeWidget();
-//    QTest::mouseClick(pcTree,Qt::RightButton);
-    QAction* addGroups = kernel->widget<QAction*>("create_group_action");
+    QSKIP("Not develped now.", SkipSingle);
 
-    QVERIFY2(addGroups, "Failed to get create_group_action");
-
-    QTreeWidget* tree = kernel->getMainWindow()->getPcTreeWidget()->getTree();
-    QVERIFY2(tree, "Failed to get PCTreeWidget");
+    std::vector<QTreeWidgetItem*> foundGroups;
 
     for (int i = 0; i < 2; i++) {
-        boost::thread t(boost::bind(&QAction::trigger,addGroups));
-        QTest::qWait(1000);
-
-        std::vector<QTreeWidgetItem*> foundGroups = findGroup("");
-        QVERIFY2(foundGroups.size() == 1, "Can not find recently added group.");
-
-        foundGroups.at(0)->setText(0, "New group");
+        addGroup("New group");
 
         QTest::qWait(1000);
         foundGroups = findGroup("New group");
@@ -150,60 +248,34 @@ void PCTreeWidgetTestSuite::testAddGroups() {
             if (i)
                 QVERIFY2(foundGroups.size() == 1, "It is possible to add two groups of same name");
         }
-        t.join();
     }
+    deleteGroup("New group");
+    foundGroups = findGroup("Added");
+    QVERIFY2(foundGroups.size() == 1, "Group Added not found after test passing.");
 }
 
 //not ready
 void PCTreeWidgetTestSuite::testRemoveGroup() {
-//    QSKIP("Not develped now.", SkipSingle);
-    QAction* deleteGroup = kernel->widget<QAction*>("delete_group_action");
-    QVERIFY2(deleteGroup, "Failed to get delete_group_action");
+    QSKIP("Not develped now.", SkipSingle);
 
-    QAction* addGroups = kernel->widget<QAction*>("create_group_action");
-    QVERIFY2(addGroups, "Failed to get create_group_action");
+    std::vector<QTreeWidgetItem*> foundGroups;
 
-    QTreeWidget* tree = kernel->getMainWindow()->getPcTreeWidget()->getTree();
-    QVERIFY2(tree, "Failed to get PCTreeWidget");
+    addGroup("I am to stay");
+    addGroup("Delete me");
+    deleteGroup("Delete me");
 
-    boost::thread t(boost::bind(&QAction::trigger,addGroups));
-    QTest::qWait(1000);
+    foundGroups = findGroup("I am to stay");
+    QVERIFY2(foundGroups.size() == 1, "Deleting group removes more groups that it should.");
 
-    std::vector<QTreeWidgetItem*> foundGroups = findGroup("");
-    QVERIFY2(foundGroups.size() == 1, "Can not find recently added group.");
-
-    foundGroups.at(0)->setText(0, "Delete me");
-
-    QTest::qWait(1000);
-    foundGroups = findGroup("Delete me");
-    if (foundGroups.size() != 1) {
-        QVERIFY2(foundGroups.size() != 0, "Recently added group not found.");
-    }
-    t.join();
-
-//    QPainter painter(tree);
-//    painter.fillRect(tree->geometry(), QBrush(Qt::red, Qt::CrossPattern));
-//    painter.fillRect(tree->visualItemRect(foundGroups.at(0)), QBrush(Qt::red, Qt::CrossPattern));
-//    QTest::qWait(4000);
-
-    //nejde mi to oznacit
-    QTest::mouseClick(tree, Qt::LeftButton, 0);
-    QPoint point = tree->mapToGlobal(tree->visualItemRect(foundGroups.at(0)).center());
-    QCursor::setPos(point);
-    QTest::qWait(1000);
-    kernel->getMainWindow()->getPcTreeWidget()->showContextMenu(tree->mapFromGlobal(point));
-    QTest::qWait(1000);
-    QVERIFY2(deleteGroup->isEnabled(), "delete_group_action not enabled after rightclicking on group.");
-    deleteGroup->trigger();
-
-    QTest::qWait(1000);
-    foundGroups = findGroup("Delete me");
-    QVERIFY2(foundGroups.size() == 0, "Failed to remove group.");
+    deleteGroup("I am to stay");
+    foundGroups = findGroup("Added");
+    QVERIFY2(foundGroups.size() == 1, "Group Added not found after test passing.");
 }
+
 
 //ready??
 void PCTreeWidgetTestSuite::testAddNamelessGroup() {
-//    QSKIP("Not needed.", SkipSingle);
+    QSKIP("Not needed.", SkipSingle);
     QAction* addGroups = kernel->widget<QAction*>("create_group_action");
     QVERIFY2(addGroups, "Failed to get create_group_action");
 
@@ -214,15 +286,16 @@ void PCTreeWidgetTestSuite::testAddNamelessGroup() {
     QTest::qWait(1000);
 
     std::vector<QTreeWidgetItem*> foundGroups = findGroup("");
-    QVERIFY2(foundGroups.size() == 1, "Can not find recently added group.");
-
+    if (foundGroups.size() != 1) {
+        QFAIL("Can not find recently added group.");
+    }
     QTest::keyClick(tree,Qt::Key_Enter);
     QTest::qWait(1000);
+    t.join();
     foundGroups = findGroup("");
     QVERIFY2(foundGroups.size() == 0, "It is possible to add group without name set.");
-    t.join();
 }
 
 void PCTreeWidgetTestSuite::testAddSystemsToGroups() {
-
+    QSKIP("Not developed yet", SkipSingle);
 }

@@ -1,5 +1,5 @@
 /* ***** BEGIN LICENSE BLOCK *****
- *   Copyright (C) 2013-2014, Martin Hatina <mhatina@redhat.com>
+ *   Copyright (C) 2013-2014, Dominika Hoďovská <dominika.hodovska@gmail.com>
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License as
@@ -19,7 +19,7 @@
 
 AbstractTestSuite::AbstractTestSuite(QObject *parent) :
     QObject(parent),
-    h(new Tst_Helper())
+    h(new Tst_Helper(this))
 {
     connect(
         this,
@@ -33,8 +33,15 @@ AbstractTestSuite::~AbstractTestSuite()
     delete h;
 }
 
-void AbstractTestSuite::testRun() {
-    QVERIFY(false);
+
+void AbstractTestSuite::status()
+{
+    std::vector<std::string> items;
+    getAllItems(kernel->getMainWindow()->getPcTreeWidget()->getTree()->invisibleRootItem(), items);
+    for (unsigned j = 0; j < items.size(); j++) {
+        std::cerr << items.at(j) << "\t";
+    }
+    std::cerr.flush();
 }
 
 void AbstractTestSuite::init()
@@ -50,12 +57,38 @@ void AbstractTestSuite::init()
         h,
         SLOT(closed()));
     kernel->showMainWindow();
+//    kernel->getMainWindow()->setWindowState(Qt::WindowMaximized);
 }
 
 //nechyba tu nieco? pr - zatvorenie programu
 void AbstractTestSuite::cleanup()
 {
-    delete kernel;
+    if (kernel) {
+        qApp->closeAllWindows();
+        delete kernel;
+        kernel = NULL;
+    }
+}
+
+void AbstractTestSuite::selectPlugin(std::string s) {
+    QTabWidget* tw = kernel->widget<QTabWidget*>("tab_widget");
+    Engine::IPlugin* plug = findPlugin(s);
+    QVERIFY2(plug, "Failed to get Account plugin");
+    QTest::qWait(500);
+    tw->setCurrentWidget(plug);
+    QTest::qWait(500);
+    QVERIFY2(plug->isVisible(), "Failed to select Account plugin");
+}
+
+Engine::IPlugin* AbstractTestSuite::findPlugin(std::string s) {
+    QTabWidget* tw = kernel->widget<QTabWidget*>("tab_widget");
+    Engine::IPlugin* plug = NULL;
+    for (int i = 0; i < tw->count(); i++) {
+        plug = (Engine::IPlugin*)tw->widget(i);
+        if (plug->getLabel() == s)
+            break;
+    }
+    return plug;
 }
 
 //nebol by lepsi ukazatel? - nie, lebo potrebujem si udrzat informacie o danych systemoch aj po restarte
@@ -78,6 +111,7 @@ void AbstractTestSuite::performAuthentication(int opt)
         window = childrenList.at(0);
         opt = 1;
     } else {
+        QTest::qWait(500);
         window = getWindow<QDialog *>("AuthenticationDialog");
         QVERIFY2(window, "Failed to get AuthenticationDialog");
     }
@@ -94,24 +128,17 @@ void AbstractTestSuite::performAuthentication(int opt)
 
 void AbstractTestSuite::addSystem(std::string systemName, int opt)
 {
-
     PCTreeWidget *pcTree = kernel->getMainWindow()->getPcTreeWidget();
     QVERIFY2(pcTree, "Failed to get PCTreeWidget.");
     QPushButton *addButton = kernel->getMainWindow()->getToolbar()->findChild<QPushButton *>("add_button");
     QVERIFY2(addButton, "Failed to get add_button");
 
-    if (opt > 7) {
-        QTest::qWait(1000);
-        removeSystem(systemName);
-        QTest::qWait(10000);
-    }
-
     QTest::qWait(100);
     QTest::mouseClick(addButton, Qt::LeftButton);
 
-
     boost::thread t(boost::bind(&AbstractTestSuite::performAuthentication, this, opt));
-    pcTree->getTree()->selectedItems().at(0)->setText(0, systemName.c_str());
+    QTreeWidgetItem *item = pcTree->getTree()->selectedItems()[0];
+    item->setText(0, systemName.c_str());
     QTest::qWait(1000);
     t.join();
 }
@@ -119,7 +146,6 @@ void AbstractTestSuite::addSystem(std::string systemName, int opt)
 //not ready
 void AbstractTestSuite::removeSystem(std::string name)
 {
-
     QPushButton *removeButton = kernel->getMainWindow()->getToolbar()->findChild<QPushButton *>("remove_button");
     QVERIFY2(removeButton, "Failed to get remove_button");
 
@@ -127,7 +153,9 @@ void AbstractTestSuite::removeSystem(std::string name)
     if (name != "") {
         QTreeWidget *tree = kernel->getMainWindow()->getPcTreeWidget()->getTree();
         QVERIFY2(tree, "Failed to get QTree.");
-        getSystem(name.c_str(), tree)->setSelected(true);
+        QTreeWidgetItem *item = getSystem(name, tree);
+        QVERIFY(item);
+        item->setSelected(true);
     }
 
     QTest::mouseClick(removeButton, Qt::LeftButton);
@@ -137,7 +165,6 @@ QTreeWidgetItem *AbstractTestSuite::getSystem(std::string name, QTreeWidget *tre
 {
     QList<QTreeWidgetItem *> items = tree->findItems(name.c_str(), Qt::MatchContains | Qt::MatchRecursive);
 
-    std::cerr << name << std::endl;
     if (items.isEmpty()) {
         qDebug("Error: Failed to find item %s in QTree.", name.c_str());
         return NULL;
@@ -153,7 +180,8 @@ std::vector<QTreeWidgetItem *> AbstractTestSuite::findGroup(std::string name)
 {
     QTreeWidget *tree = kernel->getMainWindow()->getPcTreeWidget()->getTree();
     if (!tree) {
-        qDebug("failed to get TreeWidget");
+        qDebug("Failed to get TreeWidget");
+        return std::vector<QTreeWidgetItem *>();
     }
 
     std::vector<QTreeWidgetItem *> foundTopLvlItems;
