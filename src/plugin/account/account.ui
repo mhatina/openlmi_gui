@@ -27,7 +27,16 @@
        <string>Users</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item row="0" column="0">
@@ -84,7 +93,16 @@
        <string>Groups</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item row="0" column="0">
@@ -134,7 +152,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="icons.qrc">
+      <iconset resource="../../../icons/icons.qrc">
        <normaloff>:/remove.png</normaloff>:/remove.png</iconset>
      </property>
      <property name="shortcut">
@@ -163,7 +181,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="icons.qrc">
+      <iconset resource="../../../icons/icons.qrc">
        <normaloff>:/add.png</normaloff>:/add.png</iconset>
      </property>
      <property name="shortcut">
@@ -235,7 +253,14 @@
   </layout>
  </widget>
  <resources>
-  <include location="icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
+  <include location="../../../icons/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

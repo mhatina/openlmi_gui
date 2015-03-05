@@ -352,7 +352,7 @@ void AccountPlugin::getData(std::vector<void *> *data)
                                     Pegasus::CIMNamespaceName("root/cimv2"),
                                     Pegasus::String("WQL"),
                                     String("SELECT * FROM LMI_Account WHERE UserID = \"" +
-                                                    CIMValue::to_string(member) + "\"")
+                                           CIMValue::to_string(member) + "\"")
                                 );
 
                     unsigned pos = data->size() - 1;
@@ -419,8 +419,13 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
                 prop_cnt = sizeof(userProperties) / sizeof(userProperties[0]);
                 for (int k = 0; k < prop_cnt; k++) {
                     String str_value = CIMValue::get_property_value(*instance, userProperties[k].property);
-                    QTableWidgetItem *item =
-                        new QTableWidgetItem(str_value);
+                    QTableWidgetItem *item = new QTableWidgetItem();
+                    if (strcmp(userProperties[k].property, "UserID") == 0) {
+                        int number = atoi(str_value);
+                        item->setData(Qt::DisplayRole, number);
+                    } else {
+                        item->setText(str_value);
+                    }
                     item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
                     item->setToolTip(str_value);
                     m_user_table->setItem(
@@ -434,8 +439,6 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
                     }
                 }
             } else if (creation_class_name == "LMI_Group") {
-
-
                 int row_count = m_group_table->rowCount();
                 String group_name;
                 m_group_table->insertRow(row_count);
@@ -446,8 +449,13 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
                     if (property.getName() == "Name") {
                         group_name = str_value;
                     }
-                    QTableWidgetItem *item =
-                        new QTableWidgetItem(str_value);
+                    QTableWidgetItem *item = new QTableWidgetItem();
+                    if (strcmp(groupProperties[k].property, "InstanceID") == 0) {
+                        int number = atoi(str_value.substr(str_value.rfind(":") + 1).c_str());
+                        item->setData(Qt::DisplayRole, number);
+                    } else {
+                        item->setText(str_value);
+                    }
                     item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
                     item->setToolTip(str_value);
                     m_group_table->setItem(
@@ -491,9 +499,6 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
         Logger::getInstance()->critical(CIMValue::to_string(ex.getMessage()));
     }
 
-    m_user_table->sortByColumn(0, Qt::AscendingOrder);
-    m_group_table->sortByColumn(1, Qt::AscendingOrder);
-
     unsigned int cnt = data->size();
     for (unsigned int i = 0; i < cnt; i++) {
         delete ((Pegasus::CIMInstance *) (*data)[i]);
@@ -504,20 +509,30 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
         }
     }
 
+    m_user_table->setSortingEnabled(true);
+    m_group_table->setSortingEnabled(true);
+
     m_changes_enabled = true;
 }
 
 void AccountPlugin::add()
 {
-    QTableWidget *current = (QTableWidget *)
-                            m_ui->tab_widget->currentWidget()->children()[1];
+    QTableWidget *current = (QTableWidget *) m_ui->tab_widget->currentWidget()->children()[1];
+    QList<QTableWidgetItem *> list;
     NewUserDialog *user_dialog = NULL;
     NewGroupDialog *group_dialog = NULL;
     String name;
+    int name_column;
 
     if (current == m_user_table) {
+        name_column = 0;
         user_dialog = new NewUserDialog(this);
+
         if (!user_dialog->exec()) {
+            delete user_dialog;
+            return;
+        } else if (!(list = current->findItems(user_dialog->getName(), Qt::MatchExactly)).empty()) {
+            current->selectRow(list[0]->row());
             delete user_dialog;
             return;
         }
@@ -533,10 +548,15 @@ void AccountPlugin::add()
                 m_client,
                 user_dialog
             )
-        );        
+        );
     } else if (current == m_group_table) {
+        name_column = 1;
         group_dialog = new NewGroupDialog(this);
         if (!group_dialog->exec()) {
+            delete group_dialog;
+            return;
+        } else if (!(list = current->findItems(group_dialog->getName(), Qt::MatchExactly)).empty()) {
+            current->selectRow(list[0]->row());
             delete group_dialog;
             return;
         }
@@ -560,7 +580,7 @@ void AccountPlugin::add()
     current->insertRow(row_count);
     for (int i = 0; i < current->columnCount(); i++) {
         QTableWidgetItem *item;
-        if (i == 1) {
+        if (i == name_column) {
             item = new QTableWidgetItem(name);
             item->setFlags(item_flags);
             current->setItem(
@@ -582,6 +602,7 @@ void AccountPlugin::add()
     }
     current->selectRow(row_count);
     setSelectedLineColor(current->selectedItems(), Qt::green);
+    current->selectionModel()->clearSelection();
     m_changes_enabled = true;
 }
 
@@ -729,6 +750,7 @@ void AccountPlugin::remove()
         }
         m_last_group_name = "invalid";
     }
+    current->selectionModel()->clearSelection();
 }
 
 void AccountPlugin::removeUserFromGroup(String group)
@@ -946,6 +968,8 @@ void AccountPlugin::showDetails()
 
     if (edited) {
         setSelectedLineColor(selected_items, Qt::yellow);
+        QTableWidget *current_widget = (QTableWidget *) m_ui->tab_widget->currentWidget()->children()[1];
+        current_widget->selectionModel()->clearSelection();
     }
 }
 
