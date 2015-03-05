@@ -395,8 +395,13 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
                 prop_cnt = sizeof(userProperties) / sizeof(userProperties[0]);
                 for (int k = 0; k < prop_cnt; k++) {
                     std::string str_value = CIMValue::get_property_value(*instance, userProperties[k].property);
-                    QTableWidgetItem *item =
-                        new QTableWidgetItem(str_value.c_str());
+                    QTableWidgetItem *item = new QTableWidgetItem();
+                    if (strcmp(userProperties[k].property, "UserID") == 0) {
+                        int number = atoi(str_value.c_str());
+                        item->setData(Qt::DisplayRole, number);
+                    } else {
+                        item->setText(str_value.c_str());
+                    }
                     item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
                     item->setToolTip(str_value.c_str());
                     m_user_table->setItem(
@@ -422,8 +427,13 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
                     if (property.getName() == "Name") {
                         group_name = str_value;
                     }
-                    QTableWidgetItem *item =
-                        new QTableWidgetItem(str_value.c_str());
+                    QTableWidgetItem *item = new QTableWidgetItem();
+                    if (strcmp(groupProperties[k].property, "InstanceID") == 0) {
+                        int number = atoi(str_value.substr(str_value.rfind(":") + 1).c_str());
+                        item->setData(Qt::DisplayRole, number);
+                    } else {
+                        item->setText(str_value.c_str());
+                    }
                     item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
                     item->setToolTip(str_value.c_str());
                     m_group_table->setItem(
@@ -467,9 +477,6 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
         Logger::getInstance()->critical(CIMValue::to_std_string(ex.getMessage()));
     }
 
-    m_user_table->sortByColumn(0, Qt::AscendingOrder);
-    m_group_table->sortByColumn(1, Qt::AscendingOrder);
-
     unsigned int cnt = data->size();
     for (unsigned int i = 0; i < cnt; i++) {
         delete ((Pegasus::CIMInstance *) (*data)[i]);
@@ -480,20 +487,29 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
         }
     }
 
+    m_user_table->setSortingEnabled(true);
+    m_group_table->setSortingEnabled(true);
+
     m_changes_enabled = true;
 }
 
 void AccountPlugin::add()
 {
-    QTableWidget *current = (QTableWidget *)
-                            m_ui->tab_widget->currentWidget()->children()[1];
+    QTableWidget *current = (QTableWidget *) m_ui->tab_widget->currentWidget()->children()[1];
+    QList<QTableWidgetItem *> list;
     NewUserDialog *user_dialog = NULL;
     NewGroupDialog *group_dialog = NULL;
     std::string name;
+    int name_column;
 
     if (current == m_user_table) {
+        name_column = 0;
         user_dialog = new NewUserDialog(this);
         if (!user_dialog->exec()) {
+            delete user_dialog;
+            return;
+        } else if (!(list = current->findItems(user_dialog->getName(), Qt::MatchExactly)).empty()) {
+            current->selectRow(list[0]->row());
             delete user_dialog;
             return;
         }
@@ -511,8 +527,13 @@ void AccountPlugin::add()
             )
         );
     } else if (current == m_group_table) {
+        name_column = 1;
         group_dialog = new NewGroupDialog(this);
         if (!group_dialog->exec()) {
+            delete group_dialog;
+            return;
+        } else if (!(list = current->findItems(group_dialog->getName(), Qt::MatchExactly)).empty()) {
+            current->selectRow(list[0]->row());
             delete group_dialog;
             return;
         }
@@ -536,7 +557,7 @@ void AccountPlugin::add()
     current->insertRow(row_count);
     for (int i = 0; i < current->columnCount(); i++) {
         QTableWidgetItem *item;
-        if (i == 1) {
+        if (i == name_column) {
             item = new QTableWidgetItem(
                 QString(
                     name.c_str()
@@ -557,11 +578,12 @@ void AccountPlugin::add()
                 i,
                 item
             );
-            item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
         }
+        item->setTextAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     }
     current->selectRow(row_count);
     setSelectedLineColor(current->selectedItems(), Qt::green);
+    current->selectionModel()->clearSelection();
     m_changes_enabled = true;
 }
 
