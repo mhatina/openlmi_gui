@@ -307,7 +307,7 @@ void AccountPlugin::getData(std::vector<void *> *data)
             data->push_back(instance);
             m_group_instances.push_back(*instance);
             fetch_members = true;
-        }        
+        }
 
         if (fetch_members) {
             data->push_back(new std::multimap<Pegasus::String, Pegasus::CIMInstance>());
@@ -508,7 +508,7 @@ void AccountPlugin::add()
         if (!user_dialog->exec()) {
             delete user_dialog;
             return;
-        } else if (!(list = current->findItems(user_dialog->getName(), Qt::MatchExactly)).empty()) {
+        } else if (!(list = current->findItems(user_dialog->getName().c_str(), Qt::MatchExactly)).empty()) {
             current->selectRow(list[0]->row());
             delete user_dialog;
             return;
@@ -532,7 +532,7 @@ void AccountPlugin::add()
         if (!group_dialog->exec()) {
             delete group_dialog;
             return;
-        } else if (!(list = current->findItems(group_dialog->getName(), Qt::MatchExactly)).empty()) {
+        } else if (!(list = current->findItems(group_dialog->getName().c_str(), Qt::MatchExactly)).empty()) {
             current->selectRow(list[0]->row());
             delete group_dialog;
             return;
@@ -937,7 +937,8 @@ void AccountPlugin::showDetails()
 
     if (edited) {
         setSelectedLineColor(selected_items, Qt::yellow);
-        current->selectionModel()->clearSelection();
+        QTableWidget *current_widget = (QTableWidget *) m_ui->tab_widget->currentWidget()->children()[1];
+        current_widget->selectionModel()->clearSelection();
     }
 }
 

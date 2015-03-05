@@ -47,6 +47,12 @@ typedef struct {
     QString tooltip;
 } header_item;
 
+typedef enum {
+    FILTER_AVAILABLE,
+    FILTER_NOT_AVAILABLE,
+    FILTER_ERROR
+} filter_status;
+
 class Kernel;
 
 /**
@@ -138,6 +144,7 @@ public:
         const Pegasus::String& queryLanguage,
         const Pegasus::String& query);
 
+    filter_status isFilterAvailable();
     /**
      * @brief isFilterShown
      * @return  return true if filter is displayed, otherwise false
