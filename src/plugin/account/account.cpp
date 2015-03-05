@@ -719,6 +719,7 @@ void AccountPlugin::remove()
         }
         m_last_group_name = "invalid";
     }
+    current->selectionModel()->clearSelection();
 }
 
 void AccountPlugin::removeUserFromGroup(std::string group)
@@ -936,6 +937,7 @@ void AccountPlugin::showDetails()
 
     if (edited) {
         setSelectedLineColor(selected_items, Qt::yellow);
+        current->selectionModel()->clearSelection();
     }
 }
 
