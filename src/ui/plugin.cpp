@@ -245,8 +245,6 @@ Engine::filter_status Engine::IPlugin::isFilterAvailable()
 
     QObjectList list = filter_box->children();
     if (list.empty() || list.size() == 1) {
-        Logger::getInstance()->info("No filter available!");
-        filter_box->setVisible(false);
         return FILTER_NOT_AVAILABLE;
     }
 
