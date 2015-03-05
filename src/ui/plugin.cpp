@@ -236,6 +236,21 @@ Pegasus::Array<Pegasus::CIMObject> Engine::IPlugin::execQuery(
     return array;
 }
 
+Engine::filter_status Engine::IPlugin::isFilterAvailable()
+{
+    QGroupBox *filter_box = findChild<QGroupBox *>("filter_box");
+    if (filter_box == NULL) {
+        return FILTER_ERROR;
+    }
+
+    QObjectList list = filter_box->children();
+    if (list.empty() || list.size() == 1) {
+        return FILTER_NOT_AVAILABLE;
+    }
+
+    return FILTER_AVAILABLE;
+}
+
 bool Engine::IPlugin::isFilterShown()
 {
     Logger::getInstance()->debug("Engine::IPlugin::isFilterShown()");
@@ -256,20 +271,19 @@ bool Engine::IPlugin::showFilter(bool show)
 {
     Logger::getInstance()->debug("Engine::IPlugin::showFilter(bool show)");
     QGroupBox *filter_box = findChild<QGroupBox *>("filter_box");
-    if (filter_box == NULL) {
+    switch(isFilterAvailable()) {
+    case FILTER_AVAILABLE:
+        filter_box->setVisible(show);
+        return show;
+    case FILTER_NOT_AVAILABLE:
+        filter_box->setVisible(false);
+        return false;
+    case FILTER_ERROR:
         Logger::getInstance()->error("Unable to show/hide filter!");
         return false;
     }
 
-    QObjectList list = filter_box->children();
-    if (list.empty() || list.size() == 1) {
-        Logger::getInstance()->info("No filter available!");
-        filter_box->setVisible(false);
-        return false;
-    }
-
-    filter_box->setVisible(show);
-    return show;
+    return true;
 }
 
 String Engine::IPlugin::getSystemId()

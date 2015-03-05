@@ -436,7 +436,9 @@ void Engine::Kernel::setActivePlugin(int index)
             setButtonsEnabled(true, false);
             QPushButton *button = widget<QPushButton *>("filter_button");
             if (button != NULL) {
-                button->setChecked(plugin->isFilterShown());
+                bool available = plugin->isFilterAvailable() == FILTER_AVAILABLE;
+                button->setEnabled(available);
+                button->setChecked(available && plugin->isFilterShown());
             }
         } else {
             plugin->setActive(false);
