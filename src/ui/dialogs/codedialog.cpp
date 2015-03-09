@@ -99,7 +99,7 @@ CodeDialog::~CodeDialog()
 
 void CodeDialog::setText(String text)
 {
-    Logger::getInstance()->debug("CodeDialog::setText(std::string text)");
+    Logger::getInstance()->debug("CodeDialog::setText(String text)");
     text = "#!/usr/bin/lmishell\n\n" + text;
     m_ui->code_editor->setText(text);
     int last_line = m_ui->code_editor->lines();

@@ -35,7 +35,7 @@ void ProgressBar::hide(String process)
 {
     String tool = "";
     for (unsigned int i = 0; i < m_process_info.size(); i++) {
-        if (m_process_info[i].find(process) != std::string::npos) {
+        if (m_process_info[i].find(process) != String::npos) {
             m_process_info.erase(m_process_info.begin() + i);
 
             if (m_process_info.empty()) {
@@ -59,7 +59,7 @@ void ProgressBar::hide(String process)
 void ProgressBar::show(String process)
 {
     for (unsigned int i = 0; i < m_process_info.size(); i++) {
-        if (m_process_info[i].find(process) != std::string::npos) {
+        if (m_process_info[i].find(process) != String::npos) {
             return;
         }
     }

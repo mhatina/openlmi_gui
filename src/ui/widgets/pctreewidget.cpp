@@ -612,17 +612,17 @@ void PCTreeWidget::onDiscoverButtonClicked()
     DiscoverWorker *m_worker = new DiscoverWorker();
     connect(
         m_worker,
-        SIGNAL(finished(std::list<std::string> *)),
+        SIGNAL(finished(std::list<String> *)),
         this,
-        SLOT(addDiscoveredPcsToTree(std::list<std::string> *))
+        SLOT(addDiscoveredPcsToTree(std::list<String> *))
     );
     boost::thread(boost::bind(&DiscoverWorker::discover, m_worker));
 }
 
-void PCTreeWidget::addDiscoveredPcsToTree(std::list<std::string> *pc)
+void PCTreeWidget::addDiscoveredPcsToTree(std::list<String> *pc)
 {
-    Logger::getInstance()->debug("PCTreeWidget::addDiscoveredPcsToTree(std::list<std::string> *pc)");
-    for (std::list<std::string>::iterator it = pc->begin(); it != pc->end(); it++) {
+    Logger::getInstance()->debug("PCTreeWidget::addDiscoveredPcsToTree(std::list<String> *pc)");
+    for (std::list<String>::iterator it = pc->begin(); it != pc->end(); it++) {
         addPcToTree("Discovered", (*it));
     }
 

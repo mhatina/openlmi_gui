@@ -69,8 +69,8 @@ void RemoveUserFromGroupInstruction::run()
             String member_property(CIMValue::to_string(member_prop.getValue()));
             String collection_property = CIMValue::to_string(collection_prop.getValue());
             if (member_property.find("LMI:UID:" + CIMValue::to_string(
-                                         m_value)) != std::string::npos
-                && collection_property.find(m_name) != std::string::npos) {
+                                         m_value)) != String::npos
+                && collection_property.find(m_name) != String::npos) {
                 member = members[i].getPath();
                 break;
             }

@@ -22,7 +22,7 @@ AuthenticationDialog::AuthenticationDialog(String id, QWidget *parent) :
     QDialog(parent),
     m_ui(new Ui::AuthenticationDialog)
 {
-    Logger::getInstance()->debug("AuthenticationDialog::AuthenticationDialog(std::string id)");
+    Logger::getInstance()->debug("AuthenticationDialog::AuthenticationDialog(String id, QWidget *parent)");
     m_ui->setupUi(this);
     setWindowFlags(Qt::Popup);
     m_ui->id_label->setText(id);

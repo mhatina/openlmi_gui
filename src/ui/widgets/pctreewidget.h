@@ -75,7 +75,7 @@ private:
     void saveAllPcs(String filename);
 
 private slots:
-    void addDiscoveredPcsToTree(std::list<std::string> *pc);
+    void addDiscoveredPcsToTree(std::list<String> *pc);
     void addGroup();
     void deleteGroup();
     void itemSelectionChanged();

@@ -25,7 +25,7 @@
 class ProgressBar : public QProgressBar
 {
 private:
-    std::vector<std::string> m_process_info;
+    std::vector<String> m_process_info;
 
 public:
     ProgressBar();
