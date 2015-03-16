@@ -172,6 +172,7 @@ void ServicePlugin::getData(std::vector<void *> *data)
 void ServicePlugin::clear()
 {
     m_changes_enabled = false;
+    m_service_instances.clear();
     m_services_table->setRowCount(0);
     m_changes_enabled = true;
 }
