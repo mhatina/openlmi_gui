@@ -195,7 +195,10 @@ AccountPlugin::AccountPlugin() :
 
 AccountPlugin::~AccountPlugin()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+        delete m_ui;
+        m_ui = NULL;
+    }
 }
 
 std::string AccountPlugin::getInstructionText()
@@ -374,6 +377,9 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
     m_changes_enabled = false;
     bool group = false;
 
+    m_user_table->setSortingEnabled(false);
+    m_group_table->setSortingEnabled(false);
+
     int prop_cnt;
     try {
         unsigned int cnt = data->size();
@@ -479,10 +485,16 @@ void AccountPlugin::fillTab(std::vector<void *> *data)
 
     unsigned int cnt = data->size();
     for (unsigned int i = 0; i < cnt; i++) {
-        delete ((Pegasus::CIMInstance *) (*data)[i]);
+        if (((Pegasus::CIMInstance *) (*data)[i]) != NULL) {
+                delete ((Pegasus::CIMInstance *) (*data)[i]);
+                 (*data)[i]= NULL;
+            }
         if (group) {
             group = false;
-            delete ((std::multimap<Pegasus::String, Pegasus::CIMInstance> *) (*data)[cnt - 1]);
+            if (((std::multimap<Pegasus::String, Pegasus::CIMInstance> *) (*data)[cnt - 1]) != NULL) {
+                    delete ((std::multimap<Pegasus::String, Pegasus::CIMInstance> *) (*data)[cnt - 1]);
+                    (*data)[cnt - 1] = NULL;
+                }
             cnt--;
         }
     }
@@ -506,7 +518,10 @@ void AccountPlugin::add()
         name_column = 0;
         user_dialog = new NewUserDialog(this);
         if (!user_dialog->exec()) {
-            delete user_dialog;
+            if (user_dialog != NULL) {
+                    delete user_dialog;
+                    user_dialog = NULL;
+                }
             return;
         } else if (!(list = current->findItems(user_dialog->getName().c_str(), Qt::MatchExactly)).empty()) {
             current->selectRow(list[0]->row());
@@ -517,7 +532,10 @@ void AccountPlugin::add()
         name = user_dialog->getName();
         if (name.empty()) {
             Logger::getInstance()->error("Username cannot be empty");
-            delete user_dialog;
+            if (user_dialog != NULL) {
+                    delete user_dialog;
+                    user_dialog = NULL;
+                }
             return;
         }
         addInstruction(
@@ -530,7 +548,10 @@ void AccountPlugin::add()
         name_column = 1;
         group_dialog = new NewGroupDialog(this);
         if (!group_dialog->exec()) {
-            delete group_dialog;
+            if (group_dialog != NULL) {
+                    delete group_dialog;
+                    group_dialog = NULL;
+                }
             return;
         } else if (!(list = current->findItems(group_dialog->getName().c_str(), Qt::MatchExactly)).empty()) {
             current->selectRow(list[0]->row());
@@ -541,7 +562,10 @@ void AccountPlugin::add()
         name = group_dialog->getName();
         if (name.empty()) {
             Logger::getInstance()->error("Group name cannot be empty");
-            delete group_dialog;
+            if (group_dialog != NULL) {
+                    delete group_dialog;
+                    group_dialog = NULL;
+                }
             return;
         }
         addInstruction(
