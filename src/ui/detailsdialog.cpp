@@ -70,7 +70,10 @@ DetailsDialog::DetailsDialog(std::string title, QWidget *parent) :
 DetailsDialog::~DetailsDialog()
 {
     Logger::getInstance()->debug("DetailsDialog::~DetailsDialog()");
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 std::map<std::string, std::string> DetailsDialog::getChanges()

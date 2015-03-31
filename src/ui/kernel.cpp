@@ -84,8 +84,14 @@ Engine::Kernel::Kernel() :
 Engine::Kernel::~Kernel()
 {
     Logger::getInstance()->debug("Engine::Kernel::~Kernel()");
-    delete m_mutex;
-    delete m_bar;
+    if (m_mutex != NULL) {
+            delete m_mutex;
+            m_mutex = NULL;
+        }
+    if (m_bar != NULL) {
+            delete m_bar;
+            m_bar = NULL;
+        }
     SettingsDialog::deleteInstance();
 
     disconnect(
@@ -95,6 +101,7 @@ Engine::Kernel::~Kernel()
         0);
     foreach (QPluginLoader * loader, m_loaders) {
         loader->unload();
+
         delete loader;
     }
     Logger::removeInstance();
@@ -490,7 +497,10 @@ void Engine::Kernel::deletePlugins()
         0);
     foreach (QPluginLoader * loader, m_loaders) {
         loader->unload();
-        delete loader;
+        if (loader != NULL) {
+                delete loader;
+                loader = NULL;
+            }
     }
     connect(
         m_main_window.getProviderWidget()->getTabWidget(),

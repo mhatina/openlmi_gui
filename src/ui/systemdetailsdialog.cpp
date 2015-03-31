@@ -31,7 +31,10 @@ SystemDetailsDialog::SystemDetailsDialog(QWidget *parent) :
 
 SystemDetailsDialog::~SystemDetailsDialog()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 void SystemDetailsDialog::setDomain(std::string domain)

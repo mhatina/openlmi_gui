@@ -72,6 +72,7 @@ protected:
     Engine::IPlugin* findPlugin(std::string s);
     QTreeWidgetItem* getSystem(std::string name, QTreeWidget *tree);
     std::vector<QTreeWidgetItem*>findGroup(std::string name);
+    static bool compareByFirstWord(const std::string a, const std::string b);
 
 public:
     void status();

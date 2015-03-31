@@ -137,9 +137,18 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     Logger::getInstance()->debug("MainWindow::~MainWindow()");
-    delete m_toolbar;
-    delete m_tool_button_menu;
-    delete m_ui;
+    if (m_toolbar != NULL) {
+            delete m_toolbar;
+            m_toolbar = NULL;
+        }
+    if (m_tool_button_menu != NULL) {
+            delete m_tool_button_menu;
+            m_tool_button_menu = NULL;
+        }
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 PCTreeWidget *MainWindow::getPcTreeWidget()

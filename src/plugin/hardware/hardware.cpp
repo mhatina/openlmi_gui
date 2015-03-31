@@ -109,7 +109,10 @@ void HardwarePlugin::clearComponentInfo()
 
     for (int i = list.size() - 1; i >= 0; i--) {
         m_ui->device_box->layout()->removeWidget(qobject_cast<QWidget *>(list[i]));
-        delete list[i];
+        if (list[i] != NULL) {
+                delete list[i];
+                list[i] = NULL;
+            }
     }
     m_ui->device_box->setLayout(new QFormLayout());
 }
@@ -382,7 +385,10 @@ HardwarePlugin::HardwarePlugin() :
 
 HardwarePlugin::~HardwarePlugin()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 std::string HardwarePlugin::getInstructionText()
@@ -705,7 +711,10 @@ void HardwarePlugin::fillTab(std::vector<void *> *data)
     m_changes_enabled = true;
 
     for (unsigned int i = 0; i < data->size(); i++) {
-        delete ((std::vector<Pegasus::CIMInstance> *) (*data)[i]);
+        if (((std::vector<Pegasus::CIMInstance> *) (*data)[i]) != NULL) {
+                delete ((std::vector<Pegasus::CIMInstance> *) (*data)[i]);
+                (*data)[i] = NULL;
+            }
     }
 }
 

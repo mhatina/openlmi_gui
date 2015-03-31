@@ -48,7 +48,10 @@ NetworkPageWidget::NetworkPageWidget(QWidget *parent) :
 
 NetworkPageWidget::~NetworkPageWidget()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 std::string NetworkPageWidget::getTitle()

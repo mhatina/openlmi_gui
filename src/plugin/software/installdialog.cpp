@@ -66,7 +66,10 @@ InstallDialog::InstallDialog(CIMClient *client, QWidget *parent) :
 
 InstallDialog::~InstallDialog()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 std::vector<Pegasus::CIMInstance> InstallDialog::getPackages()

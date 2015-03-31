@@ -36,7 +36,10 @@ GroupMemberDialog::GroupMemberDialog(QWidget *parent) :
 
 GroupMemberDialog::~GroupMemberDialog()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 void GroupMemberDialog::getUsers(std::vector<std::string> &available_users,

@@ -72,7 +72,10 @@ void Engine::IPlugin::addInstruction(IInstruction *instruction)
 void Engine::IPlugin::deleteInstruction(int pos)
 {
     Logger::getInstance()->debug("Engine::IPlugin::deleteInstruction(int pos)");
-    delete m_instructions[pos];
+    if (m_instructions[pos] != NULL) {
+            delete m_instructions[pos];
+            m_instructions[pos] = NULL;
+        }
     m_instructions.erase(m_instructions.begin() + pos);
     emit newInstructionText(getInstructionText());
 }
@@ -298,7 +301,10 @@ void Engine::IPlugin::applyChanges()
     Logger::getInstance()->debug("Engine::IPlugin::applyChanges()");
     for (unsigned int i = 0; i < m_instructions.size(); i++) {
         m_instructions[i]->run();
-        delete m_instructions[i];
+        if (m_instructions[i] != NULL) {
+                delete m_instructions[i];
+                m_instructions[i] = NULL;
+            }
     }
     m_instructions.clear();
     emit noChanges(this);
@@ -309,7 +315,10 @@ void Engine::IPlugin::cancelChanges()
 {
     Logger::getInstance()->debug("Engine::IPlugin::cancelChanges()");
     for (unsigned int i = 0; i < m_instructions.size(); i++) {
-        delete m_instructions[i];
+        if (m_instructions[i] != NULL) {
+                delete m_instructions[i];
+                m_instructions[i] = NULL;
+            }
     }
     m_instructions.clear();
     emit noChanges(this);
@@ -436,7 +445,10 @@ void Engine::IPlugin::handleDataFetching(std::vector<void *> *data, bool still_r
             emit refreshProgress(Engine::REFRESHED, this);
             Logger::getInstance()->info(getRefreshInfo());
         }        
-        delete data;        
+        if (data != NULL) {
+                delete data;
+                data = NULL;
+            }
     }
 }
 

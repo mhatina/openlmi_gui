@@ -103,8 +103,14 @@ PCTreeWidget::~PCTreeWidget()
     Logger::getInstance()->debug("PCTreeWidget::~PCTreeWidget()");
     std::string path = QDir::homePath().toStdString() + "/.config/lmicc_computers.xml";
     saveAllPcs(path);
-    delete m_ui;
-    delete m_worker;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
+    if (m_worker != NULL) {
+            delete m_worker;
+            m_worker = NULL;
+        }
 }
 
 QTreeWidget *PCTreeWidget::getTree()
@@ -612,8 +618,14 @@ void PCTreeWidget::addDiscoveredPcsToTree(std::list<std::string> *pc)
         addPcToTree("Discovered", (*it));
     }
 
-    delete pc;
-    delete m_worker;
+    if (pc != NULL) {
+            delete pc;
+            pc = NULL;
+        }
+    if (m_worker != NULL) {
+            delete m_worker;
+            m_worker = NULL;
+        }
     emit refreshProgress(Engine::REFRESHED, "Discovering...");
 }
 

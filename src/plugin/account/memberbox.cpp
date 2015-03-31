@@ -33,7 +33,10 @@ MemberBox::MemberBox(std::string owner) :
 
 MemberBox::~MemberBox()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 int MemberBox::findItem(std::string text)

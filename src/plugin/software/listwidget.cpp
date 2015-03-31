@@ -41,7 +41,10 @@ ListWidget::ListWidget(QWidget *parent) :
 
 ListWidget::~ListWidget()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 QList<QListWidgetItem *> ListWidget::selectedItems() const

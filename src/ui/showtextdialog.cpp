@@ -32,7 +32,10 @@ ShowTextDialog::ShowTextDialog(QWidget *parent) :
 ShowTextDialog::~ShowTextDialog()
 {
     Logger::getInstance()->debug("ShowTextDialog::~ShowTextDialog()");
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 void ShowTextDialog::setText(std::string text, bool move_to_end)

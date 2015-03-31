@@ -156,14 +156,22 @@ int Tst_LMICC::main_for_tests ()
 //    result += QTest::qExec(tst, testCmd);
 //    delete tst;
 
-//    tst = new AccountTestSuite();
+//    tst = new UsersTestSuite();
 //    result += QTest::qExec(tst, testCmd);
 //    delete tst;
 
     //no reload
+    //systemctl stop firewalld
+    //systemctl start sshd
+    //systemctl list-unit-files | grep service
+
 //    tst = new HardwarePluginTestSuite();
 //    result += QTest::qExec(tst, testCmd);
 //    delete tst;
+
+    tst = new ServicePluginTestSuite();
+    result += QTest::qExec(tst, testCmd);
+    delete tst;
 
     cleanConfFiles();
     return result;

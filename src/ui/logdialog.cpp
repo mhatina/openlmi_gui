@@ -297,8 +297,14 @@ LogDialog::LogDialog(QWidget *parent) :
 
 LogDialog::~LogDialog()
 {
-    delete m_ui;
-    delete m_tool_button_menu;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
+    if (m_tool_button_menu != NULL) {
+            delete m_tool_button_menu;
+            m_tool_button_menu = NULL;
+        }
 }
 
 void LogDialog::setLogs()

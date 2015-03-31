@@ -119,7 +119,10 @@ OverviewPlugin::OverviewPlugin() :
 
 OverviewPlugin::~OverviewPlugin()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 void OverviewPlugin::addLogEntry(std::string label, std::string text)
@@ -137,13 +140,17 @@ void OverviewPlugin::filterChanged(QString text)
     if (m_log_thread != NULL) {
         m_log_thread->interrupt();
         delete m_log_thread;
+        m_log_thread = NULL;
     }
 
     QObjectList list = m_ui->content->children();
     for (int i = list.size() - 1; i >= 0; i--) {
         QLayout *l = m_ui->content->layout();
         l->removeWidget(qobject_cast<QWidget *>(list[i]));
-        delete list[i];
+        if (list[i] != NULL) {
+                delete list[i];
+                list[i] = NULL;
+            }
     }
 
     m_log_thread = new boost::thread(boost::bind(&OverviewPlugin::fillLogBox, this,
@@ -201,18 +208,27 @@ void OverviewPlugin::clear()
     QObjectList list = m_ui->power_box->children();
     for (int i = list.size() - 1; i >= 0; i--) {
         m_ui->power_box->layout()->removeWidget(qobject_cast<QWidget *>(list[i]));
-        delete list[i];
+        if (list[i] != NULL) {
+                delete list[i];
+                list[i] = NULL;
+            }
     }
     list = m_ui->network_box->children();
     for (int i = list.size() - 1; i >= 0; i--) {
         m_ui->network_box->layout()->removeWidget(qobject_cast<QWidget *>(list[i]));
-        delete list[i];
+        if (list[i] != NULL) {
+                delete list[i];
+                list[i] = NULL;
+            }
     }
     list = m_ui->content->children();
     for (int i = list.size() - 1; i >= 0; i--) {
         QLayout *l = m_ui->content->layout();
         l->removeWidget(qobject_cast<QWidget *>(list[i]));
-        delete list[i];
+        if (list[i] != NULL) {
+                delete list[i];
+                list[i] = NULL;
+            }
     }
     m_logs.clear();
 
@@ -424,7 +440,10 @@ void OverviewPlugin::fillTab(std::vector<void *> *data)
     }
 
     for (unsigned int i = 0; i < data->size(); i++) {
-        delete (Pegasus::CIMInstance *) (*data)[i];
+        if ((Pegasus::CIMInstance *) (*data)[i] != NULL) {
+                delete (Pegasus::CIMInstance *) (*data)[i];
+                (*data)[i] = NULL;
+            }
     }
 
     m_changes_enabled = true;

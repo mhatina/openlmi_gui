@@ -37,7 +37,10 @@ NewUserDialog::NewUserDialog(QWidget *parent) :
 
 NewUserDialog::~NewUserDialog()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 bool NewUserDialog::createGroup()

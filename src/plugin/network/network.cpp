@@ -66,7 +66,10 @@ NetworkPlugin::NetworkPlugin() :
 
 NetworkPlugin::~NetworkPlugin()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 std::string NetworkPlugin::getInstructionText()
@@ -166,7 +169,10 @@ void NetworkPlugin::clear()
     for (int i = cnt - 1; i >= 0; i--) {
         QWidget *w = m_ui->network_widgets->widget(i);
         m_ui->network_widgets->removeWidget(w);
-        delete w;
+        if (w != NULL) {
+                delete w;
+                w = NULL;
+            }
     }
 
     m_ui->scroll_bar->setMaximum(0);

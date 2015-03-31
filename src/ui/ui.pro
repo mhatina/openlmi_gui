@@ -23,7 +23,7 @@ TARGET          =       lmicc
 TEMPLATE        =       app
 QMAKE_CXXFLAGS  +=      -ansi -pedantic -Wall -Wextra
 LIBS            +=      -lslp -lpegclient -lpegcommon -lboost_thread -lgnome-keyring
-INCLUDEPATH     +=      ../logger
+INCLUDEPATH     +=      ../logger ../plugin
 DEFINES         +=      PEGASUS_PLATFORM_LINUX_X86_64_GNU
 CONFIG          +=      link_pkgconfig
 PKGCONFIG       +=      glib-2.0
@@ -94,7 +94,10 @@ SOURCES         +=      main.cpp \
     tests/accounttestsuite.cpp \
     tests/hardwareplugintestsuite.cpp \
     tests/abstractplugintestsuite.cpp \
-    tests/handler.cpp
+    tests/handler.cpp \
+    tests/userstestsuite.cpp \
+    tests/serviceplugintestsuite.cpp \
+    tests/groupstestsuite.cpp
 
 HEADERS         +=      mainwindow.h \
                         kernel.h \
@@ -132,7 +135,10 @@ HEADERS         +=      mainwindow.h \
     tests/accounttestsuite.h \
     tests/hardwareplugintestsuite.h \
     tests/abstractplugintestsuite.h \
-    tests/handler.h
+    tests/handler.h \
+    tests/userstestsuite.h \
+    tests/serviceplugintestsuite.h \
+    tests/groupstestsuite.h
 
 FORMS           +=      mainwindow.ui \
                         widgets/providerwidget.ui \

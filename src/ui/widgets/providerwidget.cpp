@@ -32,7 +32,10 @@ ProviderWidget::ProviderWidget(QWidget *parent) :
 ProviderWidget::~ProviderWidget()
 {
     Logger::getInstance()->debug("ProviderWidget::~ProviderWidget()");
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 QTabWidget *ProviderWidget::getTabWidget()

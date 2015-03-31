@@ -27,8 +27,9 @@
 #include "pctreewidgettestsuite.h"
 #include "startuptestsuite.h"
 #include "toolbartestsuite.h"
-#include "accounttestsuite.h"
+#include "userstestsuite.h"
 #include "hardwareplugintestsuite.h"
+#include "serviceplugintestsuite.h"
 
 class Tst_LMICC: public QObject {
 

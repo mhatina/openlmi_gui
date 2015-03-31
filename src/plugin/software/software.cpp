@@ -319,7 +319,10 @@ SoftwarePlugin::SoftwarePlugin() :
 
 SoftwarePlugin::~SoftwarePlugin()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 std::string SoftwarePlugin::getInstructionText()
@@ -470,7 +473,10 @@ void SoftwarePlugin::fillTab(std::vector<void *> *data)
     }
 
     for (unsigned int i = 0; i < data->size(); i++) {
-        delete ((Pegasus::CIMInstance *) (*data)[i]);
+        if ((Pegasus::CIMInstance *) (*data)[i] != NULL) {
+                delete (Pegasus::CIMInstance *) (*data)[i];
+                (*data)[i] = NULL;
+            }
     }
 
     disableRepoButtons();

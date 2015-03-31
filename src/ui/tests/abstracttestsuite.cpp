@@ -30,7 +30,10 @@ AbstractTestSuite::AbstractTestSuite(QObject *parent) :
 
 AbstractTestSuite::~AbstractTestSuite()
 {
-    delete h;
+    if (h != NULL) {
+            delete h;
+            h = NULL;
+        }
 }
 
 
@@ -65,7 +68,10 @@ void AbstractTestSuite::cleanup()
 {
     if (kernel) {
         qApp->closeAllWindows();
-        delete kernel;
+        if (kernel != NULL) {
+                delete kernel;
+                kernel = NULL;
+            }
         kernel = NULL;
     }
 }
@@ -193,4 +199,16 @@ std::vector<QTreeWidgetItem *> AbstractTestSuite::findGroup(std::string name)
         }
     }
     return foundTopLvlItems;
+}
+
+bool AbstractTestSuite::compareByFirstWord(const std::string a, const std::string b)
+{
+    if (a.find(" ") != std::string::npos && b.find(" ") != std::string::npos) {
+        std::string lowerA(a.substr(0, a.find(" ")));
+        std::string lowerB(b.substr(0, b.find(" ")));
+        std::transform(lowerA.begin(),lowerA.end(),lowerA.begin(), ::tolower);
+        std::transform(lowerB.begin(),lowerB.end(),lowerB.begin(), ::tolower);
+        return  lowerA < lowerB;
+    }
+    return false;
 }

@@ -106,7 +106,10 @@ ServicePlugin::ServicePlugin() :
 
 ServicePlugin::~ServicePlugin()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 std::string ServicePlugin::getInstructionText()
@@ -179,7 +182,6 @@ void ServicePlugin::clear()
 
 void ServicePlugin::fillTab(std::vector<void *> *data)
 {
-    clear();
     m_changes_enabled = false;
 
     try {
@@ -240,7 +242,10 @@ void ServicePlugin::fillTab(std::vector<void *> *data)
     }
 
     for (unsigned int i = 0; i < data->size(); i++) {
-        delete ((Pegasus::CIMInstance *)(*data)[i]);
+        if ((Pegasus::CIMInstance *) (*data)[i] != NULL) {
+                delete (Pegasus::CIMInstance *) (*data)[i];
+                (*data)[i] = NULL;
+            }
     }
 
     m_changes_enabled = true;

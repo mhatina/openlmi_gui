@@ -33,14 +33,15 @@ class Tst_Helper : public QObject
 {
     Q_OBJECT
 
+
 private:
     bool m_closed;
     bool m_success;
     boost::thread *t;
     AbstractTestSuite* ts;
 
-    void closeWarning();
 public:
+    void closeWarning();
     Tst_Helper(AbstractTestSuite *parent);
 
     bool getClosed() const;

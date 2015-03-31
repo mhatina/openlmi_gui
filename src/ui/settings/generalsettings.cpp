@@ -31,7 +31,10 @@ GeneralSettings::GeneralSettings(QWidget *parent) :
 
 GeneralSettings::~GeneralSettings()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 std::string GeneralSettings::title()

@@ -19,6 +19,14 @@
 
 #include "abstracttestsuite.h"
 
+Tst_Helper::Tst_Helper(AbstractTestSuite *parent) :
+    m_closed(false),
+    m_success(false)
+{
+    t = NULL;
+    ts = parent;
+}
+
 bool Tst_Helper::getClosed() const
 {
     return m_closed;
@@ -43,14 +51,6 @@ bool Tst_Helper::cleanupThread()
     }
 
     return false;
-}
-
-Tst_Helper::Tst_Helper(AbstractTestSuite *parent) :
-    m_closed(false),
-    m_success(false)
-{
-    t = NULL;
-    ts = parent;
 }
 
 void Tst_Helper::closed()

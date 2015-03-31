@@ -34,7 +34,10 @@ NewGroupDialog::NewGroupDialog(QWidget *parent) :
 
 NewGroupDialog::~NewGroupDialog()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 std::string NewGroupDialog::getName()

@@ -43,7 +43,10 @@ ActionBox::ActionBox(std::string name) :
 
 ActionBox::~ActionBox()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 void ActionBox::changeAction(std::string action)

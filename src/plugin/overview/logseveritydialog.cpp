@@ -32,7 +32,10 @@ LogSeverityDialog::LogSeverityDialog(QWidget *parent) :
 
 LogSeverityDialog::~LogSeverityDialog()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 int LogSeverityDialog::getSeverity()

@@ -56,7 +56,10 @@ LabeledLineEdit::LabeledLineEdit(std::string objectName, std::string label,
 LabeledLineEdit::~LabeledLineEdit()
 {
     Logger::getInstance()->debug("LabeledLineEdit::~LabeledLineEdit()");
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 int LabeledLineEdit::getLabelWidth()

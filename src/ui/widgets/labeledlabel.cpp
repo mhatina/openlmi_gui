@@ -46,7 +46,10 @@ LabeledLabel::LabeledLabel(std::string label, QString text) :
 
 LabeledLabel::~LabeledLabel()
 {
-    delete m_ui;
+    if (m_ui != NULL) {
+            delete m_ui;
+            m_ui = NULL;
+        }
 }
 
 int LabeledLabel::getLabelWidth()
