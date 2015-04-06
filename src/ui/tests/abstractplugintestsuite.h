@@ -15,6 +15,7 @@ public:
     void setTab(std::string name);
 protected:
     void waitForRefresh(Engine::IPlugin* plug);
+    void preparePlugin(std::string plugName, int opt = 0);
 private slots:
     void initTestCase();
     void cleanupTestCase();

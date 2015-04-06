@@ -30,6 +30,51 @@ void AbstractPluginTestSuite::reselectLocalost() {
     getSystem("localhost", tree)->setSelected(true);
 }
 
+void AbstractPluginTestSuite::preparePlugin(std::string plugName, int opt) {
+
+    Engine::IPlugin *plug = findPlugin(plugName);
+    if (plug == NULL) {
+        std::cerr << "Failed to find plugin " << plugName << '\n';
+        QFAIL("");
+    }
+    reselectLocalost();
+    setTab(plugName);
+
+    QPushButton *refresh_button = kernel->widget<QPushButton *>("refresh_button");
+    QVERIFY2(refresh_button, "Failed to get refresh_button");
+    QTest::qWait(100);
+
+    while (plug->isRefreshing())
+        QTest::qWait(1000);
+    QTest::mouseClick(refresh_button, Qt::LeftButton);
+
+    waitForRefresh(plug);
+
+    QTest::qWait(1000);
+
+    if (opt) {
+        QTabWidget* tabWid = plug->findChild<QTabWidget*>("tab_widget");
+        QVERIFY2(tabWid, "Failed to get tab_widget");
+        tabWid->setCurrentIndex(1);
+        waitForRefresh(plug);
+
+    }
+    QTest::qWait(1000);
+
+    std::string str;
+    int i = 0;
+    do {
+        str.append(plug->getRefreshInfo());
+        if (str.find(" 0 ") == std::string::npos) {
+            break;
+        }
+        i++;
+    } while (i < 5);
+    QVERIFY2(i < 5, "No groups found");
+
+    QTest::qWait(3000); // magic !!!!
+}
+
 void AbstractPluginTestSuite::setTab(std::string name) {
     QTabWidget* tw = kernel->widget<QTabWidget*>("tab_widget");
 
@@ -39,7 +84,7 @@ void AbstractPluginTestSuite::setTab(std::string name) {
             return;
         }
     }
-    std::string errmsg("Failed to get tab called ");
+    std::string errmsg("Failed to get tab ");
     errmsg.append(name);
     QFAIL(errmsg.c_str());
 }

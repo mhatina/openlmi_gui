@@ -391,6 +391,7 @@ void Engine::IPlugin::apply()
         return;
     }
     Logger::getInstance()->info("Applying");
+    setRefreshed(false);
     emit refreshProgress(Engine::NOT_REFRESHED, this);
     boost::thread(boost::bind(&Engine::IPlugin::applyChanges, this));
 }
@@ -454,8 +455,7 @@ void Engine::IPlugin::handleDataFetching(std::vector<void *> *data, bool still_r
 
 void Engine::IPlugin::handleDoneApplying()
 {
-    Logger::getInstance()->debug("Engine::IPlugin::handleDoneApplying()");
-    setRefreshed(false);
+    Logger::getInstance()->debug("Engine::IPlugin::handleDoneApplying()");    
     refresh(m_client);
 }
 

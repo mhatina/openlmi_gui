@@ -7,33 +7,7 @@ ServicePluginTestSuite::ServicePluginTestSuite() :
 }
 
 void ServicePluginTestSuite::prepareServicePlugin() {
-    Engine::IPlugin *plug = findPlugin("Service");
-    QVERIFY2(plug, "Failed to find plugin \"Service\"");
-    reselectLocalost();
-    setTab("Service");
-
-    QPushButton *refresh_button = kernel->widget<QPushButton *>("refresh_button");
-    QVERIFY2(refresh_button, "Failed to get add_button");
-    QTest::qWait(100);
-    QTest::mouseClick(refresh_button, Qt::LeftButton);
-
-    waitForRefresh(plug);
-
-    QTest::qWait(1000);
-
-    std::stringstream ss;
-    int i = 0;
-    do {
-        //source of segfault
-        ss.str(plug->getRefreshInfo());
-        if (ss.str().find(" 0 ") == std::string::npos) {
-            break;
-        }
-        i++;
-    } while (i < 5);
-    QVERIFY2(i < 5, "No groups found");
-
-    QTest::qWait(3000); // magic !!!!
+    preparePlugin("Service");
 }
 
 //services from templates not tested (@.service)

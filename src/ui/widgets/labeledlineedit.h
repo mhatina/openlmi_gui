@@ -51,7 +51,7 @@ public:
     void setAlignment(int alignment);
     void setLabelText(std::string text);
     void setReadOnly(bool state);
-    void setText(std::string text);
+    void setText(std::string text, bool emit_changes = true);
 
 public slots:
     void itemChanged();

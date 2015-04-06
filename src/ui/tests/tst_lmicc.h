@@ -30,6 +30,7 @@
 #include "userstestsuite.h"
 #include "hardwareplugintestsuite.h"
 #include "serviceplugintestsuite.h"
+#include "groupstestsuite.h"
 
 class Tst_LMICC: public QObject {
 

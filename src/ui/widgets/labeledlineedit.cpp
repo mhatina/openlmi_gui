@@ -32,7 +32,7 @@ LabeledLineEdit::LabeledLineEdit(std::string objectName, std::string label,
     Logger::getInstance()->debug("LabeledLineEdit::LabeledLineEdit(std::string objectName, std::string label, std::string text, bool key)");
     m_ui->setupUi(this);
     setLabelText(label);
-    setText(text);
+    setText(text, false);
     if (key) {
         m_ui->lineEdit->setReadOnly(true);
         m_ui->lineEdit->setStyleSheet("QLineEdit{background: pink;}");
@@ -107,11 +107,13 @@ void LabeledLineEdit::setReadOnly(bool state)
     m_ui->lineEdit->setReadOnly(state);
 }
 
-void LabeledLineEdit::setText(std::string text)
+void LabeledLineEdit::setText(std::string text, bool emit_changes)
 {
     Logger::getInstance()->debug("LabeledLineEdit::setText(std::string text)");
     m_text = text;
     m_ui->lineEdit->setText(text.c_str());
+    if (emit_changes)
+        emit itemChanged(this);
 }
 
 void LabeledLineEdit::itemChanged()
