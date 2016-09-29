@@ -1,3 +1,6 @@
+WHOLE OPENLMI PROJECT WAS SHUTDOWN
+==================================
+
 ABOUT
 ===========
 Keep in mind the program is still in alpha stage, so bugs and install issues are still very common.
